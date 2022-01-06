@@ -14,14 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-Route::get('test', function (Request $request) {
-
-    $response = [
-        'msessage' => 'Hello I am from transport API site'
-    ];
-    return response()->json($response, 200);
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });

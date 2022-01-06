@@ -23,5 +23,5 @@ Route::get('test', function (Request $request) {
     $response = [
         'msessage' => 'Hello I am from transport API site'
     ];
-    return response()->json($response, 200);
+    return response($response);
 });
