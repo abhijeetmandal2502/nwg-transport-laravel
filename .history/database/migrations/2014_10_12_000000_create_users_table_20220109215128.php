@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->string('role_id')->nullable()->comment('comming from roles table');
+            $table->integer('role_id');
             $table->enum('status', ['Active', 'Inactive', 'Hold', 'Blocked'])->default('Active')->comment('Account Status');
             $table->timestamps();
         });
