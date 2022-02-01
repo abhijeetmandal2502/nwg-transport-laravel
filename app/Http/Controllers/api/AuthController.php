@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -32,24 +33,48 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:255',
+            'email' => 'required|string|max:255',
             'password' => 'required|string|min:6',
+            'role' => 'required|string'
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $user = User::where('email', $request->email)->first();
+        $role = $request->input('role');
+        $email = $request->input('email');
+        $password = $request->input('password');
+
+        $user = User::where('role_id', '=', $role)
+            ->when($email, function ($query, $email) {
+                return $query->where('email', '=', $email)
+                    ->orWhere('emp_id', '=', $email);
+            })->first();
+
         if ($user) {
-            if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('Laravel Password Grant Client')->accessToken;
-                $response = ['token' => $token];
+            if (Hash::check($password, $user->password)) {
+
+                $token = $user->createToken('access_transport_association')->accessToken;
+                $roleData = Role::where('role_id', $user->role_id)->first();
+                $response = [
+                    'status' => 'success',
+                    'access_token' => $token,
+                    'id' => $user->id,
+                    'emp_id' => $user->emp_id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'mobile' => $user->mobile,
+                    'role_id' => $user->role_id,
+                    'role_name' => $roleData->role_name,
+                    'page_access' => json_decode($roleData->access_pages, true)
+                ];
+
                 return response($response, 200);
             } else {
-                $response = ["message" => "Password mismatch"];
+                $response = ['status' => 'error', "message" => "Password mismatch"];
                 return response($response, 422);
             }
         } else {
-            $response = ["message" => 'User does not exist'];
+            $response = ['status' => 'error', "message" => 'User does not exist'];
             return response($response, 422);
         }
     }
@@ -58,7 +83,7 @@ class AuthController extends Controller
     {
         $token = $request->user()->token;
         $token->revoke();
-        $response = ['message' => 'You have successfully logged out!!'];
+        $response = ['status' => 'success', 'message' => 'You have successfully logged out!!'];
         return response($response, 200);
     }
 }

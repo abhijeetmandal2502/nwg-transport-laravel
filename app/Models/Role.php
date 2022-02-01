@@ -9,5 +9,5 @@ class Role extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['*']; // replace of fillable
+    protected $guarded = []; // replace of fillable
 }
