@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\RoleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,7 +34,7 @@ use Illuminate\Support\Facades\Route;
 //     ];
 //     return response()->json($response, 200);
 // });
-
+Route::get('/roles', [RoleController::class, 'getRoles'])->name('roles.api');
 Route::post('/login', [AuthController::class, 'login'])->name('login.api');
 Route::post('/register', [AuthController::class, 'register'])->name('register.api');
 Route::middleware('auth:api')->group(function () {
