@@ -43,7 +43,7 @@ class AuthController extends Controller
         $role = $request->input('role');
         $email = $request->input('email');
         $password = $request->input('password');
-
+        // check user availability
         $user = User::where('role_id', '=', $role)
             ->when($email, function ($query, $email) {
                 return $query->where('email', '=', $email)
@@ -51,6 +51,7 @@ class AuthController extends Controller
             })->first();
 
         if ($user) {
+            // check user password
             if (Hash::check($password, $user->password)) {
 
                 $token = $user->createToken('access_transport_association')->accessToken;
