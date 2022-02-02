@@ -13,6 +13,6 @@ class SettingPageSeeder extends Seeder
      */
     public function run()
     {
-        //
+        \App\Models\SettingPage::factory(30)->create();
     }
 }

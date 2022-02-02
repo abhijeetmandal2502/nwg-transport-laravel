@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Models\SettingPage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -44,18 +45,26 @@ class AuthController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
         // check user availability
-        $user = User::where('role_id', '=', $role)
+        $user = User::where('role_id', '=', $role)->where('status', '=', 'Active')
             ->when($email, function ($query, $email) {
                 return $query->where('email', '=', $email)
                     ->orWhere('emp_id', '=', $email);
             })->first();
 
         if ($user) {
+            $jsonToArr = array();
+            $temArray = array();
             // check user password
             if (Hash::check($password, $user->password)) {
 
                 $token = $user->createToken('access_transport_association')->accessToken;
                 $roleData = Role::where('role_id', $user->role_id)->first();
+                $jsonToArr = json_decode($roleData->access_pages, true);
+                $accessPages = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+                foreach ($accessPages as $key => $value) {
+                    $temArray[$value->parent_title][] = $value->page_slug;
+                }
+
                 $response = [
                     'status' => 'success',
                     'access_token' => $token,
@@ -66,7 +75,7 @@ class AuthController extends Controller
                     'mobile' => $user->mobile,
                     'role_id' => $user->role_id,
                     'role_name' => $roleData->role_name,
-                    'page_access' => json_decode($roleData->access_pages, true)
+                    'page_access' => $temArray
                 ];
 
                 return response($response, 200);

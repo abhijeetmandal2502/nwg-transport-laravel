@@ -13,6 +13,7 @@ class RoleController extends Controller
     {
         $roles = array();
         $allRole = Role::where('status', 'active')->get();
+
         if ($allRole) {
             foreach ($allRole as $role) {
                 $roles[] = ([

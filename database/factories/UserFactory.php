@@ -14,11 +14,18 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $gender = $this->faker->randomElement(['male', 'female']);
+        $roleId = $this->faker->randomElement(['marketing', 'account', 'supervisor', 'second_admin', 'admin']);
         return [
             'emp_id' => $this->faker->unique()->userName(),
-            'name' => $this->faker->name(),
+            'name' => $this->faker->name($gender),
             'email' => $this->faker->unique()->safeEmail(),
             'mobile' => $this->faker->unique()->e164PhoneNumber(),
+            'gender' => $gender,
+            'DOJ' => $this->faker->date('Y-m-d'),
+            'DOB' => $this->faker->date('Y-m-d'),
+            'salary' => $this->faker->numberBetween(5000, 10000),
+            'role_id' => $roleId,
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),

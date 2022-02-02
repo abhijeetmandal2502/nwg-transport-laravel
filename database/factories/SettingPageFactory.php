@@ -14,7 +14,8 @@ class SettingPageFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'page_slug' => $this->faker->unique()->userName(),
+            'parent_title' => $this->faker->randomElement(['home', 'booking', 'loading', 'receive', 'getpass', 'delivery', 'accounting', 'reports', 'settings']),
         ];
     }
 }
