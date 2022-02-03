@@ -56,7 +56,6 @@ class AuthController extends Controller
             $temArray = array();
             // check user password
             if (Hash::check($password, $user->password)) {
-
                 $token = $user->createToken('access_transport_association')->accessToken;
                 $roleData = Role::where('role_id', $user->role_id)->first();
                 $jsonToArr = json_decode($roleData->access_pages, true);
