@@ -64,7 +64,7 @@ class AuthController extends Controller
                 foreach ($accessPages as $key => $value) {
                     $temArray[$value->parent_title][] = $value->page_slug;
                 }
-
+                // result array
                 $response = [
                     'status' => 'success',
                     'access_token' => $token,
