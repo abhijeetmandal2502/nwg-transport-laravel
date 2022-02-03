@@ -80,7 +80,7 @@ class AuthController extends Controller
 
                 return response($response, 200);
             } else {
-                // error handaliing
+
                 $response = ['status' => 'error', "message" => "Password mismatch"];
                 return response($response, 422);
             }
