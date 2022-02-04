@@ -22,7 +22,7 @@ class User extends Authenticatable
     //     'email',
     //     'password',
     // ];
-    protected $guarded = ['*']; // replace of fillable
+    protected $guarded = []; // replace of fillable
 
     /**
      * The attributes that should be hidden for serialization.
