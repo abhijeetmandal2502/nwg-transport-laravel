@@ -21,7 +21,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
         $request['password'] = Hash::make($request['password']);
         $request['remember_token'] = Str::random(10);
