@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\ConsignorController;
+use App\Http\Controllers\api\LRBooking;
 use App\Http\Controllers\api\RoleController;
 use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');
 Route::get('/consignors/{type}', [ConsignorController::class, 'getConsignor'])->name('consignors.api');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('roles.api');
 Route::post('/login', [AuthController::class, 'login'])->name('login.api');
