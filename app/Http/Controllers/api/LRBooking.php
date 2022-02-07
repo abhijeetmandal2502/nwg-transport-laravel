@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\LRBooking as ModelsLRBooking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -50,5 +51,34 @@ class LRBooking extends Controller
         }
 
         return response()->json($restult);
+    }
+
+    public function getLrBookings()
+    {
+        $restultArray = array();
+        // for print custom date use
+        $printStatus = array('yes', 'no');
+        $allLrBooking =  DB::table('lrBookingView')->get()->toArray();
+        if (!empty($allLrBooking)) {
+            foreach ($allLrBooking as $key => $items) {
+                $restultArray[] = ([
+                    'lr_id' => $items->booking_id,
+                    'consignor_id' => $items->consignor_id,
+                    'consignor_name' => $items->consignorName,
+                    'consignee_id' => $items->consignee_id,
+                    'consignee_name' => $items->consigneeName,
+                    'from_location' => $items->from_location,
+                    'to_location' => $items->to_location,
+                    'amount' => rand(10000, 99999),
+                    'status' => $items->active_status,
+                    'print' => $printStatus[array_rand($printStatus)]
+                ]);
+            }
+            $finalArr = ['status' => 'success', 'data' => $restultArray];
+        } else {
+            $finalArr = ['status' => 'error', 'data' => 'Data not available!'];
+        }
+
+        return response()->json($finalArr);
     }
 }

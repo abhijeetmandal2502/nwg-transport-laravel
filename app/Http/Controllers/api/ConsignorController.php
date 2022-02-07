@@ -19,4 +19,15 @@ class ConsignorController extends Controller
         }
         return response()->json($resultArr);
     }
+    public function createConsignor(Request $request)
+    {
+        $resultArr = array();
+        $consData = Consignor::where('cons_type', $type)->where('active_status', 'active')->get()->toArray();
+        if (!empty($consData)) {
+            $resultArr = ['status' => 'success', 'data' => $consData];
+        } else {
+            $resultArr = ['status' => 'error', 'data' => "No any data available!"];
+        }
+        return response()->json($resultArr);
+    }
 }
