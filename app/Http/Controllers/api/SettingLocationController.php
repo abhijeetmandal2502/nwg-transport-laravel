@@ -92,6 +92,7 @@ class SettingLocationController extends Controller
         }
 
         $createLocation = SettingLocation::where('slug', $request->slug)->update([
+            'slug' => $this->slug,
             'location' => $request->location_name,
             'active_status' => $request->status
         ]);

@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+// all open route to be secure in last
 Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');
 Route::get('/consignors/{type}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
