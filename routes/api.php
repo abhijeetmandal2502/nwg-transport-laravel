@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 // });
 // all open route to be secure in last
 Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');
-Route::get('/lr-bookings/{page}/{lrNo?}', [LRBooking::class, 'getLrBookings'])->name('api.lr.bookings');
+Route::get('/lr-bookings/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings'])->name('api.lr.bookings');
 Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
 Route::post('/create-consignor', [ConsignorController::class, 'createConsignor'])->name('api.create.consignors');
 Route::post('/update-consignor', [ConsignorController::class, 'updateConsignors'])->name('api.update.consignors');
