@@ -14,7 +14,7 @@ class SettingLocationController extends Controller
     {
         $location = SettingLocation::where('active_status', 'active')->get()->toArray();
         if (!empty($location)) {
-            $result = ['status' => 'success', 'data' => $location];
+            $result = ['status' => 'success', 'records' => count($location), 'data' => $location];
         } else {
             $result = ['status' => 'error', 'data' => 'No any location available!'];
         }

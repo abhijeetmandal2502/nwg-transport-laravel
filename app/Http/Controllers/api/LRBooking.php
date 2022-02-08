@@ -53,15 +53,23 @@ class LRBooking extends Controller
         return response()->json($restult);
     }
 
-    public function getLrBookings()
+    public function getLrBookings($page, $lrNo = null)
     {
         $restultArray = array();
+
+        $limit = 10;
+        $ofset = $page == 1 ? 0 : (($limit * $page) - $limit + 1);  // use for pagination
         // for print custom date use
         $printStatus = array('yes', 'no');
-        $allLrBooking =  DB::table('lrBookingView')->get()->toArray();
+        if ($lrNo != "") {
+            $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $lrNo)->limit(1)->get()->toArray();
+        } else {
+            $allLrBooking =  DB::table('lrBookingView')->orderByDesc('id')->offset($ofset)->limit($limit)->get()->toArray();
+        }
+
         if (!empty($allLrBooking)) {
             foreach ($allLrBooking as $key => $items) {
-                $restultArray[] = ([
+                $restultArray[$key] = ([
                     'lr_id' => $items->booking_id,
                     'consignor_id' => $items->consignor_id,
                     'consignor_name' => $items->consignorName,
@@ -74,7 +82,7 @@ class LRBooking extends Controller
                     'print' => $printStatus[array_rand($printStatus)]
                 ]);
             }
-            $finalArr = ['status' => 'success', 'data' => $restultArray];
+            $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
         } else {
             $finalArr = ['status' => 'error', 'data' => 'Data not available!'];
         }

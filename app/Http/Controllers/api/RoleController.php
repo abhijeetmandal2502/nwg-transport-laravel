@@ -22,7 +22,7 @@ class RoleController extends Controller
                 ]);
             }
             if (!empty($roles)) {
-                $response = ['status' => 'success', 'data' => $roles];
+                $response = ['status' => 'success', 'records' => count($allRole), 'data' => $roles];
                 return response($response, 200);
             } else {
                 $response = ['status' => 'error', 'data' => 'No any role found!'];
