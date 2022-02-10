@@ -16,7 +16,7 @@ class VehicleController extends Controller
         $validator = Validator::make($request->all(), [
             'vehicle_no' => 'required|alpha_num|unique:vehicles',
             'type' => 'required|string',
-            'ownership' => 'required|in:third_party,owned',
+            'ownership' => 'required|in:third-party,owned',
             'vehicle_details' => 'required|string|max:120',
             'state' => 'required|string',
             'owner_details' => 'json',
