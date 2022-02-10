@@ -17,10 +17,11 @@ class CreateVehiclesTable extends Migration
             $table->id();
             $table->string('vehicle_no')->unique();
             $table->string('type')->comment('vehicle category');
+            $table->enum('ownership', ['third_party', 'owned'])->nullable()->comment('ownership type');
             $table->string('created_by')->comment('employee id ');
             $table->string('vehicle_details');
-            $table->json('owner_details')->comment('owner all details');
-            $table->json('driver_details')->nullable()->comment('driver all details');
+            $table->json('owner_details')->nullable()->comment('owner all details');
+            $table->string('driver_id')->nullable()->comment('driver id from driver tbl');
             $table->string('state')->comment('vehicle state');
             $table->decimal('rating')->default(0)->comment('vehicle rating');
             $table->enum('active_status', ['active', 'inactive'])->default('active');

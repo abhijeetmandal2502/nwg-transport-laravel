@@ -40,15 +40,15 @@ class ConsignorController extends Controller
             'name' => 'required|string|max:100',
             'mobile' => 'required|numeric|digits:10',
             'alt_mobile' => 'numeric|digits:10',
-            'gst_no' => 'required|string',
+            'gst_no' => 'string',
             'pan_no' => 'alpha_num|min:10|max:10',
             'aadhar_no' => 'numeric|digits:12',
             'address1' => 'string|max:100',
             'address2' => 'string|max:100',
-            'country' => 'string|max:100',
-            'state' => 'string|max:100',
-            'city' => 'string|max:100',
-            'pin_code' => 'numeric|digits_between:6,10',
+            'country' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'city' => 'required|string|max:100',
+            'pin_code' => 'required|numeric|digits_between:6,10',
             'email' => 'email',
             'cons_type' => 'required|in:consignor,consignee,other'
         ]);
@@ -87,6 +87,7 @@ class ConsignorController extends Controller
             'city' => 'string|max:100',
             'pin_code' => 'numeric|digits_between:6,10',
             'email' => 'email',
+            'active_status' => 'required|in:active,inactive,hold',
             'cons_type' => 'required|in:consignor,consignee,other'
         ]);
 
