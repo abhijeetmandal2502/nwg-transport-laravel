@@ -50,10 +50,10 @@ Route::post('/create-state', [SettingStateController::class, 'createState'])->na
 Route::post('/update-state/{id}', [SettingStateController::class, 'updateState'])->name('api.updateState');
 
 
-// Vehicle management\
+// Vehicle management
 Route::post('/create-vehicle', [VehicleController::class, 'createVehicle'])->name('api.createVehicle');
-
-
+Route::post('/update-vehicle/{id}', [VehicleController::class, 'updateVehicle'])->name('api.updateVehicle');
+Route::get('/vehicles/{vehicleNo?}', [VehicleController::class, 'getVehicle'])->name('api.getVehicle');
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
