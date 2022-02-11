@@ -3,6 +3,7 @@
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\ConsignorController;
 use App\Http\Controllers\api\LRBooking;
+use App\Http\Controllers\api\PetrolPumpController;
 use App\Http\Controllers\api\RoleController;
 use App\Http\Controllers\api\SettingDriverController;
 use App\Http\Controllers\api\SettingLocationController;
@@ -61,6 +62,10 @@ Route::post('/create-driver', [SettingDriverController::class, 'createDriver'])-
 Route::post('/update-driver/{id}', [SettingDriverController::class, 'updateDriver'])->name('api.updateDriver');
 Route::get('/drivers/{driverId?}', [SettingDriverController::class, 'getDriver'])->name('api.getDriver');
 
+// Driver Management
+Route::post('/create-ppump', [PetrolPumpController::class, 'createPPump'])->name('api.createPPump');
+Route::post('/update-ppump/{id}', [PetrolPumpController::class, 'updatePPump'])->name('api.updatePPump');
+Route::get('/petrol-pumps/{pumpId?}', [PetrolPumpController::class, 'getPPump'])->name('api.getPPump');
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');

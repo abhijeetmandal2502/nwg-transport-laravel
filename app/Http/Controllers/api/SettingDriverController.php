@@ -42,7 +42,7 @@ class SettingDriverController extends Controller
         }
     }
 
-    public function updatedriver(Request $request, $id)
+    public function updateDriver(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
@@ -60,8 +60,8 @@ class SettingDriverController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $createdriver = SettingDriver::where('id', $id)->update($request->all());
-        if ($createdriver) {
+        $updateDriver = SettingDriver::where('id', $id)->update($request->all());
+        if ($updateDriver) {
             return response(['status' => 'success', 'message' => 'Driver updated successfully!'], 200);
         } else {
             return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
