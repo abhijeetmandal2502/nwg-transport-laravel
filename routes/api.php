@@ -4,6 +4,7 @@ use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\ConsignorController;
 use App\Http\Controllers\api\LRBooking;
 use App\Http\Controllers\api\RoleController;
+use App\Http\Controllers\api\SettingDriverController;
 use App\Http\Controllers\api\SettingLocationController;
 use App\Http\Controllers\api\SettingStateController;
 use App\Http\Controllers\api\VehicleController;
@@ -54,6 +55,12 @@ Route::post('/update-state/{id}', [SettingStateController::class, 'updateState']
 Route::post('/create-vehicle', [VehicleController::class, 'createVehicle'])->name('api.createVehicle');
 Route::post('/update-vehicle/{id}', [VehicleController::class, 'updateVehicle'])->name('api.updateVehicle');
 Route::get('/vehicles/{vehicleNo?}', [VehicleController::class, 'getVehicle'])->name('api.getVehicle');
+
+// Driver Management
+Route::post('/create-driver', [SettingDriverController::class, 'createDriver'])->name('api.createDriver');
+Route::post('/update-driver/{id}', [SettingDriverController::class, 'updateDriver'])->name('api.updateDriver');
+Route::get('/drivers/{driverId?}', [SettingDriverController::class, 'getDriver'])->name('api.getDriver');
+
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
