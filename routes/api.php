@@ -9,6 +9,7 @@ use App\Http\Controllers\api\SettingDriverController;
 use App\Http\Controllers\api\SettingLocationController;
 use App\Http\Controllers\api\SettingStateController;
 use App\Http\Controllers\api\VehicleController;
+use App\Http\Controllers\api\VehicleTypeController;
 use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,10 @@ Route::get('/states/{code?}', [SettingStateController::class, 'getState'])->name
 Route::post('/create-state', [SettingStateController::class, 'createState'])->name('api.createState');
 Route::post('/update-state/{id}', [SettingStateController::class, 'updateState'])->name('api.updateState');
 
+// Vehicle category management
+Route::post('/create-category', [VehicleTypeController::class, 'createCategory'])->name('api.createCategory');
+Route::post('/update-category', [VehicleTypeController::class, 'updateCategory'])->name('api.updateCategory');
+Route::get('/categories/{typeId?}', [VehicleTypeController::class, 'getCategory'])->name('api.getCategory');
 
 // Vehicle management
 Route::post('/create-vehicle', [VehicleController::class, 'createVehicle'])->name('api.createVehicle');
