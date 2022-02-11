@@ -45,9 +45,9 @@ Route::post('/create-location', [SettingLocationController::class, 'createLocati
 Route::post('/update-location', [SettingLocationController::class, 'updateLocation'])->name('api.updateLocation');
 
 // State management
-Route::get('/states', [SettingStateController::class, 'getState'])->name('api.States');
+Route::get('/states/{code?}', [SettingStateController::class, 'getState'])->name('api.States');
 Route::post('/create-state', [SettingStateController::class, 'createState'])->name('api.createState');
-Route::post('/update-state', [SettingStateController::class, 'updateState'])->name('api.updateState');
+Route::post('/update-state/{id}', [SettingStateController::class, 'updateState'])->name('api.updateState');
 
 
 // Vehicle management\

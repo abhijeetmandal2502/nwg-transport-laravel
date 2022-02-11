@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SettingState;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class SettingStateController extends Controller
 {
@@ -29,12 +28,10 @@ class SettingStateController extends Controller
         }
     }
 
-    public function updateState(Request $request, SettingState $states)
+    public function updateState(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'old_code' => 'required|alpha|max:5',
-            // 'code' => ['required', 'alpha', 'max:5', Rule::unique('setting_states', 'code')->ignore($request->old_code)],
-            'code' => 'required|alpha|max:5|unique:setting_states,code,' . $states->id,
+            'code' => 'required|alpha|max:5|unique:setting_states,code,' . $id,
             'name' => 'required|string|max:100',
             'status' => 'required|in:active,inactive'
         ]);
@@ -43,11 +40,7 @@ class SettingStateController extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-        $createState = SettingState::where('code', $request->old_code)->update([
-            'code' => $request->code,
-            'name' => $request->name,
-            'status' => $request->status
-        ]);
+        $createState = SettingState::where('id', $id)->update($request->all());
         if ($createState) {
             return response(['status' => 'success', 'message' => 'State updated successfully!'], 200);
         } else {
@@ -55,9 +48,14 @@ class SettingStateController extends Controller
         }
     }
 
-    public function getState()
+    public function getState($code = null)
     {
-        $allStates = SettingState::where('status', 'active')->get()->toArray();
+        if ($code !== null) {
+            $allStates = SettingState::where('code', $code)->first()->toArray();
+        } else {
+            $allStates = SettingState::where('status', 'active')->get()->toArray();
+        }
+
         if (!empty($allStates)) {
             $result = ['status' => 'success', 'data' => $allStates];
         } else {
