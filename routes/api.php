@@ -41,6 +41,9 @@ Route::post('/update-consignor', [ConsignorController::class, 'updateConsignors'
 
 // Role managment
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
+Route::post('/create-role', [RoleController::class, 'createRole'])->name('api.createRole');
+Route::post('/update-role/{id}', [RoleController::class, 'updateRole'])->name('api.updateRole');
+Route::get('/all-roles/{slug?}', [RoleController::class, 'getAllRolesDetails'])->name('api.getAllRolesDetails');
 
 // location management
 Route::get('/locations', [SettingLocationController::class, 'getLocation'])->name('api.locations');

@@ -24,7 +24,7 @@ class SettingStateController extends Controller
         if ($createState) {
             return response(['status' => 'success', 'message' => 'State created successfully!'], 200);
         } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong'], 422);
+            return response(['status' => 'error', 'errors' => 'No any role found!'], 404422);
         }
     }
 
