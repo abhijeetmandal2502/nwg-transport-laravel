@@ -16,6 +16,7 @@ class CreateSettingPagesTable extends Migration
         Schema::create('setting_pages', function (Blueprint $table) {
             $table->id();
             $table->string('page_slug')->unique()->comment('page slug withount space');
+            $table->string('page_title')->comment('page title');
             $table->string('parent_title')->comment('main parent of this page');
             $table->timestamps();
         });

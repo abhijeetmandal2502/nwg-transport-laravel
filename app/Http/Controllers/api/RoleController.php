@@ -48,7 +48,7 @@ class RoleController extends Controller
                 $jsonToArr = json_decode($roles['access_pages'], true);
                 $accessPages = SettingPage::whereIn('page_slug', $jsonToArr)->get();
                 foreach ($accessPages as $key => $value) {
-                    $temArray[$value->parent_title][] = $value->page_slug;
+                    $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
                 }
 
                 $roleData[] = ([

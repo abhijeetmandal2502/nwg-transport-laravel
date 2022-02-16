@@ -7,6 +7,7 @@ use App\Http\Controllers\api\PetrolPumpController;
 use App\Http\Controllers\api\RoleController;
 use App\Http\Controllers\api\SettingDriverController;
 use App\Http\Controllers\api\SettingLocationController;
+use App\Http\Controllers\api\SettingPageController;
 use App\Http\Controllers\api\SettingStateController;
 use App\Http\Controllers\api\VehicleController;
 use App\Http\Controllers\api\VehicleTypeController;
@@ -74,6 +75,12 @@ Route::get('/drivers/{driverId?}', [SettingDriverController::class, 'getDriver']
 Route::post('/create-ppump', [PetrolPumpController::class, 'createPPump'])->name('api.createPPump');
 Route::post('/update-ppump/{id}', [PetrolPumpController::class, 'updatePPump'])->name('api.updatePPump');
 Route::get('/petrol-pumps/{pumpId?}', [PetrolPumpController::class, 'getPPump'])->name('api.getPPump');
+
+//page Management
+
+Route::post('/create-page', [SettingPageController::class, 'createPage'])->name('api.createPage');
+Route::post('/update-page/{id}', [SettingPageController::class, 'updatePage'])->name('api.updatePage');
+Route::get('/pages/{pageSlug?}', [SettingPageController::class, 'getPage'])->name('api.getPage');
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
