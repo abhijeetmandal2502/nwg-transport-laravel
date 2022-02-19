@@ -53,7 +53,7 @@ Route::post('/create-location', [SettingLocationController::class, 'createLocati
 Route::post('/update-location', [SettingLocationController::class, 'updateLocation'])->name('api.updateLocation');
 
 // Distance Management
-
+Route::get('/distances/list', [SettingDistanceController::class, 'getDistanceList'])->name('api.getDistanceList');
 Route::get('/distances/{slug?}', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
 Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
 

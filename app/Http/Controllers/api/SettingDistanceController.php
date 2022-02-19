@@ -81,4 +81,18 @@ class SettingDistanceController extends Controller
 
         return response()->json($result);
     }
+
+    public function getDistanceList()
+    {
+        $allDistance = SettingDistance::all()->toArray();
+
+        if (!empty($allDistance)) {
+
+            $result = ['status' => 'success', 'data' => $allDistance];
+        } else {
+            $result = ['status' => 'error', 'errors' => 'No location distance found!'];
+        }
+
+        return response()->json($result);
+    }
 }
