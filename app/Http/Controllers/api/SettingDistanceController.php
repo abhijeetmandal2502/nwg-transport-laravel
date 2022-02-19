@@ -74,7 +74,7 @@ class SettingDistanceController extends Controller
 
         if (!empty($resultArr)) {
 
-            $result = ['status' => 'error', 'data' => $resultArr];
+            $result = ['status' => 'success', 'data' => $resultArr];
         } else {
             $result = ['status' => 'error', 'errors' => 'No location distance found!'];
         }
