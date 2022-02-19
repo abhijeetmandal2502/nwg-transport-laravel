@@ -35,6 +35,8 @@ use Illuminate\Support\Facades\Route;
 // Lr Booking managment
 Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');
 Route::get('/lr-bookings/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings'])->name('api.lr.bookings');
+Route::post('/vehicle-assign', [LRBooking::class, 'updateVehicleInLr'])->name('api.vehicleAssign');
+
 
 // consignors managment
 Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');

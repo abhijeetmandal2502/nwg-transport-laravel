@@ -92,4 +92,32 @@ class LRBooking extends Controller
 
         return response()->json($finalArr);
     }
+
+    public function updateVehicleInLr(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'booking_id' => 'required',
+            'driver_id' => 'required',
+            'vehicle_id' => 'required',
+            'amount' => 'required|numeric'
+        ]);
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+
+        $updateVehicleInLr =  ModelsLRBooking::where('booking_id', $request->booking_id)->update([
+            'driver_id' => $request->driver_id,
+            'vehicle_id' => $request->vehicle_id,
+            'amount' => $request->amount
+        ]);
+
+        if ($updateVehicleInLr) {
+
+            $finalArr = ['status' => 'success', 'message' => "Vehicle Details Updated!"];
+        } else {
+            $finalArr = ['status' => 'error', 'errors' => 'Something went wrong!'];
+        }
+
+        return response()->json($finalArr);
+    }
 }
