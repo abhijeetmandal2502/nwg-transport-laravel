@@ -11,6 +11,7 @@ use App\Http\Controllers\api\SettingPageController;
 use App\Http\Controllers\api\SettingStateController;
 use App\Http\Controllers\api\VehicleController;
 use App\Http\Controllers\api\VehicleTypeController;
+use App\Http\Controllers\api\SettingDistanceController;
 use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,11 @@ Route::get('/all-roles/{slug?}', [RoleController::class, 'getAllRolesDetails'])-
 Route::get('/locations', [SettingLocationController::class, 'getLocation'])->name('api.locations');
 Route::post('/create-location', [SettingLocationController::class, 'createLocation'])->name('api.createLocation');
 Route::post('/update-location', [SettingLocationController::class, 'updateLocation'])->name('api.updateLocation');
+
+// Distance Management
+
+Route::get('/distances/{slug?}', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
+Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
 
 // State management
 Route::get('/states/{code?}', [SettingStateController::class, 'getState'])->name('api.States');
