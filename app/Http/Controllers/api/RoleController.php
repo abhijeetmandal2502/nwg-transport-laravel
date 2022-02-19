@@ -69,9 +69,9 @@ class RoleController extends Controller
     public function createRole(Request $request)
     {
         $slug = Str::of($request->role_name)->slug('_');
-        $request->merge(['role_id' => $slug]);
+        $request->merge(['role' => $slug]);
         $validator = Validator::make($request->all(), [
-            'role_id' => 'required|max:100|unique:roles',
+            'role' => 'required|max:100|unique:roles,role_id',
             'role_name' => 'required|string|max:100',
             'access_pages' => 'required|json'
         ]);
@@ -79,7 +79,8 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $createRole = Role::create($request->all());
+
+        $createRole = Role::create(['role_id' => $request->role, 'role_name' => $request->role_name, 'access_pages' => $request->access_pages]);
         if ($createRole) {
             return response(['status' => 'success', 'message' => 'Role created successfully!']);
         } else {

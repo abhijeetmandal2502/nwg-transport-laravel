@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SettingLocation;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class SettingLocationController extends Controller
 {
@@ -34,33 +35,39 @@ class SettingLocationController extends Controller
     }
     public function createLocation(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'location_name' => 'required|string',
-        ]);
+        $location_name = [];
+        foreach ($request->location_name as $key => $value) {
+            $this->slug[]  = Str::of($value)->slug('_');
+            $location_name[] = $value;
+        }
+        $request->merge(['loaction' => $this->slug, 'location_name' => $location_name]);
 
-        $this->slug = strtr($request->location_name, ' ', '_');
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'loaction.*' => 'required|max:100',
+                'location_name.*' => 'required|string|max:100'
 
+            ],
+        );
 
-        $validator->after(function ($validator) {
-            if ($this->locationSlugValidate($this->slug)) {
-                $validator->errors()->add(
-                    'location_name',
-                    'Location already exists!'
-                );
-            }
-        });
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-        $createLocation = SettingLocation::create([
-            'slug' => $this->slug,
-            'location' => $request->location_name,
-        ]);
+        $data = [];
+        foreach ($location_name as $key => $items) {
+            $data[] = ([
+                'slug' => $this->slug[$key],
+                'location' => $items,
+            ]);
+        }
+
+        $createLocation = SettingLocation::upsert($data, 'slug');
         if ($createLocation) {
-            $result = ['status' => 'success', 'message' => 'New Location added successfully!'];
+            $result = ['status' => 'success', 'message' => 'New Locations added successfully!'];
         } else {
-            $result = ['status' => 'error', 'message' => 'Something went wrong!'];
+            $result = ['status' => 'error', 'errors' => 'Something went wrong!'];
         }
 
         return response()->json($result);
@@ -74,7 +81,7 @@ class SettingLocationController extends Controller
             'status' => 'required|in:active,inactive'
         ]);
 
-        $this->slug = strtr($request->location_name, ' ', '_');
+        $this->slug = Str::of($request->location_name)->slug('_');
         if ($this->slug !== $request->slug) {
             $validator->after(function ($validator) {
                 if ($this->locationSlugValidate($this->slug)) {
