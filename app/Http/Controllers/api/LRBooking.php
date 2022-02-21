@@ -99,14 +99,21 @@ class LRBooking extends Controller
     {
         if ($type == 'driver') {
             $driverIds = [];
-            $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where('driver_id', '!=', null)->where('status', '!=', 'cancel')->where('status', '!=', 'closed')->get()->toArray();
+            $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where('driver_id', '!=', null)
+                ->where(function ($query) {
+                    $query->where('status', '!=', 'cancel')
+                        ->orWhere('status', '!=', 'closed');
+                })->get()->toArray();
             foreach ($findAllBookedVehicle as $key => $value) {
                 $driverIds[] = $value['driver_id'];
             }
             $resultData = SettingDriver::select('driver_id', 'name', 'mobile', 'DL_no', 'DL_expire')->whereNotIn('driver_id', $driverIds)->get()->toArray();
         } elseif ($type == 'vehicle') {
             $vehicleIds = [];
-            $findAllBookedVehicle = ModelsLRBooking::where('vehicle_id', '!=', null)->where('status', '!=', 'cancel')->where('status', '!=', 'closed')->select('vehicle_id')->get()->toArray();
+            $findAllBookedVehicle = ModelsLRBooking::where('vehicle_id', '!=', null)->where(function ($query) {
+                $query->where('status', '!=', 'cancel')
+                    ->orWhere('status', '!=', 'closed');
+            })->get()->toArray();
             foreach ($findAllBookedVehicle as $key => $value) {
                 $vehicleIds[] = $value['vehicle_id'];
             }
