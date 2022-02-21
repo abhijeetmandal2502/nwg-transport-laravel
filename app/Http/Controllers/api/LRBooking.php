@@ -81,7 +81,7 @@ class LRBooking extends Controller
                     'from_location' => $items->from_location,
                     'to_location' => $items->to_location,
                     'amount' => rand(10000, 99999),
-                    'status' => $items->active_status,
+                    'status' => $items->status,
                     'print' => $printStatus[array_rand($printStatus)]
                 ]);
             }
@@ -91,6 +91,13 @@ class LRBooking extends Controller
         }
 
         return response()->json($finalArr);
+    }
+
+    public function getAllVehicles($type)
+    {
+    }
+    public function geLrByStatus($type)
+    {
     }
 
     public function updateVehicleInLr(Request $request)
