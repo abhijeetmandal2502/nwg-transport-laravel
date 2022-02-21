@@ -4,6 +4,8 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\LRBooking as ModelsLRBooking;
+use App\Models\SettingDriver;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -95,6 +97,32 @@ class LRBooking extends Controller
 
     public function getAllVehicles($type)
     {
+        if ($type == 'driver') {
+            $driverIds = [];
+            $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where('driver_id', '!=', null)->where('status', '!=', 'cancel')->where('status', '!=', 'closed')->get()->toArray();
+            foreach ($findAllBookedVehicle as $key => $value) {
+                $driverIds[] = $value['driver_id'];
+            }
+            $resultData = SettingDriver::select('driver_id', 'name', 'mobile', 'DL_no', 'DL_expire')->whereNotIn('driver_id', $driverIds)->get()->toArray();
+        } elseif ($type == 'vehicle') {
+            $vehicleIds = [];
+            $findAllBookedVehicle = ModelsLRBooking::where('vehicle_id', '!=', null)->where('status', '!=', 'cancel')->where('status', '!=', 'closed')->select('vehicle_id')->get()->toArray();
+            foreach ($findAllBookedVehicle as $key => $value) {
+                $vehicleIds[] = $value['vehicle_id'];
+            }
+            $resultData = Vehicle::select('vehicle_no', 'type', 'ownership', 'vehicle_details')->whereNotIn('vehicle_no', $vehicleIds)->get()->toArray();
+        } else {
+            $result = ['status' => 'error', 'errors' => "Wrong Url!"];
+        }
+
+        if (!empty($resultData)) {
+            $result = ['status' => 'success', 'records' => count($resultData), 'data' => $resultData];
+        } else {
+            $result = ['status' => 'error', 'errors' => "No any " . $type . " found!"];
+        }
+
+
+        return response()->json($result);
     }
     public function geLrByStatus($type)
     {
