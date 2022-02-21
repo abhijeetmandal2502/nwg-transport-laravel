@@ -80,7 +80,7 @@ class LRBooking extends Controller
                     'consignee_name' => $items->consigneeName,
                     'from_location' => $items->from_location,
                     'to_location' => $items->to_location,
-                    'amount' => rand(10000, 99999),
+                    'amount' => $items->amount,
                     'status' => $items->status,
                     'print' => $printStatus[array_rand($printStatus)]
                 ]);
@@ -98,6 +98,32 @@ class LRBooking extends Controller
     }
     public function geLrByStatus($type)
     {
+        $restultArray = array();
+        $printStatus = array('yes', 'no');
+        $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+        if (!empty($allLrBooking)) {
+
+            foreach ($allLrBooking as $key => $items) {
+                $restultArray[$key] = ([
+                    'lr_id' => $items->booking_id,
+                    'consignor_id' => $items->consignor_id,
+                    'consignor_name' => $items->consignorName,
+                    'consignee_id' => $items->consignee_id,
+                    'consignee_name' => $items->consigneeName,
+                    'from_location' => $items->from_location,
+                    'to_location' => $items->to_location,
+                    'amount' => $items->amount,
+                    'status' => $items->status,
+                    'print' => $printStatus[array_rand($printStatus)]
+                ]);
+            }
+
+            $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $allLrBooking];
+        } else {
+            $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+        }
+
+        return response()->json($finalArr);
     }
 
     public function updateVehicleInLr(Request $request)
