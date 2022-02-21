@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\AuthController;
+use App\Http\Controllers\api\BiltyController;
 use App\Http\Controllers\api\ConsignorController;
 use App\Http\Controllers\api\LRBooking;
 use App\Http\Controllers\api\PetrolPumpController;
@@ -38,6 +39,9 @@ Route::get('/lr-bookings/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings'])-
 Route::post('/vehicle-assign', [LRBooking::class, 'updateVehicleInLr'])->name('api.vehicleAssign');
 Route::get('/lr-bookings-status/{type}', [LRBooking::class, 'geLrByStatus'])->name('api.lr.bookings.status');
 Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name('api.freeVehicle');
+
+// Bitly Genrations
+Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
 
 
 // consignors managment
