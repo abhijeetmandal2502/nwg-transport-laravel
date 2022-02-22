@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bilty;
 use App\Models\LRBooking as ModelsLRBooking;
 use App\Models\SettingDriver;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,12 +24,12 @@ class LRBooking extends Controller
         $tableName = 'l_r_bookings';
 
         $validator = Validator::make($request->all(), [
-            'consignor' => 'required|string',
-            'consignee' => 'required|string',
+            'consignor' => 'required|string|exists:consignors,cons_id',
+            'consignee' => 'required|string|exists:consignors,cons_id',
             'indent_date' => 'required|date',
             'reporting_date' => 'required|date',
-            'from_location' => 'required|string',
-            'destination_location' => 'required|string'
+            'from_location' => 'required|string|exists:setting_locations,location',
+            'destination_location' => 'required|string|exists:setting_locations,location',
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
@@ -138,22 +140,54 @@ class LRBooking extends Controller
         $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
         if (!empty($allLrBooking)) {
 
-            foreach ($allLrBooking as $key => $items) {
-                $restultArray[$key] = ([
-                    'lr_id' => $items->booking_id,
-                    'consignor_id' => $items->consignor_id,
-                    'consignor_name' => $items->consignorName,
-                    'consignee_id' => $items->consignee_id,
-                    'consignee_name' => $items->consigneeName,
-                    'from_location' => $items->from_location,
-                    'to_location' => $items->to_location,
-                    'amount' => $items->amount,
-                    'status' => $items->status,
-                    'print' => $printStatus[array_rand($printStatus)]
-                ]);
+            if ($type === "fresh") {
+                foreach ($allLrBooking as $key => $items) {
+                    $restultArray[$key] = ([
+                        'lr_id' => $items->booking_id,
+                        'consignor_id' => $items->consignor_id,
+                        'consignor_name' => $items->consignorName,
+                        'consignee_id' => $items->consignee_id,
+                        'consignee_name' => $items->consigneeName,
+                        'from_location' => $items->from_location,
+                        'to_location' => $items->to_location,
+                        'amount' => $items->amount,
+                        'status' => $items->status,
+                        'print' => $printStatus[array_rand($printStatus)]
+                    ]);
+                }
+            } elseif ($type === "vehicle-assigned") {
+                foreach ($allLrBooking as $key => $items) {
+                    $shipment_no = null;
+                    $bilty = Bilty::where('booking_id', $items->booking_id)->get()->toArray();
+                    if (!empty($bilty)) {
+                        if (isset($bilty[0])) {
+                            $shipment_no = Arr::pull($bilty[0], 'shipment_no');
+                        }
+                    }
+                    $restultArray[$key] = ([
+                        'lr_id' => $items->booking_id,
+                        'consignor_id' => $items->consignor_id,
+                        'consignor_name' => $items->consignorName,
+                        'consignee_id' => $items->consignee_id,
+                        'consignee_name' => $items->consigneeName,
+                        'from_location' => $items->from_location,
+                        'to_location' => $items->to_location,
+                        'vehicle_no' => $items->vehicle_id,
+                        'ownership' => $items->ownership,
+                        'vehicle_type' => $items->vehicle_type,
+                        'driver_name' => $items->driver_name,
+                        'driver_mobile' => $items->driver_mobile,
+                        'driver_dl' => $items->driver_dl,
+                        'DL_expire' => $items->DL_expire,
+                        'amount' => $items->amount,
+                        'bilty_count' => count($bilty),
+                        'shipment_no' => $shipment_no,
+                        'bilties' => $bilty
+                    ]);
+                }
             }
 
-            $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $allLrBooking];
+            $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
         } else {
             $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
         }
@@ -164,12 +198,13 @@ class LRBooking extends Controller
     public function updateVehicleInLr(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'booking_id' => 'required',
-            'driver_id' => 'required',
-            'vehicle_id' => 'required',
+            'booking_id' => 'required|exists:l_r_bookings,booking_id',
+            'driver_id' => 'required|exists:setting_drivers,driver_id',
+            'vehicle_id' => 'required|exists:vehicles,vehicle_no',
             'amount' => 'required|numeric|min:0',
             'status' => 'required|in:vehicle-assigned'
         ]);
+
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
@@ -181,7 +216,6 @@ class LRBooking extends Controller
         ]);
 
         if ($updateVehicleInLr) {
-
             $finalArr = ['status' => 'success', 'message' => "Vehicle Details Updated!"];
         } else {
             $finalArr = ['status' => 'error', 'errors' => 'Something went wrong!'];

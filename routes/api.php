@@ -40,8 +40,7 @@ Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name(
 
 // Bitly Genrations
 Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
-Route::get('/bilties', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
-
+// Route::get('/bilties', [LRBooking::class, 'getAllBilties'])->name('api.getAllBilties');
 
 
 // consignors managment

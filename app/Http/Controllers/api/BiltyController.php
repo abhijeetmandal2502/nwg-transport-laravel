@@ -16,7 +16,6 @@ class BiltyController extends Controller
         $consignor = LRBooking::select('consignor_id')->where('booking_id', $lrNo)->get()->toArray();
 
         if (!empty($consignor)) {
-
             return $consignor[0]['consignor_id'];
         } else {
             return null;
@@ -32,7 +31,6 @@ class BiltyController extends Controller
         }
         $invoiceUnique = $consignorId . '-' . $request->invoice_no;
         $request->merge(['invoice' => $invoiceUnique]);
-
         $validator = Validator::make($request->all(), [
             'invoice' => 'required|unique:bilties,invoice',
             'booking_id' => 'required|alpha_num|exists:l_r_bookings,booking_id',
@@ -41,6 +39,8 @@ class BiltyController extends Controller
             'packages' => 'required|numeric',
             'description' => 'required|max:150',
             'date' => 'required|date',
+            'weight' => 'required|numeric',
+            'unit' => 'required|string',
             'gst_no' => 'required',
             'goods_value' => 'required|numeric',
             'created_by' => 'required|exists:users,emp_id'
