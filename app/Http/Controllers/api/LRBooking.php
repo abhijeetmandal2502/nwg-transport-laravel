@@ -167,7 +167,8 @@ class LRBooking extends Controller
             'booking_id' => 'required',
             'driver_id' => 'required',
             'vehicle_id' => 'required',
-            'amount' => 'required|numeric|min:0'
+            'amount' => 'required|numeric|min:0',
+            'status' => 'required|in:vehicle-assigned'
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);

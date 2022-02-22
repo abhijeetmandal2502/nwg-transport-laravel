@@ -33,7 +33,6 @@ class BiltyController extends Controller
         $invoiceUnique = $consignorId . '-' . $request->invoice_no;
         $request->merge(['invoice' => $invoiceUnique]);
 
-
         $validator = Validator::make($request->all(), [
             'invoice' => 'required|unique:bilties,invoice',
             'booking_id' => 'required|alpha_num|exists:l_r_bookings,booking_id',

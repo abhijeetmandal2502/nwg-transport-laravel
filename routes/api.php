@@ -28,9 +28,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+
 // all open route to be secure in last
 
 // Lr Booking managment
@@ -42,6 +40,8 @@ Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name(
 
 // Bitly Genrations
 Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
+Route::get('/bilties', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
+
 
 
 // consignors managment
