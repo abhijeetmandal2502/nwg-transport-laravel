@@ -12,8 +12,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-
-
 class LRBooking extends Controller
 {
     public function newBooking(Request $request)
