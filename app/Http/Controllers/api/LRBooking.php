@@ -134,11 +134,11 @@ class LRBooking extends Controller
     public function geLrByStatus($type)
     {
         $restultArray = array();
+        $finalArr = array();
         $printStatus = array('yes', 'no');
-        $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
-        if (!empty($allLrBooking)) {
-
-            if ($type === "fresh") {
+        if ($type === "fresh") {
+            $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+            if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $restultArray[$key] = ([
                         'lr_id' => $items->booking_id,
@@ -153,7 +153,13 @@ class LRBooking extends Controller
                         'print' => $printStatus[array_rand($printStatus)]
                     ]);
                 }
-            } elseif ($type === "vehicle-assigned") {
+                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+            } else {
+                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+            }
+        } elseif ($type === "vehicle-assigned") {
+            $allLrBooking =  DB::table('lrBookingView')->where('status', 'vehicle-assigned')->orWhere('status', 'loading')->get()->toArray();
+            if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $shipment_no = null;
                     $bilty = Bilty::where('booking_id', $items->booking_id)->get()->toArray();
@@ -166,8 +172,28 @@ class LRBooking extends Controller
                         'lr_id' => $items->booking_id,
                         'consignor_id' => $items->consignor_id,
                         'consignor_name' => $items->consignorName,
+                        'consignor_mobile' => $items->consignor_mobile,
+                        'consignor_address1' => $items->consignor_add1,
+                        'consignor_address2' => $items->consignor_add2,
+                        'consignor_state' => $items->consignor_state,
+                        'consignor_city' => $items->consignor_city,
+                        'consignor_postal' => $items->consignor_postal,
+                        'consignor_country' => $items->consignor_country,
+                        'consignor_pan' => $items->consignor_pan,
+                        'consignor_altMobile' => $items->consignor_altMobile,
+                        'consignor_email' => $items->consignor_email,
                         'consignee_id' => $items->consignee_id,
                         'consignee_name' => $items->consigneeName,
+                        'consignee_mobile' => $items->consignee_mobile,
+                        'consignee_address1' => $items->consignee_add1,
+                        'consignee_address2' => $items->consignee_add2,
+                        'consignee_state' => $items->consignee_state,
+                        'consignee_city' => $items->consignee_city,
+                        'consignee_postal' => $items->consignee_postal,
+                        'consignee_country' => $items->consignee_country,
+                        'consignee_pan' => $items->consignee_pan,
+                        'consignee_altMobile' => $items->consignee_altMobile,
+                        'consignee_email' => $items->consignee_email,
                         'from_location' => $items->from_location,
                         'to_location' => $items->to_location,
                         'vehicle_no' => $items->vehicle_id,
@@ -183,11 +209,66 @@ class LRBooking extends Controller
                         'bilties' => $bilty
                     ]);
                 }
+                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+            } else {
+                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
             }
-
-            $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
-        } else {
-            $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+        } elseif ($type === 'loading') {
+            $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+            if (!empty($allLrBooking)) {
+                foreach ($allLrBooking as $key => $items) {
+                    $shipment_no = null;
+                    $bilty = Bilty::where('booking_id', $items->booking_id)->get()->toArray();
+                    if (!empty($bilty)) {
+                        if (isset($bilty[0])) {
+                            $shipment_no = Arr::pull($bilty[0], 'shipment_no');
+                        }
+                    }
+                    $restultArray[$key] = ([
+                        'lr_id' => $items->booking_id,
+                        'consignor_id' => $items->consignor_id,
+                        'consignor_name' => $items->consignorName,
+                        'consignor_mobile' => $items->consignor_mobile,
+                        'consignor_address1' => $items->consignor_add1,
+                        'consignor_address2' => $items->consignor_add2,
+                        'consignor_state' => $items->consignor_state,
+                        'consignor_city' => $items->consignor_city,
+                        'consignor_postal' => $items->consignor_postal,
+                        'consignor_country' => $items->consignor_country,
+                        'consignor_pan' => $items->consignor_pan,
+                        'consignor_altMobile' => $items->consignor_altMobile,
+                        'consignor_email' => $items->consignor_email,
+                        'consignee_id' => $items->consignee_id,
+                        'consignee_name' => $items->consigneeName,
+                        'consignee_mobile' => $items->consignee_mobile,
+                        'consignee_address1' => $items->consignee_add1,
+                        'consignee_address2' => $items->consignee_add2,
+                        'consignee_state' => $items->consignee_state,
+                        'consignee_city' => $items->consignee_city,
+                        'consignee_postal' => $items->consignee_postal,
+                        'consignee_country' => $items->consignee_country,
+                        'consignee_pan' => $items->consignee_pan,
+                        'consignee_altMobile' => $items->consignee_altMobile,
+                        'consignee_email' => $items->consignee_email,
+                        'from_location' => $items->from_location,
+                        'to_location' => $items->to_location,
+                        'vehicle_no' => $items->vehicle_id,
+                        'ownership' => $items->ownership,
+                        'vehicle_type' => $items->vehicle_type,
+                        'driver_name' => $items->driver_name,
+                        'driver_mobile' => $items->driver_mobile,
+                        'driver_dl' => $items->driver_dl,
+                        'DL_expire' => $items->DL_expire,
+                        'amount' => $items->amount,
+                        'bilty_count' => count($bilty),
+                        'shipment_no' => $shipment_no,
+                        'bilties' => $bilty
+                    ]);
+                }
+                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+            } else {
+                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+            }
         }
 
         return response()->json($finalArr);
