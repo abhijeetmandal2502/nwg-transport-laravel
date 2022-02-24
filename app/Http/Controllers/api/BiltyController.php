@@ -74,7 +74,7 @@ class BiltyController extends Controller
         if (!empty($getBilties)) {
             $bookingNo = $getBilties[0]['booking_id'];
             $shipment_no = $getBilties[0]['shipment_no'];
-            $bilty[] = ([
+            $bilty = [
                 'package' => $getBilties[0]['packages'],
                 'description' => $getBilties[0]['description'],
                 'invoice_no' => $getBilties[0]['invoice_no'],
@@ -83,11 +83,11 @@ class BiltyController extends Controller
                 'weight' => $getBilties[0]['weight'],
                 'weight_unit' => $getBilties[0]['unit'],
                 'goods_value' => $getBilties[0]['goods_value'],
-            ]);
+            ];
 
             $lrBooking = DB::table('lrBookingView')->where('booking_id', $bookingNo)->get()->toArray();
             if (!empty($lrBooking)) {
-                $restultArray[] = ([
+                $restultArray = [
                     'lr_id' => $lrBooking[0]->booking_id,
                     'lr_date' => $lrBooking[0]->booking_date,
                     'consignor_id' => $lrBooking[0]->consignor_id,
@@ -125,7 +125,7 @@ class BiltyController extends Controller
                     'DL_expire' => $lrBooking[0]->DL_expire,
                     'shipment_no' => $shipment_no,
                     'bilty' => $bilty,
-                ]);
+                ];
 
                 $finalArr = ['status' => 'success', 'data' => $restultArray];
 
