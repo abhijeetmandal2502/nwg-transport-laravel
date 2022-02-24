@@ -26,7 +26,7 @@ class BiltyController extends Controller
 
     public function createBilty(Request $request)
     {
-        $consignorId =  $this->getConsignor($request->booking_id);
+        $consignorId = $this->getConsignor($request->booking_id);
         if ($consignorId == null) {
             return response(['status' => 'error', 'errors' => 'Consignor not found on this booking!'], 422);
         }
@@ -44,20 +44,25 @@ class BiltyController extends Controller
             'unit' => 'required|string',
             'gst_no' => 'required',
             'goods_value' => 'required|numeric',
-            'created_by' => 'required|exists:users,emp_id'
+            'created_by' => 'required|exists:users,emp_id',
         ]);
 
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $createBilty = Bilty::create($request->all());
-        $updateLrStatus = LRBooking::where('booking_id', $request->booking_id)->update(['status' => 'loading']);
-
-        if ($createBilty && $updateLrStatus) {
+        DB::beginTransaction();
+        try {
+            Bilty::create($request->all());
+            LRBooking::where('booking_id', $request->booking_id)->update(['status' => 'loading']);
+            DB::commit();
             return response(['status' => 'success', 'message' => 'Bilty Created successfully!', 'data' => $request->all()], 201);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+
+        } catch (\Exception$e) {
+            DB::rollback();
+            return response(['status' => 'error', 'errors' => $e], 422);
+
         }
+
     }
 
     public function getAllBilties()
@@ -69,7 +74,7 @@ class BiltyController extends Controller
             foreach ($getAllBilties as $key => $bilty) {
                 $bookingNos[] = $bilty['booking_id'];
             }
-            $allLrBooking =  DB::table('lrBookingView')->whereIn('booking_id', $bookingNos)->where('status', 'loading')->get()->toArray();
+            $allLrBooking = DB::table('lrBookingView')->whereIn('booking_id', $bookingNos)->where('status', 'loading')->get()->toArray();
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $shipment_no = null;
@@ -117,7 +122,7 @@ class BiltyController extends Controller
                         'amount' => $items->amount,
                         'bilty_count' => count($bilty),
                         'shipment_no' => $shipment_no,
-                        'bilties' => $bilty
+                        'bilties' => $bilty,
                     ]);
                 }
                 $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
@@ -127,7 +132,6 @@ class BiltyController extends Controller
         } else {
             $finalArr = ['status' => 'error', 'errors' => 'No bilty available!'];
         }
-
 
         return response()->json($finalArr);
     }
