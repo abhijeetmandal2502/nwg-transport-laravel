@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Bilty;
 use App\Models\LRBooking;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -65,72 +64,80 @@ class BiltyController extends Controller
 
     }
 
-    public function getAllBilties()
+    public function getAllBilties($biltyId)
     {
 
-        $getAllBilties = Bilty::select('booking_id', 'shipment_no')->groupBy('booking_id')->get()->toArray();
+        $bilty = array();
+        $restultArray = array();
+        $finalArr = array();
+        $getBilties = Bilty::where('id', $biltyId)->get()->toArray();
+        if (!empty($getBilties)) {
+            $bookingNo = $getBilties[0]['booking_id'];
+            $shipment_no = $getBilties[0]['shipment_no'];
+            $bilty[] = ([
+                'package' => $getBilties[0]['packages'],
+                'description' => $getBilties[0]['description'],
+                'invoice_no' => $getBilties[0]['invoice_no'],
+                'bitly_date' => $getBilties[0]['date'],
+                'gst_no' => $getBilties[0]['gst_no'],
+                'weight' => $getBilties[0]['weight'],
+                'weight_unit' => $getBilties[0]['unit'],
+                'goods_value' => $getBilties[0]['goods_value'],
+            ]);
 
-        if (!empty($getAllBilties)) {
-            foreach ($getAllBilties as $key => $bilty) {
-                $bookingNos[] = $bilty['booking_id'];
-            }
-            $allLrBooking = DB::table('lrBookingView')->whereIn('booking_id', $bookingNos)->where('status', 'loading')->get()->toArray();
-            if (!empty($allLrBooking)) {
-                foreach ($allLrBooking as $key => $items) {
-                    $shipment_no = null;
-                    $bilty = Bilty::where('booking_id', $items->booking_id)->get()->toArray();
-                    if (!empty($bilty)) {
-                        if (isset($bilty[0])) {
-                            $shipment_no = Arr::pull($bilty[0], 'shipment_no');
-                        }
-                    }
-                    $restultArray[$key] = ([
-                        'lr_id' => $items->booking_id,
-                        'consignor_id' => $items->consignor_id,
-                        'consignor_name' => $items->consignorName,
-                        'consignor_mobile' => $items->consignor_mobile,
-                        'consignor_address1' => $items->consignor_add1,
-                        'consignor_address2' => $items->consignor_add2,
-                        'consignor_state' => $items->consignor_state,
-                        'consignor_city' => $items->consignor_city,
-                        'consignor_postal' => $items->consignor_postal,
-                        'consignor_country' => $items->consignor_country,
-                        'consignor_pan' => $items->consignor_pan,
-                        'consignor_altMobile' => $items->consignor_altMobile,
-                        'consignor_email' => $items->consignor_email,
-                        'consignee_id' => $items->consignee_id,
-                        'consignee_name' => $items->consigneeName,
-                        'consignee_mobile' => $items->consignee_mobile,
-                        'consignee_address1' => $items->consignee_add1,
-                        'consignee_address2' => $items->consignee_add2,
-                        'consignee_state' => $items->consignee_state,
-                        'consignee_city' => $items->consignee_city,
-                        'consignee_postal' => $items->consignee_postal,
-                        'consignee_country' => $items->consignee_country,
-                        'consignee_pan' => $items->consignee_pan,
-                        'consignee_altMobile' => $items->consignee_altMobile,
-                        'consignee_email' => $items->consignee_email,
-                        'from_location' => $items->from_location,
-                        'to_location' => $items->to_location,
-                        'vehicle_no' => $items->vehicle_id,
-                        'ownership' => $items->ownership,
-                        'vehicle_type' => $items->vehicle_type,
-                        'driver_name' => $items->driver_name,
-                        'driver_mobile' => $items->driver_mobile,
-                        'driver_dl' => $items->driver_dl,
-                        'DL_expire' => $items->DL_expire,
-                        'amount' => $items->amount,
-                        'bilty_count' => count($bilty),
-                        'shipment_no' => $shipment_no,
-                        'bilties' => $bilty,
-                    ]);
-                }
-                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+            $lrBooking = DB::table('lrBookingView')->where('booking_id', $bookingNo)->get()->toArray();
+            if (!empty($lrBooking)) {
+                $restultArray[] = ([
+                    'lr_id' => $lrBooking[0]->booking_id,
+                    'lr_date' => $lrBooking[0]->booking_date,
+                    'consignor_id' => $lrBooking[0]->consignor_id,
+                    'consignor_name' => $lrBooking[0]->consignorName,
+                    'consignor_mobile' => $lrBooking[0]->consignor_mobile,
+                    'consignor_address1' => $lrBooking[0]->consignor_add1,
+                    'consignor_address2' => $lrBooking[0]->consignor_add2,
+                    'consignor_state' => $lrBooking[0]->consignor_state,
+                    'consignor_city' => $lrBooking[0]->consignor_city,
+                    'consignor_postal' => $lrBooking[0]->consignor_postal,
+                    'consignor_country' => $lrBooking[0]->consignor_country,
+                    'consignor_pan' => $lrBooking[0]->consignor_pan,
+                    'consignor_altMobile' => $lrBooking[0]->consignor_altMobile,
+                    'consignor_email' => $lrBooking[0]->consignor_email,
+                    'consignee_id' => $lrBooking[0]->consignee_id,
+                    'consignee_name' => $lrBooking[0]->consigneeName,
+                    'consignee_mobile' => $lrBooking[0]->consignee_mobile,
+                    'consignee_address1' => $lrBooking[0]->consignee_add1,
+                    'consignee_address2' => $lrBooking[0]->consignee_add2,
+                    'consignee_state' => $lrBooking[0]->consignee_state,
+                    'consignee_city' => $lrBooking[0]->consignee_city,
+                    'consignee_postal' => $lrBooking[0]->consignee_postal,
+                    'consignee_country' => $lrBooking[0]->consignee_country,
+                    'consignee_pan' => $lrBooking[0]->consignee_pan,
+                    'consignee_altMobile' => $lrBooking[0]->consignee_altMobile,
+                    'consignee_email' => $lrBooking[0]->consignee_email,
+                    'from_location' => $lrBooking[0]->from_location,
+                    'to_location' => $lrBooking[0]->to_location,
+                    'vehicle_no' => $lrBooking[0]->vehicle_id,
+                    'ownership' => $lrBooking[0]->ownership,
+                    'vehicle_type' => $lrBooking[0]->vehicle_type,
+                    'driver_name' => $lrBooking[0]->driver_name,
+                    'driver_mobile' => $lrBooking[0]->driver_mobile,
+                    'driver_dl' => $lrBooking[0]->driver_dl,
+                    'DL_expire' => $lrBooking[0]->DL_expire,
+                    'shipment_no' => $shipment_no,
+                    'bilty' => $bilty,
+                ]);
+
+                $finalArr = ['status' => 'success', 'data' => $restultArray];
+
             } else {
-                $finalArr = ['status' => 'error', 'errors' => 'No bilty available!'];
+                // invalid lr no on bilty
+                $finalArr = ['status' => 'error', 'errors' => 'Invalid LR No on bilty!'];
+
             }
         } else {
-            $finalArr = ['status' => 'error', 'errors' => 'No bilty available!'];
+            // Invalid  bilty Id
+            $finalArr = ['status' => 'error', 'errors' => 'Invalid Bilty Invoice!'];
+
         }
 
         return response()->json($finalArr);

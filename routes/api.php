@@ -6,13 +6,13 @@ use App\Http\Controllers\api\ConsignorController;
 use App\Http\Controllers\api\LRBooking;
 use App\Http\Controllers\api\PetrolPumpController;
 use App\Http\Controllers\api\RoleController;
+use App\Http\Controllers\api\SettingDistanceController;
 use App\Http\Controllers\api\SettingDriverController;
 use App\Http\Controllers\api\SettingLocationController;
 use App\Http\Controllers\api\SettingPageController;
 use App\Http\Controllers\api\SettingStateController;
 use App\Http\Controllers\api\VehicleController;
 use App\Http\Controllers\api\VehicleTypeController;
-use App\Http\Controllers\api\SettingDistanceController;
 use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,8 +26,7 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
-
+ */
 
 // all open route to be secure in last
 
@@ -40,8 +39,7 @@ Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name(
 
 // Bitly Genrations
 Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
-Route::get('/bilties', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
-
+Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
 
 // consignors managment
 Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
@@ -105,7 +103,7 @@ Route::middleware('auth:api')->group(function () {
         // our routes to be protected will go in here
         Route::get('test', function (Request $request) {
             $response = [
-                'msessage' => 'Hello I am from transport API site'
+                'msessage' => 'Hello I am from transport API site',
             ];
             return response()->json($response, 200);
         });
