@@ -32,7 +32,7 @@ class AdvancePaymentController extends Controller
         if (isset($request->advance_amount) && !empty($request->advance_amount)) {
             $validator = Validator::make($request->all(), [
                 'lr_no' => 'required|exists:l_r_bookings,booking_id',
-                'narration' => 'required|string|max:',
+                'narration' => 'required|string|max:150',
                 'advance_amount' => 'required|numeric|min:0',
                 'payment_mode' => 'required|string|max:50',
                 'trans_id' => 'max:50',
