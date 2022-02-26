@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\AdvancePaymentController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BiltyController;
 use App\Http\Controllers\api\ConsignorController;
@@ -40,6 +41,10 @@ Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name(
 // Bitly Genrations
 Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
 Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
+
+// Accounts
+
+Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');
 
 // consignors managment
 Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
@@ -88,7 +93,6 @@ Route::post('/update-ppump/{id}', [PetrolPumpController::class, 'updatePPump'])-
 Route::get('/petrol-pumps/{pumpId?}', [PetrolPumpController::class, 'getPPump'])->name('api.getPPump');
 
 //page Management
-
 Route::post('/create-page', [SettingPageController::class, 'createPage'])->name('api.createPage');
 Route::post('/update-page/{id}', [SettingPageController::class, 'updatePage'])->name('api.updatePage');
 Route::get('/pages/{pageSlug?}', [SettingPageController::class, 'getPage'])->name('api.getPage');
