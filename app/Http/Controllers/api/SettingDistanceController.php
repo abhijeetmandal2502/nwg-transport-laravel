@@ -75,9 +75,26 @@ class SettingDistanceController extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
+        $slug2 = $request->to_location . '_to_' . $request->from_location;
         DB::beginTransaction();
         try {
-            SettingDistance::where('id', $id)->update($request->all());
+            SettingDistance::upsert([
+                [
+                    'slug' => strtolower($slug2),
+                    'from_location' => $request->to_location,
+                    'to_location' => $request->from_location,
+                    'distance' => $request->distance,
+                    'per_kg_amount' => $request->per_kg_amount
+                ],
+                [
+                    'slug' => strtolower($slug),
+                    'from_location' => $request->from_location,
+                    'to_location' => $request->to_location,
+                    'distance' => $request->distance,
+                    'per_kg_amount' => $request->per_kg_amount
+                ]
+            ], ['slug']);
+
             DB::commit();
             return response(['status' => 'success', 'message' => 'Distance updated successfully!'], 201);
             //code...
