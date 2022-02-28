@@ -261,6 +261,7 @@ class LRBooking extends Controller
                         'DL_expire' => $items->DL_expire,
                         'amount' => $items->amount,
                         'bilty_count' => count($bilty),
+                        'is_advance_done' => $items->is_advance_done,
                         'shipment_no' => $shipment_no,
                         'bilties' => $bilty
                     ]);
