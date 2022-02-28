@@ -35,24 +35,26 @@ class LRBooking extends Controller
         // create booking number
         $uniqueCode = getUniqueCode($prifix, $tableName);
 
-        $createLr =  ModelsLRBooking::create([
-            'booking_id' => $uniqueCode,
-            'consignor_id' => $request->consignor,
-            'consignee_id' => $request->consignee,
-            'indent_date' => $request->indent_date,
-            'reporting_date' => $request->reporting_date,
-            'booking_date' => $dateNow,
-            'from_location' => $request->from_location,
-            'to_location' => $request->destination_location
-        ]);
-
-        if ($createLr) {
-            $restult = ['status' => 'success', 'lr_no' => $uniqueCode, 'message' => 'LR created successfully!'];
-        } else {
-            $restult = ['status' => 'error', 'message' => 'Something went wrong!'];
+        DB::beginTransaction();
+        try {
+            ModelsLRBooking::create([
+                'booking_id' => $uniqueCode,
+                'consignor_id' => $request->consignor,
+                'consignee_id' => $request->consignee,
+                'indent_date' => $request->indent_date,
+                'reporting_date' => $request->reporting_date,
+                'booking_date' => $dateNow,
+                'from_location' => $request->from_location,
+                'to_location' => $request->destination_location
+            ]);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'LR created successfully!'], 201);
+            //code...
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            //throw $th;
         }
-
-        return response()->json($restult);
     }
 
     public function getLrBookings($page = null, $lrNo = null)
@@ -289,18 +291,21 @@ class LRBooking extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-        $updateVehicleInLr =  ModelsLRBooking::where('booking_id', $request->booking_id)->update([
-            'driver_id' => $request->driver_id,
-            'vehicle_id' => $request->vehicle_id,
-            'amount' => $request->amount
-        ]);
 
-        if ($updateVehicleInLr) {
-            $finalArr = ['status' => 'success', 'message' => "Vehicle Details Updated!"];
-        } else {
-            $finalArr = ['status' => 'error', 'errors' => 'Something went wrong!'];
+        DB::beginTransaction();
+        try {
+            ModelsLRBooking::where('booking_id', $request->booking_id)->update([
+                'driver_id' => $request->driver_id,
+                'vehicle_id' => $request->vehicle_id,
+                'amount' => $request->amount
+            ]);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Vehicle Details Updated!'], 201);
+            //code...
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            //throw $th;
         }
-
-        return response()->json($finalArr);
     }
 }

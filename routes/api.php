@@ -64,9 +64,10 @@ Route::post('/create-location', [SettingLocationController::class, 'createLocati
 Route::post('/update-location', [SettingLocationController::class, 'updateLocation'])->name('api.updateLocation');
 
 // Distance Management
-Route::get('/distances/list', [SettingDistanceController::class, 'getDistanceList'])->name('api.getDistanceList');
-Route::get('/distances/{slug?}', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
+Route::get('/distances/list/{slug?}', [SettingDistanceController::class, 'getDistanceList'])->name('api.getDistanceList');
+Route::get('/distances', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
 Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
+Route::post('/update-distance/{id}', [SettingDistanceController::class, 'updateDistance'])->name('api.updateDistance');
 
 // State management
 Route::get('/states/{code?}', [SettingStateController::class, 'getState'])->name('api.States');

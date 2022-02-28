@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\PetrolPump;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PetrolPumpController extends Controller
@@ -32,11 +33,18 @@ class PetrolPumpController extends Controller
             $request->all(),
             ['pump_id' => $uniqueDrId]
         );
-        $createPPump = PetrolPump::create($newArr);
-        if ($createPPump) {
-            return response(['status' => 'success', 'message' => 'Petrol pump addedd successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+
+
+        DB::beginTransaction();
+        try {
+            PetrolPump::create($newArr);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Petrol pump addedd successfully!'], 201);
+            //code...
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            //throw $th;
         }
     }
 
@@ -56,11 +64,17 @@ class PetrolPumpController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $updatePPump = PetrolPump::where('id', $id)->update($request->all());
-        if ($updatePPump) {
-            return response(['status' => 'success', 'message' => 'Petrol pump updated successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+
+        DB::beginTransaction();
+        try {
+            PetrolPump::where('id', $id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Petrol pump updated successfully!'], 201);
+            //code...
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            //throw $th;
         }
     }
 

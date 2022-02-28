@@ -55,13 +55,10 @@ class BiltyController extends Controller
             LRBooking::where('booking_id', $request->booking_id)->update(['status' => 'loading']);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Bilty Created successfully!', 'data' => $request->all()], 201);
-
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             DB::rollback();
-            return response(['status' => 'error', 'errors' => $e], 422);
-
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
-
     }
 
     public function getAllBilties($biltyId)
@@ -128,16 +125,13 @@ class BiltyController extends Controller
                 ];
 
                 $finalArr = ['status' => 'success', 'data' => $restultArray];
-
             } else {
                 // invalid lr no on bilty
                 $finalArr = ['status' => 'error', 'errors' => 'Invalid LR No on bilty!'];
-
             }
         } else {
             // Invalid  bilty Id
             $finalArr = ['status' => 'error', 'errors' => 'Invalid Bilty Invoice!'];
-
         }
 
         return response()->json($finalArr);

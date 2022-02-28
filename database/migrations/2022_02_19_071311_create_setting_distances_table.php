@@ -18,7 +18,8 @@ class CreateSettingDistancesTable extends Migration
             $table->string('slug')->unique()->comment('unique slug');
             $table->string('from_location')->comment('location slug');
             $table->string('to_location')->comment('location slug');
-            $table->decimal('distance')->default(0)->comment('distance in KM');
+            $table->decimal('distance', 10, 2)->default(0)->comment('distance in KM');
+            $table->decimal('per_kg_amount', 10, 2)->default(0)->comment('amount/kg for own');
             $table->timestamps();
         });
     }
