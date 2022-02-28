@@ -23,7 +23,7 @@ class CreateAdvancePaymentsTable extends Migration
             $table->string('txn_id')->nullable()->comment('payment id');
             $table->string('cheque_no')->nullable()->comment('if method cheque');
             $table->dateTime('created_at');
-            $table->dateTime('created_by');
+            $table->string('created_by');
         });
     }
 

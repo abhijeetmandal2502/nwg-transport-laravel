@@ -45,6 +45,7 @@ Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->nam
 // Accounts
 
 Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');
+Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdvanceDetails'])->name('api.getAdvanceDetails');
 
 // consignors managment
 Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
