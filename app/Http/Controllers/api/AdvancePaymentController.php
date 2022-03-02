@@ -108,7 +108,7 @@ class AdvancePaymentController extends Controller
         $petrolPump = array();
         $getAdvance = AdvancePayment::where('lr_no', $lrNo)->get()->toArray();
         $getPetrolPayment = PetrolPumpPayment::join('petrol_pumps', 'petrol_pumps.pump_id', '=', 'petrol_pump_payments.pump_id')->where('lr_no', $lrNo)->get()->toArray();
-
+        $getLrDetails = DB::table('lrBookingView')->where('booking_id', $lrNo)->get(['driver_name', 'driver_mobile', 'driver_dl', 'DL_expire'])->toArray();
         if (!empty($getPetrolPayment) || !empty($getAdvance)) {
             if (!empty($getAdvance)) {
                 foreach ($getAdvance as $ak => $aItems) {
@@ -119,6 +119,7 @@ class AdvancePaymentController extends Controller
                         'method' => $aItems['method'],
                         'txn_id' => $aItems['txn_id'],
                         'cheque_no' => $aItems['cheque_no'],
+                        'driver' => $getLrDetails,
                         'created_at' => $aItems['created_at'],
                         'created_by' => $aItems['created_by']
                     ]);
@@ -139,6 +140,7 @@ class AdvancePaymentController extends Controller
                             'country' => $pItems['country'],
                             'state' => $pItems['state'],
                         ],
+                        'driver' => $getLrDetails,
                         'created_at' => $pItems['created_at'],
                         'created_by' => $pItems['created_by']
                     ]);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\BusinesTransaction;
 use Illuminate\Support\Facades\DB;
 
 if (!function_exists('getUniqueCode')) {
@@ -15,5 +16,24 @@ if (!function_exists('getUniqueCode')) {
         }
 
         return $finalResult;
+    }
+}
+
+
+if (!function_exists('allTransactions')) {
+    function allTransactions($trNo, $actionType, $description, $amount, $transType, $createdBy)
+    {
+        $prifix = time() . 'TR';
+        $txnId = getUniqueCode($prifix, 'busines_transactions');
+        BusinesTransaction::create([
+            'tr_id' => $txnId,
+            'lr_no' => $trNo,
+            'action_type' => $actionType,
+            'description' => $description,
+            'amount' => $amount,
+            'trans_type' => $transType,
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => $createdBy
+        ]);
     }
 }

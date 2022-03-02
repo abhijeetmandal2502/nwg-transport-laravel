@@ -43,7 +43,6 @@ Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api
 Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
 
 // Accounts
-
 Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');
 Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdvanceDetails'])->name('api.getAdvanceDetails');
 
