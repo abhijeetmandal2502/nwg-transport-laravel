@@ -48,7 +48,7 @@ class LRBooking extends Controller
                 'to_location' => $request->destination_location
             ]);
             DB::commit();
-            return response(['status' => 'success', 'message' => 'LR created successfully!'], 201);
+            return response(['status' => 'success', 'lr_no' => $uniqueCode,  'message' => 'LR created successfully!'], 201);
             //code...
         } catch (\Exception $th) {
             DB::rollBack();
