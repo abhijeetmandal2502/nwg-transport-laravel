@@ -119,7 +119,6 @@ class AdvancePaymentController extends Controller
                         'method' => $aItems['method'],
                         'txn_id' => $aItems['txn_id'],
                         'cheque_no' => $aItems['cheque_no'],
-                        'vehicle_no' => $aItems['vehicle_id'],
                         'driver' => $getLrDetails,
                         'created_at' => $aItems['created_at'],
                         'created_by' => $aItems['created_by']
@@ -141,7 +140,6 @@ class AdvancePaymentController extends Controller
                             'country' => $pItems['country'],
                             'state' => $pItems['state'],
                         ],
-                        'vehicle_no' => $aItems['vehicle_id'],
                         'driver' => $getLrDetails,
                         'created_at' => $pItems['created_at'],
                         'created_by' => $pItems['created_by']
