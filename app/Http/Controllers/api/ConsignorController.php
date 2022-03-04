@@ -73,22 +73,21 @@ class ConsignorController extends Controller
     public function updateConsignors(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'cons_id' => 'required|alpha_num',
+            'consignor'=>'required',
+            'cons_slug' => 'required',
             'name' => 'required|string|max:100',
             'mobile' => 'required|numeric|digits:10',
             'alt_mobile' => 'numeric|digits:10',
             'gst_no' => 'required|string',
             'pan_no' => 'alpha_num|min:10|max:10',
-            'aadhar_no' => 'numeric|digits:12',
-            'address1' => 'string|max:100',
-            'address2' => 'string|max:100',
+            'location' => 'string|max:100',
+            'address' => 'string|max:100',
             'country' => 'string|max:100',
             'state' => 'string|max:100',
             'city' => 'string|max:100',
             'pin_code' => 'numeric|digits_between:6,10',
             'email' => 'email',
             'active_status' => 'required|in:active,inactive,hold',
-            'cons_type' => 'required|in:consignor,consignee,other'
         ]);
 
         if ($validator->fails()) {

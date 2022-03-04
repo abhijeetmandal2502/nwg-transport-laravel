@@ -14,6 +14,7 @@ use App\Http\Controllers\api\SettingPageController;
 use App\Http\Controllers\api\SettingStateController;
 use App\Http\Controllers\api\VehicleController;
 use App\Http\Controllers\api\VehicleTypeController;
+use App\Http\Controllers\api\VendorListController;
 use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,8 @@ Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])
 Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdvanceDetails'])->name('api.getAdvanceDetails');
 
 // consignors managment
+Route::post('/create-vendor', [VendorListController::class, 'createVendor'])->name('api.createVendor');
+Route::get('/vendors/{slug?}', [VendorListController::class, 'getVendors'])->name('api.getVendors');
 Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
 Route::post('/create-consignor', [ConsignorController::class, 'createConsignor'])->name('api.create.consignors');
 Route::post('/update-consignor', [ConsignorController::class, 'updateConsignors'])->name('api.update.consignors');
@@ -63,8 +66,8 @@ Route::post('/create-location', [SettingLocationController::class, 'createLocati
 Route::post('/update-location', [SettingLocationController::class, 'updateLocation'])->name('api.updateLocation');
 
 // Distance Management
-Route::get('/distances/list/{slug?}', [SettingDistanceController::class, 'getDistanceList'])->name('api.getDistanceList');
-Route::get('/distances', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
+Route::get('/distances/list/{did?}', [SettingDistanceController::class, 'getDistanceList'])->name('api.getDistanceList');
+Route::get('/distances/{slug}', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
 Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
 Route::post('/update-distance/{id}', [SettingDistanceController::class, 'updateDistance'])->name('api.updateDistance');
 

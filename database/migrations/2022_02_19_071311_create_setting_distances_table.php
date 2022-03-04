@@ -16,10 +16,13 @@ class CreateSettingDistancesTable extends Migration
         Schema::create('setting_distances', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique()->comment('unique slug');
+            $table->string('consignor')->comment('vendor slug');
             $table->string('from_location')->comment('location slug');
             $table->string('to_location')->comment('location slug');
             $table->decimal('distance', 10, 2)->default(0)->comment('distance in KM');
-            $table->decimal('per_kg_amount', 10, 2)->default(0)->comment('amount/kg for own');
+            $table->decimal('own_per_kg_rate', 10, 2)->default(0)->comment('amount/kg for own');
+            $table->decimal('vendor_per_kg_rate', 10, 2)->default(0)->comment('amount/kg for vendor');
+            $table->string('created_by', 100)->comment('who created');
             $table->timestamps();
         });
     }

@@ -15,22 +15,22 @@ class CreateConsignorsTable extends Migration
     {
         Schema::create('consignors', function (Blueprint $table) {
             $table->id();
-            $table->String('cons_id')->unique()->comment('consign(or/ee) id');
-            $table->String('name')->comment('consign(or/ee) name');
-            $table->String('mobile')->comment('consign(or/ee) mobile');
-            $table->String('alt_mobile')->nullable()->comment('consign(or/ee) alt mobile');
-            $table->String('gst_no')->nullable()->comment('consign(or/ee) gst no');
-            $table->String('pan_no')->nullable()->comment('consign(or/ee) pan no');
-            $table->String('aadhar_no')->nullable()->comment('consign(or/ee) aadhar no');
-            $table->String('address1')->nullable()->comment('consign(or/ee) address1');
-            $table->String('address2')->nullable()->comment('consign(or/ee) address2');
-            $table->String('country')->comment('consign(or/ee) country');
-            $table->String('state')->comment('consign(or/ee) state');
-            $table->String('city')->comment('consign(or/ee) city');
-            $table->String('pin_code')->comment('consign(or/ee) pin_code');
-            $table->String('email')->nullable()->comment('consign(or/ee) email');
+            $table->String('cons_id')->unique()->comment('vendor sub slug');
+            $table->string('consignor')->comment('Main vendor slug');
+            $table->String('name')->comment('vendor sub name');
+            $table->String('mobile')->comment('vendor mobile');
+            $table->String('alt_mobile')->nullable()->comment('vendor alt mobile');
+            $table->String('gst_no')->nullable()->comment('vendor gst no');
+            $table->String('pan_no')->nullable()->comment('vendor pan no');
+            $table->String('location')->comment('vendor location');
+            $table->String('address')->nullable()->comment('vendor address');
+            $table->String('country')->comment('vendor country');
+            $table->String('state')->comment('vendor state');
+            $table->String('city')->comment('vendor city');
+            $table->String('pin_code')->comment('vendor pin_code');
+            $table->String('email')->nullable()->comment('vendor email');
             $table->enum('active_status', ['active', 'inactive', 'hold'])->default('active');
-            $table->enum('cons_type', ['consignor', 'consignee', 'other'])->nullable()->comment('consignor/consignee)');
+            $table->string('created_by');
             $table->timestamps();
         });
     }
