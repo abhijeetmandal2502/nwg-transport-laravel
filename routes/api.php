@@ -50,9 +50,9 @@ Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdv
 // consignors managment
 Route::post('/create-vendor', [VendorListController::class, 'createVendor'])->name('api.createVendor');
 Route::get('/vendors/{slug?}', [VendorListController::class, 'getVendors'])->name('api.getVendors');
-Route::get('/consignors/{type}/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
+Route::get('/consignors/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
 Route::post('/create-consignor', [ConsignorController::class, 'createConsignor'])->name('api.create.consignors');
-Route::post('/update-consignor', [ConsignorController::class, 'updateConsignors'])->name('api.update.consignors');
+Route::post('/update-consignor/{id}', [ConsignorController::class, 'updateConsignors'])->name('api.update.consignors');
 
 // Role managment
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
