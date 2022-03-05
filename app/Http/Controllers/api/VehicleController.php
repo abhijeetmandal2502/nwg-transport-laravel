@@ -27,11 +27,15 @@ class VehicleController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $createVehicle = Vehicle::create($request->all());
-        if ($createVehicle) {
+        DB::beginTransaction();
+        try {
+            Vehicle::create($request->all());
+            DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle addedd successfully!'], 201);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 
