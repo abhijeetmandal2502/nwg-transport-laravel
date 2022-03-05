@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\SettingPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -21,12 +22,15 @@ class SettingPageController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-
-        $createPages = SettingPage::create($request->all());
-        if ($createPages) {
-            return response(['status' => 'success', 'message' => 'Page created successfully!']);
-        } else {
-            return response(['status' => 'error', 'message' => 'Something went wrong!']);
+        DB::beginTransaction();
+        try {
+            SettingPage::create($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Page created successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 
@@ -42,16 +46,23 @@ class SettingPageController extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-        $updatePages = SettingPage::where('id', $id)->update($request->all());
-        if ($updatePages) {
-            return response(['status' => 'success', 'message' => 'Page updated successfully!']);
-        } else {
-            return response(['status' => 'error', 'message' => 'Something went wrong!']);
+        DB::beginTransaction();
+        try {
+            SettingPage::where('id', $id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Page updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 
     public function getPage($pageSlug = null)
     {
+
+        // return response(auth()->user()->emp_id);
+
         if ($pageSlug !== null) {
             $pages = SettingPage::where('page_slug', $pageSlug)->get()->toArray();
         } else {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SettingState;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SettingStateController extends Controller
@@ -15,16 +16,18 @@ class SettingStateController extends Controller
             'code' => 'required|alpha|unique:setting_states|max:5',
             'name' => 'required|string|max:100'
         ]);
-
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-
-        $createState = SettingState::create($request->all());
-        if ($createState) {
-            return response(['status' => 'success', 'message' => 'State created successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'No any role found!'], 404422);
+        DB::beginTransaction();
+        try {
+            SettingState::create($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'State created successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 
@@ -40,11 +43,15 @@ class SettingStateController extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-        $createState = SettingState::where('id', $id)->update($request->all());
-        if ($createState) {
-            return response(['status' => 'success', 'message' => 'State updated successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong'], 422);
+        DB::beginTransaction();
+        try {
+            SettingState::where('id', $id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'State updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 

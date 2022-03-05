@@ -27,6 +27,7 @@ class AdvancePaymentController extends Controller
             if ($validator->fails()) {
                 return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
             }
+
             $this->petrolStatus = true;
         }
 
@@ -43,6 +44,7 @@ class AdvancePaymentController extends Controller
             if ($validator->fails()) {
                 return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
             }
+
             $this->advanceStatus = true;
         }
 
@@ -60,9 +62,7 @@ class AdvancePaymentController extends Controller
                         'hsb_msd' => $request->hsb_msd,
                         'pump_id' => $request->pump_name,
                         'created_at' => $request->created_at,
-                        'created_by' => 'test001',
-                        // 'created_by' => auth()->user()->role_id,
-
+                        'created_by' => auth()->user()->emp_id,
                     ]);
                 }
             }
@@ -81,8 +81,7 @@ class AdvancePaymentController extends Controller
                         'txn_id' => $request->trans_id,
                         'cheque_no' => $request->cheque_no,
                         'created_at' => $request->created_at,
-                        'created_by' => 'test001',
-                        // 'created_by' => auth()->user()->role_id,
+                        'created_by' => auth()->user()->emp_id
                     ]);
                 }
             }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\VehicleType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleTypeController extends Controller
@@ -20,16 +21,17 @@ class VehicleTypeController extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
         $uniqueDrId = getUniqueCode($prifix, $tableName);
-        $newArr =  array_merge(
-            $request->all(),
-            ['type_id' => $uniqueDrId]
-        );
+        $request->merge(['type_id' => $uniqueDrId]);
 
-        $createCategory = VehicleType::create($newArr);
-        if ($createCategory) {
-            return response(['status' => 'success', 'message' => 'New Vehicle Category addedd successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+        DB::beginTransaction();
+        try {
+            VehicleType::create($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'New Vehicle Category addedd successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
     public function updateCategory(Request $request)
@@ -42,11 +44,15 @@ class VehicleTypeController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $updateCategory = VehicleType::where('type_id', $request->type_id)->update($request->all());
-        if ($updateCategory) {
-            return response(['status' => 'success', 'message' => 'Vehicle Category updated successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+        DB::beginTransaction();
+        try {
+            VehicleType::where('type_id', $request->type_id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Vehicle Category updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
     public function getCategory($typeId = null)

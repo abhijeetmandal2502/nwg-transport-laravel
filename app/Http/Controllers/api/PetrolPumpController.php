@@ -15,6 +15,7 @@ class PetrolPumpController extends Controller
     {
         $prifix = 'TASPP';
         $tableName = 'petrol_pumps';
+        $request->merge(['created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'pump_name' => 'required|string|max:100',
             'mobile' => 'required|numeric|digits:10|unique:petrol_pumps,mobile',
@@ -23,7 +24,6 @@ class PetrolPumpController extends Controller
             'city' => 'required|string|max:50',
             'country' => 'required|string|max:50',
             'state' => 'required|string|max:50',
-            'created_by' => 'required|string'
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
@@ -58,7 +58,6 @@ class PetrolPumpController extends Controller
             'city' => 'required|string|max:50',
             'country' => 'required|string|max:50',
             'state' => 'required|string|max:50',
-            'created_by' => 'required|string',
             'status' => 'required|in:active,inactive'
         ]);
         if ($validator->fails()) {

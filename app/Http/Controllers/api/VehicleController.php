@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class VehicleController extends Controller
@@ -12,6 +13,8 @@ class VehicleController extends Controller
 
     public function createVehicle(Request $request)
     {
+
+        $request->merge(['created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'vehicle_no' => 'required|alpha_num|unique:vehicles',
             'type' => 'required|string',
@@ -19,8 +22,7 @@ class VehicleController extends Controller
             'vehicle_details' => 'required|string|max:120',
             'state' => 'required|string',
             'owner_details' => 'json',
-            'driver_id' => 'alpha_num',
-            'created_by' => 'required|string'
+            'driver_id' => 'alpha_num|exists:setting_drivers,driver_id'
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
@@ -42,18 +44,23 @@ class VehicleController extends Controller
             'vehicle_details' => 'required|string|max:120',
             'state' => 'required|string',
             'owner_details' => 'json',
-            'driver_id' => 'alpha_num',
+            'driver_id' => 'alpha_num|exists:setting_drivers,driver_id',
             'rating' => 'numeric|min:0|max:5',
             'active_status' => 'required|in:active,inactive',
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $createVehicle = Vehicle::where('id', $id)->update($request->all());
-        if ($createVehicle) {
-            return response(['status' => 'success', 'message' => 'Vehicle updated successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+
+        DB::beginTransaction();
+        try {
+            Vehicle::where('id', $id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Vehicle updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 

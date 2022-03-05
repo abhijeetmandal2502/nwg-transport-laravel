@@ -19,8 +19,7 @@ class SettingDistanceController extends Controller
         $toLocation = Str::of($request->to_location)->slug('_');
         $consignor = Str::of($request->consignor)->slug('_');
         $slug = $consignor . '_' . $fromLocation . '_to_' . $toLocation;
-
-        $request->merge(['mapping' => $slug]);
+        $request->merge(['mapping' => $slug, 'from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor, 'created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'mapping' => 'required|unique:setting_distances,slug',
             'consignor' => 'required|exists:vendor_lists,slug',
@@ -83,7 +82,7 @@ class SettingDistanceController extends Controller
         $slug = $consignor . '_' . $fromLocation . '_to_' . $toLocation;
 
 
-        $request->merge(['mapping' => $slug]);
+        $request->merge(['mapping' => $slug, 'from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor]);
         $validator = Validator::make($request->all(), [
             'mapping' => 'required|unique:setting_distances,slug,' . $id,
             'consignor' => 'required|exists:vendor_lists,slug',

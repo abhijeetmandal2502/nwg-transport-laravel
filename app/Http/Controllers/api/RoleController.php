@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\SettingPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -79,12 +80,15 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-
-        $createRole = Role::create(['role_id' => $request->role, 'role_name' => $request->role_name, 'access_pages' => $request->access_pages]);
-        if ($createRole) {
-            return response(['status' => 'success', 'message' => 'Role created successfully!']);
-        } else {
-            return response(['status' => 'error', 'message' => 'Something went wrong!']);
+        DB::beginTransaction();
+        try {
+            Role::create(['role_id' => $request->role, 'role_name' => $request->role_name, 'access_pages' => $request->access_pages]);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Role created successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 
@@ -102,11 +106,16 @@ class RoleController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $updateRole = Role::where('id', $id)->update($request->all());
-        if ($updateRole) {
-            return response(['status' => 'success', 'message' => 'Role updated successfully!']);
-        } else {
-            return response(['status' => 'error', 'message' => 'Something went wrong!']);
+
+        DB::beginTransaction();
+        try {
+            Role::where('id', $id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Role updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 }

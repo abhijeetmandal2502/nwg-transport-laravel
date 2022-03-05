@@ -30,7 +30,7 @@ class BiltyController extends Controller
             return response(['status' => 'error', 'errors' => 'Consignor not found on this booking!'], 422);
         }
         $invoiceUnique = $consignorId . '-' . $request->invoice_no;
-        $request->merge(['invoice' => $invoiceUnique]);
+        $request->merge(['invoice' => $invoiceUnique, 'created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'invoice' => 'required|unique:bilties,invoice',
             'booking_id' => 'required|alpha_num|exists:l_r_bookings,booking_id',
@@ -42,8 +42,7 @@ class BiltyController extends Controller
             'weight' => 'required|numeric',
             'unit' => 'required|string',
             'gst_no' => 'required',
-            'goods_value' => 'required|numeric',
-            'created_by' => 'required|exists:users,emp_id',
+            'goods_value' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {

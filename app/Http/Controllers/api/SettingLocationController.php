@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\SettingLocation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -63,14 +64,16 @@ class SettingLocationController extends Controller
             ]);
         }
 
-        $createLocation = SettingLocation::upsert($data, 'slug');
-        if ($createLocation) {
-            $result = ['status' => 'success', 'message' => 'New Locations added successfully!'];
-        } else {
-            $result = ['status' => 'error', 'errors' => 'Something went wrong!'];
+        DB::beginTransaction();
+        try {
+            SettingLocation::upsert($data, 'slug');
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'New Locations added successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
-
-        return response()->json($result);
     }
 
     public function updateLocation(Request $request)
@@ -93,22 +96,23 @@ class SettingLocationController extends Controller
             });
         }
 
-
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-        $createLocation = SettingLocation::where('slug', $request->slug)->update([
-            'slug' => $this->slug,
-            'location' => $request->location_name,
-            'active_status' => $request->status
-        ]);
-        if ($createLocation) {
-            $result = ['status' => 'success', 'message' => 'Location updated successfully!'];
-        } else {
-            $result = ['status' => 'error', 'message' => 'Something went wrong!'];
+        DB::beginTransaction();
+        try {
+            SettingLocation::where('slug', $request->slug)->update([
+                'slug' => $this->slug,
+                'location' => $request->location_name,
+                'active_status' => $request->status
+            ]);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Location updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
-
-        return response()->json($result);
     }
 }

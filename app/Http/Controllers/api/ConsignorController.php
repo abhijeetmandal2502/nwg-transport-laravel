@@ -37,7 +37,7 @@ class ConsignorController extends Controller
         $consignor = Str::of($request->consignor)->slug('_');
         $cons_id = Str::of($request->name)->slug('_');
         $location = Str::of($request->location)->slug('_');
-        $request->merge(['consignor' => $consignor, 'cons_id' => $cons_id, 'location' => $location, 'created_by' => 'honey001']);
+        $request->merge(['consignor' => $consignor, 'cons_id' => $cons_id, 'location' => $location, 'created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'consignor' => 'required|exists:vendor_lists,slug',
             'cons_id' => 'required|unique:consignors,cons_id',

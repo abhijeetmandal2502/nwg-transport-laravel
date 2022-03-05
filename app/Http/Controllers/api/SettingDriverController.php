@@ -6,6 +6,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\SettingDriver;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class SettingDriverController extends Controller
@@ -23,22 +24,24 @@ class SettingDriverController extends Controller
             'city' => 'required|string|max:50',
             'country' => 'required|string|max:50',
             'state' => 'required|string|max:50',
-            'alt_mobile' => 'numeric|digits:10',
-            'created_by' => 'required|string'
+            'alt_mobile' => 'numeric|digits:10'
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
         $uniqueDrId = getUniqueCode($prifix, $tableName);
-        $newArr =  array_merge(
-            $request->all(),
-            ['driver_id' => $uniqueDrId]
-        );
-        $createdriver = SettingDriver::create($newArr);
-        if ($createdriver) {
-            return response(['status' => 'success', 'message' => 'Driver addedd successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+        $request->merge(['driver_id' => $uniqueDrId, 'created_by' => auth()->user()->emp_id]);
+
+
+        DB::beginTransaction();
+        try {
+            SettingDriver::create($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Driver addedd successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 
@@ -60,11 +63,16 @@ class SettingDriverController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $updateDriver = SettingDriver::where('id', $id)->update($request->all());
-        if ($updateDriver) {
-            return response(['status' => 'success', 'message' => 'Driver updated successfully!'], 200);
-        } else {
-            return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
+
+        DB::beginTransaction();
+        try {
+            SettingDriver::where('id', $id)->update($request->all());
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Driver updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 

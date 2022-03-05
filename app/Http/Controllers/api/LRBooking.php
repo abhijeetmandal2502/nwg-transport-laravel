@@ -45,7 +45,8 @@ class LRBooking extends Controller
                 'reporting_date' => $request->reporting_date,
                 'booking_date' => $dateNow,
                 'from_location' => $request->from_location,
-                'to_location' => $request->destination_location
+                'to_location' => $request->destination_location,
+                'created_by' => auth()->user()->emp_id
             ]);
             DB::commit();
             return response(['status' => 'success', 'lr_no' => $uniqueCode,  'message' => 'LR created successfully!'], 201);
