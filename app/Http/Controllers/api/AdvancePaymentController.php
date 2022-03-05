@@ -49,6 +49,9 @@ class AdvancePaymentController extends Controller
 
         DB::beginTransaction();
         try {
+            $actionType = "";
+            $description = array();
+            $transType = "debit";
             if ($this->petrolStatus) {
                 if ($request->petrol_amount > 0) {
                     $prifix = 'TASPPP';
@@ -63,17 +66,28 @@ class AdvancePaymentController extends Controller
                         'created_at' => $request->created_at,
                         'created_by' => auth()->user()->emp_id,
                     ]);
+
+                    // for busines all transactions
+                    $actionType = "petrol_payment";
+                    $description = [
+                        'pp_id' => $uniquePPId,
+                        'hsb_msd' => $request->hsb_msd,
+                        'pump_id' => $request->pump_id
+                    ];
+
+                    allTransactions($request->lr_no, $actionType, json_encode($description), $request->petrol_amount, $transType, auth()->user()->emp_id);
                 }
             }
             if ($this->advanceStatus) {
                 if ($request->advance_amount > 0) {
                     $prifix = 'TASAP';
-                    $tableName = 'advance_payments';
+                    $tableName = 'booking_payments';
                     $uniqueAPId = getUniqueCode($prifix, $tableName);
                     BookingPayment::create([
                         'tr_id' => $uniqueAPId,
                         'lr_no' => $request->lr_no,
                         'type' => 'advance',
+                        'txn_type' => 'debit',
                         'amount' => $request->advance_amount,
                         'narration' => $request->narration,
                         'method' => $request->payment_mode,
@@ -82,6 +96,17 @@ class AdvancePaymentController extends Controller
                         'created_at' => $request->created_at,
                         'created_by' => auth()->user()->emp_id
                     ]);
+
+                    // for busines all transactions
+                    $actionType = "advance_payment";
+                    $description = [
+                        'ap_id' => $uniqueAPId,
+                        'narration' => $request->narration,
+                        'method' => $request->payment_mode,
+                        'txn_id' => $request->trans_id,
+                        'cheque_no' => $request->cheque_no
+                    ];
+                    allTransactions($request->lr_no, $actionType, json_encode($description), $request->advance_amount, $transType, auth()->user()->emp_id);
                 }
             }
 
@@ -116,6 +141,7 @@ class AdvancePaymentController extends Controller
                         'tr_id' => $aItems['tr_id'],
                         'amount' => $aItems['amount'],
                         'narration' => $aItems['narration'],
+                        'txn_type' => $aItems['txn_type'],
                         'method' => $aItems['method'],
                         'txn_id' => $aItems['txn_id'],
                         'cheque_no' => $aItems['cheque_no'],
@@ -153,7 +179,7 @@ class AdvancePaymentController extends Controller
 
             return response(['status' => 'success', 'data' => $resultArr], 200);
         } else {
-            return response(['status' => 'error', 'errors' => "No records found!"], 204);
+            return response(['status' => 'error', 'errors' => "No records found!"], 400);
         }
     }
 }

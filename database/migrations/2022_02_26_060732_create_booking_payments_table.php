@@ -18,6 +18,7 @@ class CreateBookingPaymentsTable extends Migration
             $table->string('tr_id');
             $table->string('lr_no');
             $table->string('type', 100)->nullable()->comment('payment type');
+            $table->enum('txn_type', ['credit', 'debit'])->comment('transaction type');
             $table->decimal('amount', 10, 2);
             $table->string('narration')->nullable()->comment('remark');
             $table->string('method')->comment('payment method');

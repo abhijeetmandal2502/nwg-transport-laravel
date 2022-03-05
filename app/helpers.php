@@ -21,13 +21,13 @@ if (!function_exists('getUniqueCode')) {
 
 
 if (!function_exists('allTransactions')) {
-    function allTransactions($trNo, $actionType, $description, $amount, $transType, $createdBy)
+    function allTransactions($lrNo, $actionType, $description, $amount, $transType, $createdBy)
     {
         $prifix = time() . 'TR';
         $txnId = getUniqueCode($prifix, 'busines_transactions');
         BusinesTransaction::create([
             'tr_id' => $txnId,
-            'lr_no' => $trNo,
+            'lr_no' => $lrNo,
             'action_type' => $actionType,
             'description' => $description,
             'amount' => $amount,
