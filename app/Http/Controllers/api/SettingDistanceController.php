@@ -44,7 +44,7 @@ class SettingDistanceController extends Controller
                 'distance' => $request->distance,
                 'own_per_kg_rate' => $request->own_per_kg_rate,
                 'vendor_per_kg_rate' => $request->vendor_per_kg_rate,
-                'created_by' => 'honey001'
+                'created_by' => auth()->user()->emp_id
             ]);
 
             // SettingDistance::upsert([

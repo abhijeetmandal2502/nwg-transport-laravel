@@ -17,7 +17,7 @@ class CreateVehiclesTable extends Migration
             $table->id();
             $table->string('vehicle_no')->unique();
             $table->string('type')->comment('vehicle category');
-            $table->enum('ownership', ['third_party', 'owned'])->nullable()->comment('ownership type');
+            $table->enum('ownership', ['third-party', 'owned'])->comment('ownership type');
             $table->string('created_by')->comment('employee id ');
             $table->string('vehicle_details');
             $table->json('owner_details')->nullable()->comment('owner all details');
