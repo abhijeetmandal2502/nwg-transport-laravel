@@ -27,7 +27,6 @@ class AdvancePaymentController extends Controller
             if ($validator->fails()) {
                 return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
             }
-
             $this->petrolStatus = true;
         }
 
@@ -85,6 +84,7 @@ class AdvancePaymentController extends Controller
                     ]);
                 }
             }
+
             LRBooking::where('booking_id', $request->lr_no)->update([
                 'is_advance_done' => 'yes'
             ]);
