@@ -29,7 +29,7 @@ class VehicleController extends Controller
         }
         $createVehicle = Vehicle::create($request->all());
         if ($createVehicle) {
-            return response(['status' => 'success', 'message' => 'Vehicle addedd successfully!'], 200);
+            return response(['status' => 'success', 'message' => 'Vehicle addedd successfully!'], 201);
         } else {
             return response(['status' => 'error', 'errors' => 'Something went wrong!'], 422);
         }
