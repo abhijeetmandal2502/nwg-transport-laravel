@@ -45,47 +45,52 @@ class AuthController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
         // check user availability
-        $user = User::where('role_id', '=', $role)->where('status', '=', 'Active')
-            ->when($email, function ($query, $email) {
-                return $query->where('email', '=', $email)
-                    ->orWhere('emp_id', '=', $email);
-            })->first();
+        try {
 
-        if ($user) {
-            $jsonToArr = array();
-            $temArray = array();
-            // check user password
-            if (Hash::check($password, $user->password)) {
-                $token = $user->createToken('access_transport_association')->accessToken;
-                $roleData = Role::where('role_id', $user->role_id)->first();
-                $jsonToArr = json_decode($roleData->access_pages, true);
-                $accessPages = SettingPage::whereIn('page_slug', $jsonToArr)->get();
-                foreach ($accessPages as $key => $value) {
-                    $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
+            $user = User::where('role_id', '=', $role)->where('status', '=', 'Active')
+                ->when($email, function ($query, $email) {
+                    return $query->where('email', '=', $email)
+                        ->orWhere('emp_id', '=', $email);
+                })->first();
+
+            if ($user) {
+                $jsonToArr = array();
+                $temArray = array();
+                // check user password
+                if (Hash::check($password, $user->password)) {
+                    $token = $user->createToken('access_transport_association')->accessToken;
+                    $roleData = Role::where('role_id', $user->role_id)->first();
+                    $jsonToArr = json_decode($roleData->access_pages, true);
+                    $accessPages = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+                    foreach ($accessPages as $key => $value) {
+                        $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
+                    }
+                    // result array
+                    $response = [
+                        'status' => 'success',
+                        'access_token' => $token,
+                        'id' => $user->id,
+                        'emp_id' => $user->emp_id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'mobile' => $user->mobile,
+                        'role_id' => $user->role_id,
+                        'role_name' => $roleData->role_name,
+                        'page_access' => $temArray
+                    ];
+
+                    return response($response, 200);
+                } else {
+
+                    $response = ['status' => 'error', "message" => "Password mismatch"];
+                    return response($response, 422);
                 }
-                // result array
-                $response = [
-                    'status' => 'success',
-                    'access_token' => $token,
-                    'id' => $user->id,
-                    'emp_id' => $user->emp_id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'mobile' => $user->mobile,
-                    'role_id' => $user->role_id,
-                    'role_name' => $roleData->role_name,
-                    'page_access' => $temArray
-                ];
-
-                return response($response, 200);
             } else {
-
-                $response = ['status' => 'error', "message" => "Password mismatch"];
+                $response = ['status' => 'error', "message" => 'User does not exist'];
                 return response($response, 422);
             }
-        } else {
-            $response = ['status' => 'error', "message" => 'User does not exist'];
-            return response($response, 422);
+        } catch (\Throwable $th) {
+            return response($th->getMessage(), 422);
         }
     }
 
