@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdvancePayment;
+use App\Models\BookingPayment;
 use App\Models\LRBooking;
 use App\Models\PetrolPumpPayment;
 use Illuminate\Http\Request;
@@ -71,9 +71,10 @@ class AdvancePaymentController extends Controller
                     $prifix = 'TASAP';
                     $tableName = 'advance_payments';
                     $uniqueAPId = getUniqueCode($prifix, $tableName);
-                    AdvancePayment::create([
+                    BookingPayment::create([
                         'tr_id' => $uniqueAPId,
                         'lr_no' => $request->lr_no,
+                        'type' => 'advance',
                         'amount' => $request->advance_amount,
                         'narration' => $request->narration,
                         'method' => $request->payment_mode,
@@ -92,7 +93,7 @@ class AdvancePaymentController extends Controller
                 DB::commit();
                 return response(['status' => 'success', 'message' => 'Advance payment successfully!'], 201);
             } else {
-                return response(['status' => 'error', 'errors' => 'No any payment done!'], 204);
+                return response(['status' => 'error', 'errors' => 'No any payment done!'], 400);
             }
         } catch (\Exception $e) {
 
@@ -106,7 +107,7 @@ class AdvancePaymentController extends Controller
         $resultArr = array();
         $advancePayment = array();
         $petrolPump = array();
-        $getAdvance = AdvancePayment::where('lr_no', $lrNo)->get()->toArray();
+        $getAdvance = BookingPayment::where('lr_no', $lrNo)->where('type', 'advance')->get()->toArray();
         $getPetrolPayment = PetrolPumpPayment::join('petrol_pumps', 'petrol_pumps.pump_id', '=', 'petrol_pump_payments.pump_id')->where('lr_no', $lrNo)->get()->toArray();
         $getLrDetails = DB::table('lrBookingView')->where('booking_id', $lrNo)->get(['driver_name', 'driver_mobile', 'driver_dl', 'DL_expire', 'vehicle_id'])->toArray();
         if (!empty($getPetrolPayment) || !empty($getAdvance)) {
