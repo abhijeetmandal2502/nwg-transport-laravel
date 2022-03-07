@@ -1,20 +1,20 @@
 <?php
 
-use App\Http\Controllers\api\AdvancePaymentController;
-use App\Http\Controllers\api\AuthController;
-use App\Http\Controllers\api\BiltyController;
-use App\Http\Controllers\api\ConsignorController;
-use App\Http\Controllers\api\LRBooking;
-use App\Http\Controllers\api\PetrolPumpController;
-use App\Http\Controllers\api\RoleController;
-use App\Http\Controllers\api\SettingDistanceController;
-use App\Http\Controllers\api\SettingDriverController;
-use App\Http\Controllers\api\SettingLocationController;
-use App\Http\Controllers\api\SettingPageController;
-use App\Http\Controllers\api\SettingStateController;
-use App\Http\Controllers\api\VehicleController;
-use App\Http\Controllers\api\VehicleTypeController;
-use App\Http\Controllers\api\VendorListController;
+use App\Http\Controllers\API\AdvancePaymentController;
+use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BiltyController;
+use App\Http\Controllers\API\ConsignorController;
+use App\Http\Controllers\API\LRBooking;
+use App\Http\Controllers\API\PetrolPumpController;
+use App\Http\Controllers\API\RoleController;
+use App\Http\Controllers\API\SettingDistanceController;
+use App\Http\Controllers\API\SettingDriverController;
+use App\Http\Controllers\API\SettingLocationController;
+use App\Http\Controllers\API\SettingPageController;
+use App\Http\Controllers\API\SettingStateController;
+use App\Http\Controllers\API\VehicleController;
+use App\Http\Controllers\API\VehicleTypeController;
+use App\Http\Controllers\API\VendorListController;
 use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Consignor;
@@ -52,8 +52,7 @@ class ConsignorController extends Controller
             'state' => 'string|max:100',
             'city' => 'string|max:100',
             'pin_code' => 'numeric|digits_between:6,10',
-            'email' => 'email',
-            'active_status' => 'required|in:active,inactive,hold',
+            'email' => 'email'
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
