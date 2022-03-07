@@ -14,6 +14,7 @@ use App\Http\Controllers\Apis\SettingPageController;
 use App\Http\Controllers\Apis\SettingStateController;
 use App\Http\Controllers\Apis\VehicleController;
 use App\Http\Controllers\Apis\VehicleTypeController;
+use App\Http\Controllers\Apis\VehicleUnloadController;
 use App\Http\Controllers\Apis\VendorListController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,13 +37,19 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::post('/register', [AuthController::class, 'register'])->name('api.register');
 
+
+
 Route::middleware('auth:api')->group(function () {
+
     // Lr Booking managment
     Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');
     Route::get('/lr-bookings/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings'])->name('api.lr.bookings');
     Route::post('/vehicle-assign', [LRBooking::class, 'updateVehicleInLr'])->name('api.vehicleAssign');
     Route::get('/lr-bookings-status/{type}', [LRBooking::class, 'geLrByStatus'])->name('api.lr.bookings.status');
     Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name('api.freeVehicle');
+
+    // Unloading Vehicle
+    Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
 
     // Bitly Genrations
     Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');

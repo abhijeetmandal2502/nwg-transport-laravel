@@ -29,6 +29,7 @@ class CreateLRBookingsTable extends Migration
             $table->String('vehicle_id')->nullable()->comment('vehicle information');
             $table->decimal('amount')->nullable()->default(0)->comment('vehicle booking amount');
             $table->enum('is_advance_done', ['yes', 'no'])->default('no')->comment('advance payment status');
+            $table->string('created_by', 100)->nullable()->comment('who created');
             $table->String('remark')->nullable()->comment('Remark if  any');
             $table->dateTime('closed_date', 0)->nullable()->comment('LR Closed date');
         });
