@@ -15,7 +15,6 @@ use App\Http\Controllers\Apis\SettingStateController;
 use App\Http\Controllers\Apis\VehicleController;
 use App\Http\Controllers\Apis\VehicleTypeController;
 use App\Http\Controllers\Apis\VendorListController;
-use App\Http\Middleware\checkRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -108,17 +107,4 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/pages/{pageSlug?}', [SettingPageController::class, 'getPage'])->name('api.getPage');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
-
-
-    // Route::middleware([checkRole::class])->group(function () {
-    // our routes to be protected will go in here
-
-
-    // Route::get('test', function (Request $request) {
-    //     $response = [
-    //         'msessage' => 'Hello I am from transport API site',
-    //     ];
-    //     return response()->json($response, 200);
-    // });
-    // });
 });
