@@ -53,7 +53,7 @@ class LRBooking extends Controller
             //code...
         } catch (\Exception $th) {
             DB::rollBack();
-            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
             //throw $th;
         }
     }
@@ -305,7 +305,7 @@ class LRBooking extends Controller
             //code...
         } catch (\Exception $th) {
             DB::rollBack();
-            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
             //throw $th;
         }
     }
