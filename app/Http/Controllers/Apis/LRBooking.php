@@ -292,13 +292,13 @@ class LRBooking extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
 
-
         DB::beginTransaction();
         try {
             ModelsLRBooking::where('booking_id', $request->booking_id)->update([
                 'driver_id' => $request->driver_id,
                 'vehicle_id' => $request->vehicle_id,
-                'amount' => $request->amount
+                'amount' => $request->amount,
+                'status' => 'vehicle-assigned'
             ]);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle Details Updated!'], 201);
