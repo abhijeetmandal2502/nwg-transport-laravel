@@ -372,15 +372,17 @@ class LRBooking extends Controller
             }
             $unloadCharge = $allUnloadDetails[0]['unload_charge'];
             $totaldeduction = 0;
-            $newDeductionArr = array();
+            $newDeductionArr = [];
             $deductionsArr = json_decode($allUnloadDetails[0]['deductions']);
+
             foreach ($deductionsArr as $dk => $dv) {
                 $totaldeduction += $dv->amount;
-                $dkey = Str::of($dv->title)->slug('_');
+                $dkey = $dv->title;
                 $dAmount = (isset($dv->amount) ? $dv->amount : 0);
                 $dNarration = (isset($dv->narration) ? $dv->narration : "");
                 $newDeductionArr[$dkey] = ['amount' => $dAmount, 'narration' => $dNarration];
             }
+
             $finalPayment = $amount + $unloadCharge - $totaldeduction - $advancePayment - $petrolPayment;
             $resultArr = [
                 'lr_no' => $lrNo,
