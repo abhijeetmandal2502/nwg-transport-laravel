@@ -37,7 +37,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
 Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('api.dashboard');
-Route::get('/due-payments/{lrNo}', [LRBooking::class, 'getLrFinalPaymentDetails'])->name('api.due-payments');
 
 Route::middleware('auth:api')->group(function () {
 
