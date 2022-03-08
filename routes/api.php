@@ -16,7 +16,6 @@ use App\Http\Controllers\Apis\VehicleController;
 use App\Http\Controllers\Apis\VehicleTypeController;
 use App\Http\Controllers\Apis\VehicleUnloadController;
 use App\Http\Controllers\Apis\VendorListController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,11 +34,18 @@ use Illuminate\Support\Facades\Route;
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
-Route::post('/register', [AuthController::class, 'register'])->name('api.register');
+
 
 
 
 Route::middleware('auth:api')->group(function () {
+
+    // Dashboard
+    // Route::get('/dashboard',[])
+
+    // user registration api
+    Route::post('/register', [AuthController::class, 'register'])->name('api.register');
+    Route::get('/employees/{empId?}', [AuthController::class, 'getEmployees'])->name('api.employees');
 
     // Lr Booking managment
     Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');

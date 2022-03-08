@@ -105,7 +105,8 @@ class LRBooking extends Controller
             $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where('driver_id', '!=', null)
                 ->where(function ($query) {
                     $query->where('status', '!=', 'cancel')
-                        ->orWhere('status', '!=', 'closed');
+                        ->orWhere('status', '!=', 'closed')
+                        ->orWhere('status', '!=', 'unload');
                 })->get()->toArray();
             foreach ($findAllBookedVehicle as $key => $value) {
                 $driverIds[] = $value['driver_id'];
@@ -115,7 +116,8 @@ class LRBooking extends Controller
             $vehicleIds = [];
             $findAllBookedVehicle = ModelsLRBooking::where('vehicle_id', '!=', null)->where(function ($query) {
                 $query->where('status', '!=', 'cancel')
-                    ->orWhere('status', '!=', 'closed');
+                    ->orWhere('status', '!=', 'closed')
+                    ->orWhere('status', '!=', 'unload');
             })->get()->toArray();
             foreach ($findAllBookedVehicle as $key => $value) {
                 $vehicleIds[] = $value['vehicle_id'];

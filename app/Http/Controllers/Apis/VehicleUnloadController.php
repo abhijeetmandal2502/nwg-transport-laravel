@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
+use App\Models\LRBooking;
 use App\Models\VehicleUnload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,9 @@ class VehicleUnloadController extends Controller
         try {
             $request->merge(['created_by' => auth()->user()->emp_id]);
             VehicleUnload::create($request->all());
+            LRBooking::where('booking_id', $request->lr_no)->update([
+                'status' => 'unload'
+            ]);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle unloaded successfully!'], 201);
             //code...

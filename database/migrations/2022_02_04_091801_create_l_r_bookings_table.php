@@ -24,7 +24,7 @@ class CreateLRBookingsTable extends Migration
             $table->dateTime('booking_date', 0)->comment('LR Booking date');
             $table->string('from_location')->comment('pickup location');
             $table->string('to_location')->comment('destination location');
-            $table->enum('status', ['fresh', 'vehicle-assigned', 'cancel', 'closed', 'hold', 'loading'])->default('fresh')->comment('Booking Status');
+            $table->enum('status', ['fresh', 'vehicle-assigned', 'cancel', 'closed', 'hold', 'loading', 'unload'])->default('fresh')->comment('Booking Status');
             $table->String('driver_id')->nullable()->comment('driver information');
             $table->String('vehicle_id')->nullable()->comment('vehicle information');
             $table->decimal('amount')->nullable()->default(0)->comment('vehicle booking amount');
