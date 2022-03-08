@@ -4,13 +4,19 @@ namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bilty;
+use App\Models\BookingPayment;
+use App\Models\Consignor;
 use App\Models\LRBooking as ModelsLRBooking;
+use App\Models\PetrolPumpPayment;
+use App\Models\SettingDistance;
 use App\Models\SettingDriver;
 use App\Models\Vehicle;
+use App\Models\VehicleUnload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class LRBooking extends Controller
 {
@@ -330,6 +336,70 @@ class LRBooking extends Controller
             DB::rollBack();
             return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
             //throw $th;
+        }
+    }
+
+    public function getLrFinalPaymentDetails($lrNo)
+    {
+        $allUnloadDetails = VehicleUnload::where('lr_no', $lrNo)->get()->toArray();
+        if (!empty($allUnloadDetails)) {
+            $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $lrNo)->get(['booking_date', 'amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
+            $bookingDate = $allLrBooking[0]->booking_date;
+            $ownership = $allLrBooking[0]->ownership;
+            $consignor_id = $allLrBooking[0]->consignor_id;
+            $from_location = $allLrBooking[0]->from_location;
+            $to_location = $allLrBooking[0]->to_location;
+            $is_advance_done = $allLrBooking[0]->is_advance_done;
+            if ($ownership !== "owned") {
+                $amount = $allLrBooking[0]->amount;
+            } else {
+                $getConsignor = Consignor::where('cons_id', $consignor_id)->get('consignor')->toArray();
+                $mainVendorName = $getConsignor[0]['consignor'];
+                $getPerKgRate = SettingDistance::where('consignor', $mainVendorName)->where('from_location', $from_location)->where('to_location', $to_location)->get('own_per_kg_rate')->toArray();
+                $ownPerKgRate = $getPerKgRate[0]['own_per_kg_rate'];
+                $getBiltyWeight = Bilty::where('booking_id', $lrNo)->groupBy('booking_id')->selectRaw('sum(weight) as totalWeight')->get()->toArray();
+                $totalWeight = ceil($getBiltyWeight[0]['totalWeight']);
+                $amount = $totalWeight * $ownPerKgRate;
+            }
+            if ($is_advance_done === "yes") {
+                $getPetrolPayment = PetrolPumpPayment::where('lr_no', $lrNo)->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
+                $getAdvancePayment = BookingPayment::where('lr_no', $lrNo)->where('type', 'advance')->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
+                $petrolPayment = (isset($getPetrolPayment[0]['totalpayment'])) ? $getPetrolPayment[0]['totalpayment'] : 0;
+                $advancePayment = (isset($getAdvancePayment[0]['totalpayment'])) ? $getAdvancePayment[0]['totalpayment'] : 0;
+            } else {
+                $petrolPayment = 0;
+                $advancePayment = 0;
+            }
+            $unloadCharge = $allUnloadDetails[0]['unload_charge'];
+            $totaldeduction = 0;
+            $newDeductionArr = array();
+            $deductionsArr = json_decode($allUnloadDetails[0]['deductions']);
+            foreach ($deductionsArr as $dk => $dv) {
+                $totaldeduction += $dv->amount;
+                $dkey = Str::of($dv->title)->slug('_');
+                $dAmount = (isset($dv->amount) ? $dv->amount : 0);
+                $dNarration = (isset($dv->narration) ? $dv->narration : "");
+                $newDeductionArr[$dkey] = ['amount' => $dAmount, 'narration' => $dNarration];
+            }
+            $finalPayment = $amount + $unloadCharge - $totaldeduction - $advancePayment - $petrolPayment;
+            $resultArr = [
+                'lr_no' => $lrNo,
+                'booking_date' => $bookingDate,
+                'arrive_date' => $allUnloadDetails[0]['arrive_date'],
+                'unload_date' => $allUnloadDetails[0]['unload_date'],
+                'total_goods' => $allUnloadDetails[0]['total_goods'],
+                'receive_goods' => $allUnloadDetails[0]['receive_goods'],
+                'unload_charge' => $unloadCharge,
+                'total_amount' => $amount,
+                'advance_payment' => $advancePayment,
+                'petrol_payment' => $petrolPayment,
+                'final_payment' => $finalPayment,
+                'deduction_amount' => $totaldeduction,
+                'deductions' => $newDeductionArr
+            ];
+            return response(['status' => 'success', 'data' => $resultArr], 200);
+        } else {
+            return response(['status' => 'error', 'errors' => 'Lr Number is not available!'], 422);
         }
     }
 }
