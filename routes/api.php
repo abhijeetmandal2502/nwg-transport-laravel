@@ -4,6 +4,7 @@ use App\Http\Controllers\Apis\AdvancePaymentController;
 use App\Http\Controllers\Apis\AuthController;
 use App\Http\Controllers\Apis\BiltyController;
 use App\Http\Controllers\Apis\ConsignorController;
+use App\Http\Controllers\Apis\DashboardController;
 use App\Http\Controllers\Apis\LRBooking;
 use App\Http\Controllers\Apis\PetrolPumpController;
 use App\Http\Controllers\Apis\RoleController;
@@ -35,13 +36,13 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
-
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('api.dashboard');
 
 
 Route::middleware('auth:api')->group(function () {
 
     // Dashboard
-    // Route::get('/dashboard',[])
+
 
     // user registration api
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');

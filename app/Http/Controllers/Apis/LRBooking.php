@@ -275,6 +275,27 @@ class LRBooking extends Controller
             } else {
                 $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
             }
+        } elseif ($type === 'unload') {
+            $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+            if (!empty($allLrBooking)) {
+                foreach ($allLrBooking as $key => $items) {
+                    $restultArray[$key] = ([
+                        'lr_id' => $items->booking_id,
+                        'consignor_id' => $items->consignor_id,
+                        'consignor_name' => $items->consignorName,
+                        'consignee_name' => $items->consigneeName,
+                        'from_location' => $items->from_location,
+                        'to_location' => $items->to_location,
+                        'vehicle_no' => $items->vehicle_id,
+                        'ownership' => $items->ownership,
+                        'driver_name' => $items->driver_name,
+                        'booking_date' => $items->booking_date
+                    ]);
+                }
+                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+            } else {
+                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+            }
         }
 
         return response()->json($finalArr);
