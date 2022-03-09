@@ -20,8 +20,15 @@ class CreateVehicleUnloadsTable extends Migration
             $table->date('unload_date');
             $table->decimal('total_goods', 10, 2)->default(0)->comment('total loaded goods in vehicle');
             $table->decimal('receive_goods', 10, 2)->default(0)->comment('total received goods to vendor');
-            $table->decimal('unload_charge')->default(0);
+            $table->decimal('order_weight', 10, 2)->default(0)->comment('total bilty weight');
+            $table->decimal('per_kg_rate', 10, 2)->default(0)->comment('if owner vehicle');
+            $table->decimal('unload_charge', 10, 2)->default(0);
             $table->json('deductions')->nullable()->comment('All deductions details and amount');
+            $table->decimal('total_amount', 10, 2)->default(0)->comment('total booking amount');
+            $table->decimal('advance_amount', 10, 2)->default(0)->comment('total advance payment');
+            $table->decimal('petrol_amount', 10, 2)->default(0)->comment('total petrol payment');
+            $table->decimal('total_deduction', 10, 2)->default(0)->comment('total other deductions amount');
+            $table->decimal('final_amount', 10, 2)->default(0)->comment('final payable amount');
             $table->string('created_by', 100)->nullable();
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();

@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bilty;
+use App\Models\BookingPayment;
+use App\Models\Consignor;
 use App\Models\LRBooking;
+use App\Models\PetrolPumpPayment;
+use App\Models\SettingDistance;
 use App\Models\VehicleUnload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +34,52 @@ class VehicleUnloadController extends Controller
 
         DB::beginTransaction();
         try {
-            $request->merge(['created_by' => auth()->user()->emp_id]);
+            $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
+            $ownership = $allLrBooking[0]->ownership;
+            $consignor_id = $allLrBooking[0]->consignor_id;
+            $from_location = $allLrBooking[0]->from_location;
+            $to_location = $allLrBooking[0]->to_location;
+            $is_advance_done = $allLrBooking[0]->is_advance_done;
+            $getBiltyWeight = Bilty::where('booking_id', $request->lr_no)->groupBy('booking_id')->selectRaw('sum(weight) as totalWeight')->get()->toArray();
+            // $totalWeight = ceil($getBiltyWeight[0]['totalWeight']);
+            $totalWeight = (isset($getBiltyWeight[0]['totalWeight'])) ? $getBiltyWeight[0]['totalWeight'] : 0;
+            $ownPerKgRate = 0;
+            if ($ownership !== "owned") {
+                $amount = $allLrBooking[0]->amount;
+            } else {
+                $getConsignor = Consignor::where('cons_id', $consignor_id)->get('consignor')->toArray();
+                $mainVendorName = (isset($getConsignor[0]['consignor'])) ? $getConsignor[0]['consignor'] : "";
+                $getPerKgRate = SettingDistance::where('consignor', $mainVendorName)->where('from_location', $from_location)->where('to_location', $to_location)->get('own_per_kg_rate')->toArray();
+                $ownPerKgRate = (isset($getPerKgRate[0]['own_per_kg_rate'])) ? $getPerKgRate[0]['own_per_kg_rate'] : 0;
+                $amount = ceil($totalWeight) * $ownPerKgRate;
+            }
+            if ($is_advance_done === "yes") {
+                $getPetrolPayment = PetrolPumpPayment::where('lr_no', $request->lr_no)->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
+                $getAdvancePayment = BookingPayment::where('lr_no', $request->lr_no)->where('type', 'advance')->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
+                $petrolPayment = (isset($getPetrolPayment[0]['totalpayment'])) ? $getPetrolPayment[0]['totalpayment'] : 0;
+                $advancePayment = (isset($getAdvancePayment[0]['totalpayment'])) ? $getAdvancePayment[0]['totalpayment'] : 0;
+            } else {
+                $petrolPayment = 0;
+                $advancePayment = 0;
+            }
+            $totaldeduction = 0;
+            $deductionsArr = json_decode($request->deductions);
+            foreach ($deductionsArr as $dk => $dv) {
+                $totaldeduction += $dv->amount;
+            }
+
+            $finalPayment = $amount + $request->unload_charge - $totaldeduction - $advancePayment - $petrolPayment;
+
+            $request->merge([
+                'order_weight' => $totalWeight,
+                'per_kg_rate' => $ownPerKgRate,
+                'total_amount' => $amount,
+                'advance_amount' => $advancePayment,
+                'petrol_amount' => $petrolPayment,
+                'total_deduction' => $totaldeduction,
+                'final_amount' => $finalPayment,
+                'created_by' => auth()->user()->emp_id
+            ]);
             VehicleUnload::create($request->all());
             LRBooking::where('booking_id', $request->lr_no)->update([
                 'status' => 'unload'
