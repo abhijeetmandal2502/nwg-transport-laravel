@@ -63,7 +63,9 @@ class SettingDistanceController extends Controller
             //         'per_kg_amount' => $request->per_kg_amount
             //     ]
             // ], ['slug']);
-
+            $depart = 'supervisor';
+            $subject = "New location distance was mapped";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'New Distance added successfully!'], 201);
             //code...
@@ -126,7 +128,9 @@ class SettingDistanceController extends Controller
             //         'per_kg_amount' => $request->per_kg_amount
             //     ]
             // ], ['slug']);
-
+            $depart = 'supervisor';
+            $subject = "mapped Location distance was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Distance updated successfully!'], 201);
             //code...

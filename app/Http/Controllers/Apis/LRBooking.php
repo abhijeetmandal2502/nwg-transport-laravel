@@ -4,11 +4,7 @@ namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bilty;
-use App\Models\BookingPayment;
-use App\Models\Consignor;
 use App\Models\LRBooking as ModelsLRBooking;
-use App\Models\PetrolPumpPayment;
-use App\Models\SettingDistance;
 use App\Models\SettingDriver;
 use App\Models\Vehicle;
 use App\Models\VehicleUnload;
@@ -16,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class LRBooking extends Controller
 {
@@ -54,6 +49,9 @@ class LRBooking extends Controller
                 'to_location' => $request->destination_location,
                 'created_by' => auth()->user()->emp_id
             ]);
+            $depart = 'supervisor';
+            $subject = "New LR was created";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'lr_no' => $uniqueCode,  'message' => 'LR created successfully!'], 201);
             //code...
@@ -329,6 +327,9 @@ class LRBooking extends Controller
                 'amount' => $request->amount,
                 'status' => 'vehicle-assigned'
             ]);
+            $depart = 'supervisor';
+            $subject = "Vehicle was assigned to LR";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle Details Updated!'], 201);
             //code...

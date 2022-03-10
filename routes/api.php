@@ -17,6 +17,7 @@ use App\Http\Controllers\Apis\VehicleController;
 use App\Http\Controllers\Apis\VehicleTypeController;
 use App\Http\Controllers\Apis\VehicleUnloadController;
 use App\Http\Controllers\Apis\VendorListController;
+use App\Http\Controllers\Apis\PetrolPumpPaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -36,12 +37,12 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
-Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('api.dashboard');
+Route::post('/logs', [PetrolPumpPaymentController::class, 'getLog']);
 
 Route::middleware('auth:api')->group(function () {
 
     // Dashboard
-
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('api.dashboard');
 
     // user registration api
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');
@@ -57,6 +58,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
+    Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');
 
     // Bitly Genrations
     Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');

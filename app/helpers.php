@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\BusinesTransaction;
+use App\Models\UserActivityLog;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 
 if (!function_exists('getUniqueCode')) {
     function getUniqueCode($prifix, $tableName)
@@ -35,5 +37,21 @@ if (!function_exists('allTransactions')) {
             'created_at' => date('Y-m-d H:i:s'),
             'created_by' => $createdBy
         ]);
+    }
+}
+
+if (!function_exists('userLogs')) {
+    function userLogs($department, $subject)
+    {
+        $logs = [];
+        $logs['depart'] = $department;
+        $logs['subject'] = $subject;
+        $logs['content'] = json_encode(Request::all());
+        $logs['url'] = Request::fullUrl();
+        $logs['method'] = Request::method();
+        $logs['ip'] = Request::ip();
+        $logs['agent'] = Request::header('user-agent');
+        $logs['created_by'] = auth()->check() ? auth()->user()->emp_id : 'unknown';
+        UserActivityLog::create($logs);
     }
 }

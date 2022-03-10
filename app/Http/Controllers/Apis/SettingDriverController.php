@@ -36,6 +36,9 @@ class SettingDriverController extends Controller
         DB::beginTransaction();
         try {
             SettingDriver::create($request->all());
+            $depart = 'supervisor';
+            $subject = "New driver was created";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Driver addedd successfully!'], 201);
         } catch (\Exception $e) {
@@ -67,6 +70,9 @@ class SettingDriverController extends Controller
         DB::beginTransaction();
         try {
             SettingDriver::where('id', $id)->update($request->all());
+            $depart = 'supervisor';
+            $subject = "Driver was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Driver updated successfully!'], 201);
         } catch (\Exception $e) {

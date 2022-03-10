@@ -34,7 +34,6 @@ class AuthController extends Controller
         }
         DB::beginTransaction();
         try {
-
             User::create([
                 'emp_id' => $request->employee_id,
                 'name' => $request->name,
@@ -55,6 +54,9 @@ class AuthController extends Controller
             // $user = User::create($request->toArray());
             // $token = $user->createToken('Laravel Password Grant Client')->accessToken;
             // $response = ['token' => $token];
+            $depart = 'super_admin';
+            $subject = "New Employee Created";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Employee created successfully!'], 201);
             //code...

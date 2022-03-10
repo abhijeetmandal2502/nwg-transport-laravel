@@ -25,6 +25,9 @@ class SettingPageController extends Controller
         DB::beginTransaction();
         try {
             SettingPage::create($request->all());
+            $depart = 'super_admin';
+            $subject = "New access page was added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Page created successfully!'], 201);
         } catch (\Exception $e) {
@@ -49,6 +52,9 @@ class SettingPageController extends Controller
         DB::beginTransaction();
         try {
             SettingPage::where('id', $id)->update($request->all());
+            $depart = 'super_admin';
+            $subject = "Access Page was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Page updated successfully!'], 201);
         } catch (\Exception $e) {

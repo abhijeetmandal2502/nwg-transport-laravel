@@ -29,6 +29,7 @@ class CreateVehicleUnloadsTable extends Migration
             $table->decimal('petrol_amount', 10, 2)->default(0)->comment('total petrol payment');
             $table->decimal('total_deduction', 10, 2)->default(0)->comment('total other deductions amount');
             $table->decimal('final_amount', 10, 2)->default(0)->comment('final payable amount');
+            $table->decimal('paid_amount', 10, 2)->default(0)->comment('actual paid amount');
             $table->string('created_by', 100)->nullable();
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();

@@ -67,6 +67,10 @@ class ConsignorController extends Controller
         DB::beginTransaction();
         try {
             Consignor::create($request->all());
+
+            $depart = 'supervisor';
+            $subject = "New Sub Vendor Created";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'cons_id' => $cons_id, 'msessage' => 'Consignor Created successfully!'], 201);
         } catch (\Exception $e) {
@@ -106,6 +110,9 @@ class ConsignorController extends Controller
         DB::beginTransaction();
         try {
             Consignor::where('id', $id)->update($request->all());
+            $depart = 'supervisor';
+            $subject = "Sub Vendor Upated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'msessage' => 'Consignor Updated successfully!'], 201);
         } catch (\Exception $e) {

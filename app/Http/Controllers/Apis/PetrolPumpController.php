@@ -15,7 +15,7 @@ class PetrolPumpController extends Controller
     {
         $prifix = 'TASPP';
         $tableName = 'petrol_pumps';
-        $request->merge(['created_by' => auth()->user()->emp_id]);
+
         $validator = Validator::make($request->all(), [
             'pump_name' => 'required|string|max:100',
             'mobile' => 'required|numeric|digits:10|unique:petrol_pumps,mobile',
@@ -29,15 +29,13 @@ class PetrolPumpController extends Controller
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
         $uniqueDrId = getUniqueCode($prifix, $tableName);
-        $newArr =  array_merge(
-            $request->all(),
-            ['pump_id' => $uniqueDrId]
-        );
-
-
+        $request->merge(['created_by' => auth()->user()->emp_id, 'pump_id' => $uniqueDrId]);
         DB::beginTransaction();
         try {
-            PetrolPump::create($newArr);
+            PetrolPump::create($request->all());
+            $depart = 'supervisor';
+            $subject = "Add New Petrol Pump";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Petrol pump addedd successfully!'], 201);
             //code...
@@ -67,6 +65,9 @@ class PetrolPumpController extends Controller
         DB::beginTransaction();
         try {
             PetrolPump::where('id', $id)->update($request->all());
+            $depart = 'supervisor';
+            $subject = "Updated Petrol Pump";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Petrol pump updated successfully!'], 201);
             //code...

@@ -76,6 +76,9 @@ class AdvancePaymentController extends Controller
                     ];
 
                     allTransactions($request->lr_no, $actionType, json_encode($description), $request->petrol_amount, $transType, auth()->user()->emp_id);
+                    $depart = 'account';
+                    $subject = "Petrol Payment for vehicle";
+                    userLogs($depart, $subject);
                 }
             }
             if ($this->advanceStatus) {
@@ -86,7 +89,7 @@ class AdvancePaymentController extends Controller
                     BookingPayment::create([
                         'tr_id' => $uniqueAPId,
                         'lr_no' => $request->lr_no,
-                        'type' => 'advance',
+                        'type' => 'vehicle_advance',
                         'txn_type' => 'debit',
                         'amount' => $request->advance_amount,
                         'narration' => $request->narration,
@@ -98,7 +101,7 @@ class AdvancePaymentController extends Controller
                     ]);
 
                     // for busines all transactions
-                    $actionType = "advance_payment";
+                    $actionType = "vehicle_advance";
                     $description = [
                         'ap_id' => $uniqueAPId,
                         'narration' => $request->narration,
@@ -107,6 +110,9 @@ class AdvancePaymentController extends Controller
                         'cheque_no' => $request->cheque_no
                     ];
                     allTransactions($request->lr_no, $actionType, json_encode($description), $request->advance_amount, $transType, auth()->user()->emp_id);
+                    $depart = 'account';
+                    $subject = "Advance Payment For Vehicle";
+                    userLogs($depart, $subject);
                 }
             }
 

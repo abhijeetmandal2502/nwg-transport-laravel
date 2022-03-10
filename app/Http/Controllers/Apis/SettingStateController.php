@@ -22,6 +22,9 @@ class SettingStateController extends Controller
         DB::beginTransaction();
         try {
             SettingState::create($request->all());
+            $depart = 'super_admin';
+            $subject = "State was added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'State created successfully!'], 201);
         } catch (\Exception $e) {
@@ -46,6 +49,9 @@ class SettingStateController extends Controller
         DB::beginTransaction();
         try {
             SettingState::where('id', $id)->update($request->all());
+            $depart = 'super_admin';
+            $subject = "State was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'State updated successfully!'], 201);
         } catch (\Exception $e) {

@@ -32,8 +32,11 @@ class VendorListController extends Controller
             VendorList::create([
                 'slug' => $request->consignor,
                 'name' => $request->name,
-                'created_by' => 'h001'
+                'created_by' => auth()->user()->emp_id
             ]);
+            $depart = 'supervisor';
+            $subject = "New main vendor added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Consignor created successfully!'], 201);
         } catch (\Exception $e) {

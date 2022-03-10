@@ -67,6 +67,9 @@ class SettingLocationController extends Controller
         DB::beginTransaction();
         try {
             SettingLocation::upsert($data, 'slug');
+            $depart = 'supervisor';
+            $subject = "New location was added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'New Locations added successfully!'], 201);
         } catch (\Exception $e) {
@@ -107,6 +110,9 @@ class SettingLocationController extends Controller
                 'location' => $request->location_name,
                 'active_status' => $request->status
             ]);
+            $depart = 'supervisor';
+            $subject = "Location was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Location updated successfully!'], 201);
         } catch (\Exception $e) {

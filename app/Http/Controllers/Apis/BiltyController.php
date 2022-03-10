@@ -52,6 +52,9 @@ class BiltyController extends Controller
         try {
             Bilty::create($request->all());
             LRBooking::where('booking_id', $request->booking_id)->update(['status' => 'loading']);
+            $depart = 'supervisor';
+            $subject = "New Bilty Created";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Bilty Created successfully!', 'data' => $request->all()], 201);
         } catch (\Exception $e) {

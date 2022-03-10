@@ -30,6 +30,9 @@ class VehicleController extends Controller
         DB::beginTransaction();
         try {
             Vehicle::create($request->all());
+            $depart = 'supervisor';
+            $subject = "New vehicle was added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle addedd successfully!'], 201);
         } catch (\Exception $e) {
@@ -59,6 +62,9 @@ class VehicleController extends Controller
         DB::beginTransaction();
         try {
             Vehicle::where('id', $id)->update($request->all());
+            $depart = 'supervisor';
+            $subject = "Vehicle was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle updated successfully!'], 201);
         } catch (\Exception $e) {

@@ -55,7 +55,7 @@ class VehicleUnloadController extends Controller
             }
             if ($is_advance_done === "yes") {
                 $getPetrolPayment = PetrolPumpPayment::where('lr_no', $request->lr_no)->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
-                $getAdvancePayment = BookingPayment::where('lr_no', $request->lr_no)->where('type', 'advance')->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
+                $getAdvancePayment = BookingPayment::where('lr_no', $request->lr_no)->where('type', 'vehicle_advance')->groupBy('lr_no')->selectRaw('sum(amount) as totalpayment')->get()->toArray();
                 $petrolPayment = (isset($getPetrolPayment[0]['totalpayment'])) ? $getPetrolPayment[0]['totalpayment'] : 0;
                 $advancePayment = (isset($getAdvancePayment[0]['totalpayment'])) ? $getAdvancePayment[0]['totalpayment'] : 0;
             } else {
@@ -84,6 +84,9 @@ class VehicleUnloadController extends Controller
             LRBooking::where('booking_id', $request->lr_no)->update([
                 'status' => 'unload'
             ]);
+            $depart = 'supervisor';
+            $subject = "Vehicle was unloaded";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle unloaded successfully!'], 201);
             //code...
@@ -91,6 +94,66 @@ class VehicleUnloadController extends Controller
             DB::rollBack();
             return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
             //throw $th;
+        }
+    }
+    public function finalDuePayment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'lr_no' => 'required|exists:l_r_bookings,booking_id',
+            'narration' => 'string|max:150',
+            'amount' => 'required|numeric|min:0',
+            'payment_mode' => 'required|string|max:50',
+            'trans_id' => 'max:50',
+            'cheque_no' => 'max:50'
+        ]);
+
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            VehicleUnload::where('lr_no', $request->lr_no)->update([
+                'status' => 'closed',
+                'paid_amount' => $request->amount
+            ]);
+
+            $prifix = 'TASAP';
+            $tableName = 'booking_payments';
+            $uniqueAPId = getUniqueCode($prifix, $tableName);
+
+            BookingPayment::create([
+                'tr_id' => $uniqueAPId,
+                'lr_no' => $request->lr_no,
+                'type' => 'vehicle_final',
+                'txn_type' => 'debit',
+                'amount' => $request->advance_amount,
+                'narration' => $request->narration,
+                'method' => $request->payment_mode,
+                'txn_id' => $request->trans_id,
+                'cheque_no' => $request->cheque_no,
+                'created_at' => $request->created_at,
+                'created_by' => auth()->user()->emp_id
+            ]);
+            $actionType = "vehicle_final";
+            $transType = "debit";
+            $description = [
+                'fp_id' => $uniqueAPId,
+                'narration' => $request->narration,
+                'method' => $request->payment_mode,
+                'txn_id' => $request->trans_id,
+                'cheque_no' => $request->cheque_no
+            ];
+            allTransactions($request->lr_no, $actionType, json_encode($description), $request->advance_amount, $transType, auth()->user()->emp_id);
+            $depart = 'account';
+            $subject = "Vehicle final due payment given";
+            userLogs($depart, $subject);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Final payment successfully!'], 201);
+        } catch (\Exception $e) {
+
+            DB::rollback();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
         }
     }
 }

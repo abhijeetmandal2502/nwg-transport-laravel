@@ -83,6 +83,9 @@ class RoleController extends Controller
         DB::beginTransaction();
         try {
             Role::create(['role_id' => $request->role, 'role_name' => $request->role_name, 'access_pages' => $request->access_pages]);
+            $depart = 'super_admin';
+            $subject = "New Role Added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Role created successfully!'], 201);
         } catch (\Exception $e) {
@@ -110,6 +113,9 @@ class RoleController extends Controller
         DB::beginTransaction();
         try {
             Role::where('id', $id)->update($request->all());
+            $depart = 'super_admin';
+            $subject = "Role was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Role updated successfully!'], 201);
         } catch (\Exception $e) {

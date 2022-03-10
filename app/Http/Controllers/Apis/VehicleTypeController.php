@@ -26,6 +26,9 @@ class VehicleTypeController extends Controller
         DB::beginTransaction();
         try {
             VehicleType::create($request->all());
+            $depart = 'supervisor';
+            $subject = "Vehicle type was added";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'New Vehicle Category addedd successfully!'], 201);
         } catch (\Exception $e) {
@@ -47,6 +50,9 @@ class VehicleTypeController extends Controller
         DB::beginTransaction();
         try {
             VehicleType::where('type_id', $request->type_id)->update($request->all());
+            $depart = 'supervisor';
+            $subject = "Vehicle type was updated";
+            userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Vehicle Category updated successfully!'], 201);
         } catch (\Exception $e) {
