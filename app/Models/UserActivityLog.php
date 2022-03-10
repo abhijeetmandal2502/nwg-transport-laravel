@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class UserActivityLog extends Model
 {
     use HasFactory;
+    protected $guarded = []; // replace of fillable
 }
