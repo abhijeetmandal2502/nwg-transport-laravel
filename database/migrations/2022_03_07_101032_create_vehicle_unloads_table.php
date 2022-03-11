@@ -33,6 +33,9 @@ class CreateVehicleUnloadsTable extends Migration
             $table->string('created_by', 100)->nullable();
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('lr_no')->references('booking_id')->on('l_r_bookings')->onUpdate('cascade');
+            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

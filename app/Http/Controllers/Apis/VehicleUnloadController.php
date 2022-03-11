@@ -127,7 +127,7 @@ class VehicleUnloadController extends Controller
                 'lr_no' => $request->lr_no,
                 'type' => 'vehicle_final',
                 'txn_type' => 'debit',
-                'amount' => $request->advance_amount,
+                'amount' => $request->amount,
                 'narration' => $request->narration,
                 'method' => $request->payment_mode,
                 'txn_id' => $request->trans_id,
@@ -144,7 +144,7 @@ class VehicleUnloadController extends Controller
                 'txn_id' => $request->trans_id,
                 'cheque_no' => $request->cheque_no
             ];
-            allTransactions($request->lr_no, $actionType, json_encode($description), $request->advance_amount, $transType, auth()->user()->emp_id);
+            allTransactions($request->lr_no, $actionType, json_encode($description), $request->amount, $transType, auth()->user()->emp_id);
             $depart = 'account';
             $subject = "Vehicle final due payment given";
             userLogs($depart, $subject);

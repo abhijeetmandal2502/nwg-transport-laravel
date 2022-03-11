@@ -4,10 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PetrolPumpPayment extends Model
 {
-    public $timestamps = false;
-    use HasFactory;
+
+    use HasFactory, SoftDeletes;
     protected $guarded = []; // replace of fillable
+
+    public function l_r_bookings()
+    {
+        return $this->belongsTo(LRBooking::class);
+    }
+    public function users()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function petrol_pumps()
+    {
+        return $this->belongsTo(PetrolPump::class);
+    }
 }

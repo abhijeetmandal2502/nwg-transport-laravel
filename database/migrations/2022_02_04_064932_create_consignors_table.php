@@ -32,6 +32,10 @@ class CreateConsignorsTable extends Migration
             $table->enum('active_status', ['active', 'inactive', 'hold'])->default('active');
             $table->string('created_by');
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            $table->foreign('consignor')->references('slug')->on('vendor_lists')->onUpdate('cascade');
+            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

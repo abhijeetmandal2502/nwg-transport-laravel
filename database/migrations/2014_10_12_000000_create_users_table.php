@@ -27,10 +27,13 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('view_pass', 100)->comment('for reading password');
             $table->rememberToken();
-            $table->string('role_id')->nullable()->comment('comming from roles table');
+            $table->string('role_id')->comment('comming from roles table');
             $table->enum('status', ['Active', 'Inactive', 'Hold', 'Blocked'])->default('Active')->comment('Account Status');
             $table->string('created_by', 100)->nullable();
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('role_id')->references('role_id')->on('roles')->onUpdate('cascade');
+            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

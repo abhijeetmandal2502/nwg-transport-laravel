@@ -24,6 +24,7 @@ class CreateUserActivityLogsTable extends Migration
             $table->string('agent')->nullable();
             $table->string('created_by')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }

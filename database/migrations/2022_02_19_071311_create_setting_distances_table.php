@@ -24,6 +24,11 @@ class CreateSettingDistancesTable extends Migration
             $table->decimal('vendor_per_kg_rate', 10, 2)->default(0)->comment('amount/kg for vendor');
             $table->string('created_by', 100)->comment('who created');
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('from_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            $table->foreign('to_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            $table->foreign('consignor')->references('slug')->on('vendor_lists')->onUpdate('cascade');
+            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

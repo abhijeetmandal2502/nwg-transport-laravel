@@ -19,6 +19,7 @@ class CreateSettingPagesTable extends Migration
             $table->string('page_title')->comment('page title');
             $table->string('parent_title')->comment('main parent of this page');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

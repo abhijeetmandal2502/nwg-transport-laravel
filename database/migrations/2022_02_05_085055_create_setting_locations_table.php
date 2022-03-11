@@ -19,6 +19,7 @@ class CreateSettingLocationsTable extends Migration
             $table->String('location')->comment('Location Name');
             $table->enum('active_status', ['active', 'inactive'])->default('active');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

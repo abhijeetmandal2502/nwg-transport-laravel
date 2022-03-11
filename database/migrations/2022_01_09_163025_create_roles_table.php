@@ -20,6 +20,7 @@ class CreateRolesTable extends Migration
             $table->json('access_pages')->nullable()->comment('access pages slug in json formate');
             $table->enum('status', ['active', 'inactive'])->default('active')->comment('active status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

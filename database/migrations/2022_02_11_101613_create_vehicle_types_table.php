@@ -19,6 +19,7 @@ class CreateVehicleTypesTable extends Migration
             $table->string('type_name')->comment('Vehicle Category');
             $table->enum('status', ['active', 'inactive'])->default('active')->comment('Category Status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

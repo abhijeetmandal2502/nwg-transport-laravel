@@ -19,6 +19,7 @@ class CreateSettingStatesTable extends Migration
             $table->string('name')->comment('state name');
             $table->enum('status', ['active', 'inactive'])->default('active')->comment('state active status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

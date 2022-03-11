@@ -18,7 +18,6 @@ class CreateLRBookingsTable extends Migration
             $table->String('booking_id')->unique()->comment('custom id');
             $table->String('consignor_id')->comment('Sender id');
             $table->String('consignee_id')->comment('Receiver id');
-            $table->String('other_id')->nullable()->comment('broker/vendor/third party id');
             $table->dateTime('indent_date', 0)->comment('unknown');
             $table->dateTime('reporting_date', 0)->comment('Loading date');
             $table->dateTime('booking_date', 0)->comment('LR Booking date');
@@ -32,6 +31,16 @@ class CreateLRBookingsTable extends Migration
             $table->string('created_by', 100)->nullable()->comment('who created');
             $table->String('remark')->nullable()->comment('Remark if  any');
             $table->dateTime('closed_date', 0)->nullable()->comment('LR Closed date');
+            $table->timestamps();
+            $table->softDeletes();
+
+            $table->foreign('consignor_id')->references('cons_id')->on('consignors')->onUpdate('cascade');
+            $table->foreign('consignee_id')->references('cons_id')->on('consignors')->onUpdate('cascade');
+            $table->foreign('from_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            $table->foreign('to_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            $table->foreign('driver_id')->references('driver_id')->on('setting_drivers')->onUpdate('cascade');
+            $table->foreign('vehicle_id')->references('vehicle_no')->on('vehicles')->onUpdate('cascade');
+            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

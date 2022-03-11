@@ -28,6 +28,10 @@ class CreateBiltiesTable extends Migration
             $table->decimal('goods_value', 10, 2)->default(0)->comment('Package value in amount');
             $table->string('created_by')->nullable()->comment('who generated');
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('gst_no')->references('gst_no')->on('consignors')->onUpdate('cascade');
+            $table->foreign('booking_id')->references('booking_id')->on('l_r_bookings')->onUpdate('cascade');
+            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 
