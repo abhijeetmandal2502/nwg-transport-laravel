@@ -20,7 +20,6 @@ class CreateVendorListsTable extends Migration
             $table->string('created_by')->comment('who created');
             $table->timestamps();
             $table->softDeletes();
-            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

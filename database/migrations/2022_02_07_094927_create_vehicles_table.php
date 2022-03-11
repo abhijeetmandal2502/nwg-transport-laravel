@@ -27,8 +27,6 @@ class CreateVehiclesTable extends Migration
             $table->enum('active_status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
-            // $table->foreign('driver_id')->references('driver_id')->on('setting_drivers')->onUpdate('cascade');
-            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

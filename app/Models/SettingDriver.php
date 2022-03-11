@@ -14,16 +14,16 @@ class SettingDriver extends Model
 
     public function l_r_bookings()
     {
-        return $this->hasMany(LRBooking::class);
+        return $this->hasMany(LRBooking::class, 'driver_id');
     }
 
     public function vehicles()
     {
-        return $this->hasMany(Vehicle::class);
+        return $this->hasMany(Vehicle::class, 'driver_id');
     }
 
     public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
 }

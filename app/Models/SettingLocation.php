@@ -12,16 +12,5 @@ class SettingLocation extends Model
 
     protected $guarded = []; // replace of fillable
 
-    public function consignors()
-    {
-        return $this->hasMany(Consignor::class);
-    }
-    public function l_r_bookings()
-    {
-        return $this->hasMany(LRBooking::class);
-    }
-    public function setting_distances()
-    {
-        return $this->hasMany(SettingDistance::class);
-    }
+
 }

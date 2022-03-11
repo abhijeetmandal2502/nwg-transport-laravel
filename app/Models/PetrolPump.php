@@ -14,14 +14,11 @@ class PetrolPump extends Model
 
     public function petrol_pump_payments()
     {
-        return $this->hasMany(PetrolPumpPayment::class);
+        return $this->hasMany(PetrolPumpPayment::class, 'pump_id');
     }
-    public function l_r_bookings()
-    {
-        return $this->belongsTo(LRBooking::class);
-    }
+
     public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
 }

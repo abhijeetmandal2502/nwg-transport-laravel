@@ -20,7 +20,7 @@ class CreateConsignorsTable extends Migration
             $table->String('name')->comment('vendor sub name');
             $table->String('mobile')->comment('vendor mobile');
             $table->String('alt_mobile')->nullable()->comment('vendor alt mobile');
-            $table->String('gst_no')->nullable()->comment('vendor gst no');
+            $table->String('gst_no')->unique()->nullable()->comment('vendor gst no');
             $table->String('pan_no')->nullable()->comment('vendor pan no');
             $table->String('location')->comment('vendor location');
             $table->String('address')->nullable()->comment('vendor address');
@@ -33,9 +33,6 @@ class CreateConsignorsTable extends Migration
             $table->string('created_by');
             $table->timestamps();
             $table->softDeletes();
-            // $table->foreign('location')->references('slug')->on('setting_locations')->onUpdate('cascade');
-            // $table->foreign('consignor')->references('slug')->on('vendor_lists')->onUpdate('cascade');
-            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

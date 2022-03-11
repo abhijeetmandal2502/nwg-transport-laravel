@@ -27,9 +27,6 @@ class CreatePetrolPumpPaymentsTable extends Migration
             $table->string('created_by');
             $table->timestamps();
             $table->softDeletes();
-            // $table->foreign('pump_id')->references('pump_id')->on('petrol_pumps')->onUpdate('cascade');
-            // $table->foreign('lr_no')->references('booking_id')->on('l_r_bookings')->onUpdate('cascade');
-            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

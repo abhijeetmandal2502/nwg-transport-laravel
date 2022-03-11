@@ -25,10 +25,6 @@ class CreateSettingDistancesTable extends Migration
             $table->string('created_by', 100)->comment('who created');
             $table->timestamps();
             $table->softDeletes();
-            // $table->foreign('from_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
-            // $table->foreign('to_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
-            // $table->foreign('consignor')->references('slug')->on('vendor_lists')->onUpdate('cascade');
-            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

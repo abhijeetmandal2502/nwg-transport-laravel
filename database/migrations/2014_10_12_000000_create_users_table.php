@@ -32,8 +32,6 @@ class CreateUsersTable extends Migration
             $table->string('created_by', 100)->nullable();
             $table->timestamps();
             $table->softDeletes();
-            // $table->foreign('role_id')->references('role_id')->on('roles')->onUpdate('cascade');
-            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

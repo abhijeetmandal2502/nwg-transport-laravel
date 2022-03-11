@@ -13,14 +13,14 @@ class Vehicle extends Model
 
     public function l_r_bookings()
     {
-        return $this->hasMany(LRBooking::class);
+        return $this->hasMany(LRBooking::class, 'vehicle_id', 'vehicle_no');
     }
     public function setting_drivers()
     {
-        return $this->belongsTo(SettingDriver::class);
+        return $this->belongsTo(SettingDriver::class, 'driver_id');
     }
     public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
 }

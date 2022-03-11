@@ -12,16 +12,20 @@ class SettingDistance extends Model
 
     protected $guarded = []; // replace of fillable
 
-    public function setting_locations()
+    public function fromLocations()
     {
-        return $this->belongsTo(SettingLocation::class);
+        return $this->belongsTo(SettingLocation::class, 'form_location', 'slug');
     }
-    public function vendor_lists()
+    public function toLocations()
     {
-        return $this->belongsTo(VendorList::class);
+        return $this->belongsTo(SettingLocation::class, 'to_location', 'slug');
+    }
+    public function main_vendor()
+    {
+        return $this->belongsTo(VendorList::class, 'consignor', 'slug');
     }
     public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
 }

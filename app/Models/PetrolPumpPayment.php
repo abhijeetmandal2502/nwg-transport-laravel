@@ -14,15 +14,15 @@ class PetrolPumpPayment extends Model
 
     public function l_r_bookings()
     {
-        return $this->belongsTo(LRBooking::class);
+        return $this->belongsTo(LRBooking::class, 'lr_no', 'booking_id');
     }
     public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
 
     public function petrol_pumps()
     {
-        return $this->belongsTo(PetrolPump::class);
+        return $this->belongsTo(PetrolPump::class, 'pump_id');
     }
 }
