@@ -71,7 +71,7 @@ class SettingDistanceController extends Controller
             //code...
         } catch (\Exception $th) {
             DB::rollBack();
-            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
             //throw $th;
         }
     }
@@ -136,7 +136,7 @@ class SettingDistanceController extends Controller
             //code...
         } catch (\Exception $th) {
             DB::rollBack();
-            return response(['status' => 'error', 'errors' => $th->getmessage()], 204);
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
             //throw $th;
         }
     }
@@ -159,7 +159,7 @@ class SettingDistanceController extends Controller
                 ]);
             }
         } else {
-            return response(['status' => 'error', 'errors' => 'No any location add in this consignor!'], 204);
+            return response(['status' => 'error', 'errors' => 'No any location add in this consignor!'], 422);
         }
         if (!empty($resultArr)) {
 
@@ -181,7 +181,7 @@ class SettingDistanceController extends Controller
         if (!empty($allDistance)) {
             return response(['status' => 'success', 'data' => $allDistance], 200);
         } else {
-            return response(['status' => 'error', 'errors' => 'No location distance found!'], 204);
+            return response(['status' => 'error', 'errors' => 'No location distance found!'], 422);
         }
     }
 }
