@@ -23,6 +23,6 @@ class Bilty extends Model
     }
     public function consignors()
     {
-        return $this->belongsTo(Consignor::class, 'consignor');
+        return $this->belongsTo(Consignor::class, 'gst_no');
     }
 }

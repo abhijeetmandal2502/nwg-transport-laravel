@@ -34,13 +34,13 @@ class CreateLRBookingsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('consignor_id')->references('cons_id')->on('consignors')->onUpdate('cascade');
-            $table->foreign('consignee_id')->references('cons_id')->on('consignors')->onUpdate('cascade');
-            $table->foreign('from_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
-            $table->foreign('to_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
-            $table->foreign('driver_id')->references('driver_id')->on('setting_drivers')->onUpdate('cascade');
-            $table->foreign('vehicle_id')->references('vehicle_no')->on('vehicles')->onUpdate('cascade');
-            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
+            // $table->foreign('consignor_id')->references('cons_id')->on('consignors')->onUpdate('cascade');
+            // $table->foreign('consignee_id')->references('cons_id')->on('consignors')->onUpdate('cascade');
+            // $table->foreign('from_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            // $table->foreign('to_location')->references('slug')->on('setting_locations')->onUpdate('cascade');
+            // $table->foreign('driver_id')->references('driver_id')->on('setting_drivers')->onUpdate('cascade');
+            // $table->foreign('vehicle_id')->references('vehicle_no')->on('vehicles')->onUpdate('cascade');
+            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 

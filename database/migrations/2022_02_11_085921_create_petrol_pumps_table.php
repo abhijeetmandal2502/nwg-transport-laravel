@@ -27,7 +27,7 @@ class CreatePetrolPumpsTable extends Migration
             $table->enum('status', ['active', 'inactive'])->default('active')->comment('pump active status');
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
+            // $table->foreign('created_by')->references('emp_id')->on('users')->onUpdate('cascade');
         });
     }
 
