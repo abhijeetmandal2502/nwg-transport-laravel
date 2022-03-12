@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
-Route::post('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
 
 Route::middleware('auth:api')->group(function () {
 

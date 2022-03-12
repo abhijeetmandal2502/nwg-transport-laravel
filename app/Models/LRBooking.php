@@ -15,7 +15,7 @@ class LRBooking extends Model
 
     public function bilties()
     {
-        return $this->hasMany(Bilty::class, 'lr_no', 'booking_id');
+        return $this->hasMany(Bilty::class, 'booking_id', 'booking_id');
     }
     public function booking_payments()
     {
@@ -51,7 +51,7 @@ class LRBooking extends Model
     }
     public function setting_drivers()
     {
-        return $this->belongsTo(SettingDriver::class, 'driver_id');
+        return $this->belongsTo(SettingDriver::class, 'driver_id', 'driver_id');
     }
     public function vehicles()
     {

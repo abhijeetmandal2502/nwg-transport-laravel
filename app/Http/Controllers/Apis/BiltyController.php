@@ -65,14 +65,10 @@ class BiltyController extends Controller
 
     public function getAllBilties($biltyId)
     {
-
         $bilty = array();
         $restultArray = array();
-        $finalArr = array();
-        $getBilties = Bilty::where('id', $biltyId)->get()->toArray();
+        $getBilties = Bilty::where('id', $biltyId)->with('l_r_bookings.consignor', 'l_r_bookings.consignee', 'l_r_bookings.setting_drivers', 'l_r_bookings.vehicles')->get()->toArray();
         if (!empty($getBilties)) {
-            $bookingNo = $getBilties[0]['booking_id'];
-            $shipment_no = $getBilties[0]['shipment_no'];
             $bilty = [
                 'package' => $getBilties[0]['packages'],
                 'description' => $getBilties[0]['description'],
@@ -83,59 +79,52 @@ class BiltyController extends Controller
                 'weight_unit' => $getBilties[0]['unit'],
                 'goods_value' => $getBilties[0]['goods_value'],
             ];
+            $restultArray = [
+                'lr_id' => $getBilties[0]['l_r_bookings']['booking_id'],
+                'lr_date' => $getBilties[0]['l_r_bookings']['booking_date'],
+                'consignor_id' => $getBilties[0]['l_r_bookings']['consignor']['cons_id'],
+                'consignor_name' => $getBilties[0]['l_r_bookings']['consignor']['name'],
+                'consignor_mobile' => $getBilties[0]['l_r_bookings']['consignor']['mobile'],
+                'consignor_location' => $getBilties[0]['l_r_bookings']['consignor']['location'],
+                'consignor_address' => $getBilties[0]['l_r_bookings']['consignor']['address'],
+                'consignor_state' => $getBilties[0]['l_r_bookings']['consignor']['state'],
+                'consignor_city' => $getBilties[0]['l_r_bookings']['consignor']['city'],
+                'consignor_postal' => $getBilties[0]['l_r_bookings']['consignor']['pin_code'],
+                'consignor_country' => $getBilties[0]['l_r_bookings']['consignor']['country'],
+                'consignor_gst_no' => $getBilties[0]['l_r_bookings']['consignor']['gst_no'],
+                'consignor_pan' => $getBilties[0]['l_r_bookings']['consignor']['pan_no'],
+                'consignor_altMobile' => $getBilties[0]['l_r_bookings']['consignor']['alt_mobile'],
+                'consignor_email' => $getBilties[0]['l_r_bookings']['consignor']['email'],
+                'consignee_id' => $getBilties[0]['l_r_bookings']['consignee']['cons_id'],
+                'consignee_name' => $getBilties[0]['l_r_bookings']['consignee']['name'],
+                'consignee_mobile' => $getBilties[0]['l_r_bookings']['consignee']['mobile'],
+                'consignee_location' => $getBilties[0]['l_r_bookings']['consignee']['location'],
+                'consignee_address' => $getBilties[0]['l_r_bookings']['consignee']['address'],
+                'consignee_state' => $getBilties[0]['l_r_bookings']['consignee']['state'],
+                'consignee_city' => $getBilties[0]['l_r_bookings']['consignee']['city'],
+                'consignee_postal' => $getBilties[0]['l_r_bookings']['consignee']['pin_code'],
+                'consignee_country' => $getBilties[0]['l_r_bookings']['consignee']['country'],
+                'consignee_gst_no' => $getBilties[0]['l_r_bookings']['consignee']['gst_no'],
+                'consignee_pan' => $getBilties[0]['l_r_bookings']['consignee']['pan_no'],
+                'consignee_altMobile' => $getBilties[0]['l_r_bookings']['consignee']['alt_mobile'],
+                'consignee_email' => $getBilties[0]['l_r_bookings']['consignee']['email'],
+                'from_location' => $getBilties[0]['l_r_bookings']['from_location'],
+                'to_location' => $getBilties[0]['l_r_bookings']['to_location'],
+                'vehicle_no' => $getBilties[0]['l_r_bookings']['vehicle_id'],
+                'ownership' => $getBilties[0]['l_r_bookings']['vehicles']['ownership'],
+                'vehicle_type' => $getBilties[0]['l_r_bookings']['vehicles']['type'],
+                'driver_name' => $getBilties[0]['l_r_bookings']['setting_drivers']['name'],
+                'driver_mobile' => $getBilties[0]['l_r_bookings']['setting_drivers']['mobile'],
+                'driver_dl' => $getBilties[0]['l_r_bookings']['setting_drivers']['DL_no'],
+                'DL_expire' => $getBilties[0]['l_r_bookings']['setting_drivers']['DL_expire'],
+                'shipment_no' => $getBilties[0]['shipment_no'],
+                'bilty' => $bilty,
+            ];
 
-            $lrBooking = DB::table('lrBookingView')->where('booking_id', $bookingNo)->get()->toArray();
-            if (!empty($lrBooking)) {
-                $restultArray = [
-                    'lr_id' => $lrBooking[0]->booking_id,
-                    'lr_date' => $lrBooking[0]->booking_date,
-                    'consignor_id' => $lrBooking[0]->consignor_id,
-                    'consignor_name' => $lrBooking[0]->consignorName,
-                    'consignor_mobile' => $lrBooking[0]->consignor_mobile,
-                    'consignor_location' => $lrBooking[0]->consignor_location,
-                    'consignor_address' => $lrBooking[0]->consignor_address,
-                    'consignor_state' => $lrBooking[0]->consignor_state,
-                    'consignor_city' => $lrBooking[0]->consignor_city,
-                    'consignor_postal' => $lrBooking[0]->consignor_postal,
-                    'consignor_country' => $lrBooking[0]->consignor_country,
-                    'consignor_pan' => $lrBooking[0]->consignor_pan,
-                    'consignor_altMobile' => $lrBooking[0]->consignor_altMobile,
-                    'consignor_email' => $lrBooking[0]->consignor_email,
-                    'consignee_id' => $lrBooking[0]->consignee_id,
-                    'consignee_name' => $lrBooking[0]->consigneeName,
-                    'consignee_mobile' => $lrBooking[0]->consignee_mobile,
-                    'consignee_location' => $lrBooking[0]->consignee_location,
-                    'consignee_address' => $lrBooking[0]->consignee_address,
-                    'consignee_state' => $lrBooking[0]->consignee_state,
-                    'consignee_city' => $lrBooking[0]->consignee_city,
-                    'consignee_postal' => $lrBooking[0]->consignee_postal,
-                    'consignee_country' => $lrBooking[0]->consignee_country,
-                    'consignee_pan' => $lrBooking[0]->consignee_pan,
-                    'consignee_altMobile' => $lrBooking[0]->consignee_altMobile,
-                    'consignee_email' => $lrBooking[0]->consignee_email,
-                    'from_location' => $lrBooking[0]->from_location,
-                    'to_location' => $lrBooking[0]->to_location,
-                    'vehicle_no' => $lrBooking[0]->vehicle_id,
-                    'ownership' => $lrBooking[0]->ownership,
-                    'vehicle_type' => $lrBooking[0]->vehicle_type,
-                    'driver_name' => $lrBooking[0]->driver_name,
-                    'driver_mobile' => $lrBooking[0]->driver_mobile,
-                    'driver_dl' => $lrBooking[0]->driver_dl,
-                    'DL_expire' => $lrBooking[0]->DL_expire,
-                    'shipment_no' => $shipment_no,
-                    'bilty' => $bilty,
-                ];
-
-                $finalArr = ['status' => 'success', 'data' => $restultArray];
-            } else {
-                // invalid lr no on bilty
-                $finalArr = ['status' => 'error', 'errors' => 'Invalid LR No on bilty!'];
-            }
+            return response(['status' => 'success', 'data' => $restultArray], 200);
         } else {
             // Invalid  bilty Id
-            $finalArr = ['status' => 'error', 'errors' => 'Invalid Bilty Invoice!'];
+            return response(['status' => 'error', 'errors' => 'Invalid Bilty Invoice!'], 422);
         }
-
-        return response()->json($finalArr);
     }
 }

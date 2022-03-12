@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BookingPayment extends Model
 {
-    public $timestamps = false;
+
     use HasFactory, SoftDeletes;
 
     protected $guarded = []; // replace of fillable

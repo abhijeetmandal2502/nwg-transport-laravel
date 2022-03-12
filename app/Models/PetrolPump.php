@@ -14,7 +14,7 @@ class PetrolPump extends Model
 
     public function petrol_pump_payments()
     {
-        return $this->hasMany(PetrolPumpPayment::class, 'pump_id');
+        return $this->hasMany(PetrolPumpPayment::class, 'pump_id', 'pump_id');
     }
 
     public function users()

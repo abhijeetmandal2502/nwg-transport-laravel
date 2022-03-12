@@ -29,7 +29,7 @@ class ConsignorController extends Controller
             // }
             return response(['status' => 'success', 'records' => count($consData), 'data' => $consData], 200);
         } else {
-            return response(['status' => 'error', 'errors' => "No any consignor available!"], 400);
+            return response(['status' => 'error', 'errors' => "No any consignor available!"], 422);
         }
     }
     public function createConsignor(Request $request)

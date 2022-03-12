@@ -19,7 +19,7 @@ class Bilty extends Model
 
     public function l_r_bookings()
     {
-        return $this->belongsTo(LRBooking::class, 'lr_no', 'booking_id');
+        return $this->belongsTo(LRBooking::class, 'booking_id', 'booking_id');
     }
     public function consignors()
     {

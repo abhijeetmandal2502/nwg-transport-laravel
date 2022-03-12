@@ -23,6 +23,6 @@ class PetrolPumpPayment extends Model
 
     public function petrol_pumps()
     {
-        return $this->belongsTo(PetrolPump::class, 'pump_id');
+        return $this->belongsTo(PetrolPump::class, 'pump_id', 'pump_id');
     }
 }

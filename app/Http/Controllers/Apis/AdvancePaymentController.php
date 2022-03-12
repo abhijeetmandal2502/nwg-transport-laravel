@@ -123,7 +123,7 @@ class AdvancePaymentController extends Controller
                 DB::commit();
                 return response(['status' => 'success', 'message' => 'Advance payment successfully!'], 201);
             } else {
-                return response(['status' => 'error', 'errors' => 'No any payment done!'], 400);
+                return response(['status' => 'error', 'errors' => 'No any payment done!'], 422);
             }
         } catch (\Exception $e) {
 
@@ -137,9 +137,20 @@ class AdvancePaymentController extends Controller
         $resultArr = array();
         $advancePayment = array();
         $petrolPump = array();
-        $getAdvance = BookingPayment::where('lr_no', $lrNo)->where('type', 'advance')->get()->toArray();
-        $getPetrolPayment = PetrolPumpPayment::join('petrol_pumps', 'petrol_pumps.pump_id', '=', 'petrol_pump_payments.pump_id')->where('lr_no', $lrNo)->get()->toArray();
-        $getLrDetails = DB::table('lrBookingView')->where('booking_id', $lrNo)->get(['driver_name', 'driver_mobile', 'driver_dl', 'DL_expire', 'vehicle_id'])->toArray();
+
+        $getPetrolPayment = PetrolPumpPayment::where('lr_no', $lrNo)->with('petrol_pumps')->get()->toArray();
+        $getAdvance = BookingPayment::where('lr_no', $lrNo)->where('type', 'vehicle_advance')->get()->toArray();
+        $getLrDetails = LRBooking::where('booking_id', $lrNo)->with('setting_drivers:driver_id,name,mobile,DL_no,DL_expire')->get()->toArray();
+        $driversDetails = [
+            'driver_name' => $getLrDetails[0]['setting_drivers']['name'],
+            'driver_mobile' => $getLrDetails[0]['setting_drivers']['mobile'],
+            'driver_dl' => $getLrDetails[0]['setting_drivers']['DL_no'],
+            'DL_expire' => $getLrDetails[0]['setting_drivers']['DL_expire'],
+            'vehicle_id' => $getLrDetails[0]['vehicle_id']
+        ];
+        // $getAdvance = BookingPayment::where('lr_no', $lrNo)->where('type', 'vehicle_advance')->get()->toArray();
+        // $getPetrolPayment = PetrolPumpPayment::join('petrol_pumps', 'petrol_pumps.pump_id', '=', 'petrol_pump_payments.pump_id')->where('lr_no', $lrNo)->get()->toArray();
+        // $getLrDetails = DB::table('lrBookingView')->where('booking_id', $lrNo)->get(['driver_name', 'driver_mobile', 'driver_dl', 'DL_expire', 'vehicle_id'])->toArray();
         if (!empty($getPetrolPayment) || !empty($getAdvance)) {
             if (!empty($getAdvance)) {
                 foreach ($getAdvance as $ak => $aItems) {
@@ -151,7 +162,7 @@ class AdvancePaymentController extends Controller
                         'method' => $aItems['method'],
                         'txn_id' => $aItems['txn_id'],
                         'cheque_no' => $aItems['cheque_no'],
-                        'driver' => $getLrDetails,
+                        'driver' => $driversDetails,
                         'created_at' => $aItems['created_at'],
                         'created_by' => $aItems['created_by']
                     ]);
@@ -164,15 +175,15 @@ class AdvancePaymentController extends Controller
                         'amount' => $pItems['amount'],
                         'hsb_msd' => $pItems['hsb_msd'],
                         'pump' => [
-                            'id' => $pItems['pump_id'],
-                            'name' => $pItems['pump_name'],
-                            'mobile' => $pItems['mobile'],
-                            'address' => $pItems['address'],
-                            'city' => $pItems['city'],
-                            'country' => $pItems['country'],
-                            'state' => $pItems['state'],
+                            'id' => $pItems['petrol_pumps']['pump_id'],
+                            'name' => $pItems['petrol_pumps']['pump_name'],
+                            'mobile' => $pItems['petrol_pumps']['mobile'],
+                            'address' => $pItems['petrol_pumps']['address'],
+                            'city' => $pItems['petrol_pumps']['city'],
+                            'country' => $pItems['petrol_pumps']['country'],
+                            'state' => $pItems['petrol_pumps']['state'],
                         ],
-                        'driver' => $getLrDetails,
+                        'driver' => $driversDetails,
                         'created_at' => $pItems['created_at'],
                         'created_by' => $pItems['created_by']
                     ]);
@@ -185,7 +196,7 @@ class AdvancePaymentController extends Controller
 
             return response(['status' => 'success', 'data' => $resultArr], 200);
         } else {
-            return response(['status' => 'error', 'errors' => "No records found!"], 400);
+            return response(['status' => 'error', 'errors' => "No records found!"], 422);
         }
     }
 }

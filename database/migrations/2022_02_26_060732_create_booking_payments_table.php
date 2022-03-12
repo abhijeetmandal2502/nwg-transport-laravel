@@ -24,7 +24,7 @@ class CreateBookingPaymentsTable extends Migration
             $table->string('method')->comment('payment method');
             $table->string('txn_id')->nullable()->comment('payment id');
             $table->string('cheque_no')->nullable()->comment('if method cheque');
-            $table->dateTime('created_at');
+            $table->timestamps();
             $table->string('created_by');
             $table->softDeletes();
         });
