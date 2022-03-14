@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Apis;
 use App\Http\Controllers\Controller;
 use App\Models\Bilty;
 use App\Models\LRBooking;
+use App\Models\SettingDistance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -14,10 +15,21 @@ class BiltyController extends Controller
 
     public function getConsignor($lrNo)
     {
-        $consignor = LRBooking::select('consignor_id')->where('booking_id', $lrNo)->get()->toArray();
+        $result = array();
+        $consignor = LRBooking::where('booking_id', $lrNo)->with('consignor:cons_id,consignor')->get()->toArray();
+        $consignor_id = $consignor[0]['consignor_id'];
+        $fromLocation = $consignor[0]['from_location'];
+        $toLocation = $consignor[0]['to_location'];
+        $mainVendor = $consignor[0]['consignor']['consignor'];
+        $getVendorKgRate = SettingDistance::where('consignor', $mainVendor)->where('from_location', $fromLocation)->where('to_location', $toLocation)->get('vendor_per_kg_rate')->toArray();
+        $vendorKgRate = $getVendorKgRate[0]['vendor_per_kg_rate'];
+        $result = [
+            'consignor_id' => $consignor_id,
+            'vendor_per_kg_rate' => $vendorKgRate
+        ];
 
-        if (!empty($consignor)) {
-            return $consignor[0]['consignor_id'];
+        if (!empty($result)) {
+            return $result;
         } else {
             return null;
         }
@@ -25,12 +37,12 @@ class BiltyController extends Controller
 
     public function createBilty(Request $request)
     {
-        $consignorId = $this->getConsignor($request->booking_id);
-        if ($consignorId == null) {
+        $consignor = $this->getConsignor($request->booking_id);
+        if ($consignor == null) {
             return response(['status' => 'error', 'errors' => 'Consignor not found on this booking!'], 422);
         }
-        $invoiceUnique = $consignorId . '-' . $request->invoice_no;
-        $request->merge(['invoice' => $invoiceUnique, 'created_by' => auth()->user()->emp_id]);
+        $invoiceUnique = $consignor['consignor_id'] . '-' . $request->invoice_no;
+
         $validator = Validator::make($request->all(), [
             'invoice' => 'required|unique:bilties,invoice',
             'booking_id' => 'required|alpha_num|exists:l_r_bookings,booking_id',
@@ -48,6 +60,10 @@ class BiltyController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
+
+        // income calculation
+        $income_amount = ceil($request->weight) * $consignor['vendor_per_kg_rate'];
+        $request->merge(['invoice' => $invoiceUnique, 'income_amount' => $income_amount, 'created_by' => auth()->user()->emp_id]);
         DB::beginTransaction();
         try {
             Bilty::create($request->all());

@@ -26,6 +26,8 @@ class CreateBiltiesTable extends Migration
             $table->decimal('weight', 10, 2)->default(0)->comment('weight in kg/tan/other');
             $table->string('unit', 50)->nullable()->comment('shipment number');
             $table->decimal('goods_value', 10, 2)->default(0)->comment('Package value in amount');
+            $table->decimal('income_amount', 10, 2)->default(0)->comment('system genrate income from vendor');
+            $table->decimal('received_amount', 10, 2)->default(0)->comment('actual received from vendor');
             $table->enum('payment_status', ['pending', 'paid'])->default('pending');
             $table->string('created_by')->nullable()->comment('who generated');
             $table->timestamps();

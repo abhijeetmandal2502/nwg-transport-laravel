@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Route::get('/logs', [VehicleUnloadController::class, 'getAllDuePayement']);
-// Route::get('/logs/{lrNo}', [BiltyController::class, 'getBilties']);
+Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
 
 
 Route::middleware('auth:api')->group(function () {
@@ -48,6 +48,7 @@ Route::middleware('auth:api')->group(function () {
     // user registration api
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');
     Route::get('/employees/{empId?}', [AuthController::class, 'getEmployees'])->name('api.employees');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
 
     // Lr Booking managment
     Route::post('/create-lr-booking', [LRBooking::class, 'newBooking'])->name('api.create.lr.booking');
@@ -57,6 +58,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name('api.freeVehicle');
     Route::get('/due-payment/{lrNo}', [LRBooking::class, 'getLrFinalPaymentDetails'])->name('api.due-payment');
     Route::get('/lr-booking/single/{lrNo}', [LRBooking::class, 'getAllSingleLrDtl'])->name('api.singleLrInfo');
+
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
     Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');
@@ -124,6 +126,4 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/create-page', [SettingPageController::class, 'createPage'])->name('api.createPage');
     Route::post('/update-page/{id}', [SettingPageController::class, 'updatePage'])->name('api.updatePage');
     Route::get('/pages/{pageSlug?}', [SettingPageController::class, 'getPage'])->name('api.getPage');
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
 });

@@ -7,6 +7,7 @@ use App\Models\Bilty;
 use App\Models\BookingPayment;
 use App\Models\LRBooking;
 use App\Models\PetrolPumpPayment;
+use App\Models\SettingDistance;
 use Illuminate\Http\Request;
 
 class PetrolPumpPaymentController extends Controller
@@ -16,10 +17,25 @@ class PetrolPumpPaymentController extends Controller
         $lrNo = 'TAS1647002024LR1';
         $biltyId = 4;
         $restultArray = array();
-        // $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
+        $consignor = LRBooking::where('booking_id', $lrNo)->with('consignor:cons_id,consignor')->get()->toArray();
+        $consignor_id = $consignor[0]['consignor_id'];
+        $fromLocation = $consignor[0]['from_location'];
+        $toLocation = $consignor[0]['to_location'];
+        $mainVendor = $consignor[0]['consignor']['consignor'];
+        $getVendorKgRate = SettingDistance::where('consignor', $mainVendor)->where('from_location', $fromLocation)->where('to_location', $toLocation)->get('vendor_per_kg_rate')->toArray();
+        $vendorKgRate = $getVendorKgRate[0]['vendor_per_kg_rate'];
 
-        $allLrBooking = LRBooking::where('booking_id', $lrNo)->with('vehicles:vehicle_no,ownership', 'consignor:cons_id,consignor')->get()->toArray();
-        dd($allLrBooking[0]['consignor']['consignor']);
+        $result = [
+            'consignor_id' => $consignor_id,
+            'vendor_per_kg_rate' => $vendorKgRate
+
+        ];
+        dd($result);
+        // $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
+        $getBilties = Bilty::where('id', 4)->with('l_r_bookings.consignor', 'l_r_bookings.consignee', 'l_r_bookings.setting_drivers', 'l_r_bookings.vehicles')->get()->toArray();
+
+        // $allLrBooking = LRBooking::where('booking_id', $lrNo)->with('vehicles:vehicle_no,ownership', 'consignor:cons_id,consignor')->get()->toArray();
+
         // foreach ($allLrBooking as $key => $items) {
         //     dd($items->booking_id);
         //     $restultArray[$key] = ([
