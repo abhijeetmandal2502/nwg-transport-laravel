@@ -270,7 +270,7 @@ class LRBooking extends Controller
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $restultArray[$key] = ([
-                        'lr_id' => $items->booking_id,
+                        'lr_id' => $items['booking_id'],
                         'consignor_id' => $items['consignor_id'],
                         'consignor_name' => ucwords(Str::replace('_', ' ', $items['consignor_id'])),
                         'consignee_id' => $items['consignee_id'],
