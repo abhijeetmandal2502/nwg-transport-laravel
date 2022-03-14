@@ -86,11 +86,9 @@ class PetrolPumpController extends Controller
             $pumps = PetrolPump::where('status', 'active')->get()->toArray();
         }
         if (!empty($pumps)) {
-            $result = ['status' => 'success', 'data' => $pumps];
+            return response(['status' => 'success', 'data' => $pumps], 200);
         } else {
-            $result = ['status' => 'error', 'data' => 'No  any petrol pumps found!'];
+            return response(['status' => 'error', 'data' => 'No  any petrol pumps found!'], 422);
         }
-
-        return response()->json($result);
     }
 }

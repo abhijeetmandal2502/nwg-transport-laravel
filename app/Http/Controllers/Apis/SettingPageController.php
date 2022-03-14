@@ -75,9 +75,9 @@ class SettingPageController extends Controller
             $pages = SettingPage::all()->toArray();
         }
         if (!empty($pages)) {
-            return response()->json(['status' => 'success', 'data' => $pages]);
+            return response(['status' => 'success', 'data' => $pages], 200);
         } else {
-            return response()->json(['status' => 'error', 'data' => "No any page found!"]);
+            return response(['status' => 'error', 'data' => "No any page found!"], 422);
         }
     }
 }

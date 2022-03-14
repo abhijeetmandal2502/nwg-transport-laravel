@@ -163,12 +163,10 @@ class SettingDistanceController extends Controller
         }
         if (!empty($resultArr)) {
 
-            $result = ['status' => 'success', 'data' => $resultArr];
+            return response(['status' => 'success', 'data' => $resultArr], 200);
         } else {
-            $result = ['status' => 'error', 'errors' => 'No location distance found!'];
+            return response(['status' => 'error', 'errors' => 'No location distance found!'], 422);
         }
-
-        return response()->json($result);
     }
 
     public function getDistanceList($did = null)

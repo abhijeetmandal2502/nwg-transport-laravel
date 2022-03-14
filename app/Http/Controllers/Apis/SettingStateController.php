@@ -70,11 +70,9 @@ class SettingStateController extends Controller
         }
 
         if (!empty($allStates)) {
-            $result = ['status' => 'success', 'data' => $allStates];
+            return response(['status' => 'success', 'data' => $allStates], 200);
         } else {
-            $result = ['status' => 'error', 'data' => 'No any state available!'];
+            return response(['status' => 'error', 'data' => 'No any state available!'], 422);
         }
-
-        return response()->json($result);
     }
 }

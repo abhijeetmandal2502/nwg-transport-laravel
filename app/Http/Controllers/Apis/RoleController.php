@@ -61,9 +61,9 @@ class RoleController extends Controller
                 ]);
             }
 
-            return response()->json(['status' => 'success', 'data' => $roleData]);
+            return response(['status' => 'success', 'data' => $roleData], 200);
         } else {
-            return response()->json(['status' => 'error', 'data' => 'No role found!']);
+            return response(['status' => 'error', 'data' => 'No role found!'], 422);
         }
     }
 

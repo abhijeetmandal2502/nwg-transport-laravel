@@ -90,11 +90,9 @@ class SettingDriverController extends Controller
             $drivers = SettingDriver::where('status', 'active')->get()->toArray();
         }
         if (!empty($drivers)) {
-            $result = ['status' => 'success', 'data' => $drivers];
+            return response(['status' => 'success', 'data' => $drivers], 200);
         } else {
-            $result = ['status' => 'error', 'data' => 'No  any driver found!'];
+            return response(['status' => 'error', 'data' => 'No  any driver found!'], 422);
         }
-
-        return response()->json($result);
     }
 }

@@ -82,11 +82,9 @@ class VehicleController extends Controller
             $vehicles = Vehicle::where('active_status', 'active')->orderByDesc('rating')->get()->toArray();
         }
         if (!empty($vehicles)) {
-            $result = ['status' => 'success', 'data' => $vehicles];
+            return response(['status' => 'success', 'data' => $vehicles], 200);
         } else {
-            $result = ['status' => 'error', 'data' => 'No  any vehicle found!'];
+            return response(['status' => 'error', 'data' => 'No  any vehicle found!'], 422);
         }
-
-        return response()->json($result);
     }
 }

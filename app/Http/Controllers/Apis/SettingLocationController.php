@@ -16,11 +16,10 @@ class SettingLocationController extends Controller
     {
         $location = SettingLocation::where('active_status', 'active')->get()->toArray();
         if (!empty($location)) {
-            $result = ['status' => 'success', 'records' => count($location), 'data' => $location];
+            return response(['status' => 'success', 'records' => count($location), 'data' => $location], 200);
         } else {
-            $result = ['status' => 'error', 'data' => 'No any location available!'];
+            return response(['status' => 'error', 'data' => 'No any location available!'], 422);
         }
-        return response()->json($result);
     }
     public function locationSlugValidate($slug)
     {

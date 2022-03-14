@@ -70,11 +70,9 @@ class VehicleTypeController extends Controller
             $categories = VehicleType::where('status', 'active')->get()->toArray();
         }
         if (!empty($categories)) {
-            $result = ['status' => 'success', 'data' => $categories];
+            return response(['status' => 'success', 'data' => $categories], 200);
         } else {
-            $result = ['status' => 'error', 'data' => 'No data available'];
+            return response(['status' => 'error', 'data' => 'No data available'], 422);
         }
-
-        return response()->json($result);
     }
 }
