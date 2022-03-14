@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\Route;
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
-// Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+// Route::get('/logs', [VehicleUnloadController::class, 'getAllDuePayement']);
 // Route::get('/logs/{lrNo}', [BiltyController::class, 'getBilties']);
 
 
@@ -69,6 +69,7 @@ Route::middleware('auth:api')->group(function () {
     // Accounts
     Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');
     Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdvanceDetails'])->name('api.getAdvanceDetails');
+    Route::get('/vehicle-due-payments', [VehicleUnloadController::class, 'getAllDuePayement'])->name('api.getVehicleDuePayments');
 
     // consignors managment
     Route::post('/create-vendor', [VendorListController::class, 'createVendor'])->name('api.createVendor');

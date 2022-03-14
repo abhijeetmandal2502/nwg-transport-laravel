@@ -12,6 +12,7 @@ use App\Models\VehicleUnload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class VehicleUnloadController extends Controller
 {
@@ -152,6 +153,33 @@ class VehicleUnloadController extends Controller
 
             DB::rollback();
             return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
+        }
+    }
+
+    public function getAllDuePayement()
+    {
+        $duePayments = VehicleUnload::where('status', 'open')->with('l_r_bookings:booking_id,consignor_id,consignee_id,from_location,to_location,booking_date,vehicle_id')->get()->toArray();
+        if (!empty($duePayments)) {
+            foreach ($duePayments as $key => $items) {
+                $restultArray[$key] = ([
+                    'lr_id' => $items['lr_no'],
+                    'consignor_id' => $items['l_r_bookings']['consignor_id'],
+                    'consignor_name' => ucwords(Str::replace('_', ' ', $items['l_r_bookings']['consignor_id'])),
+                    'consignee_id' => $items['l_r_bookings']['consignee_id'],
+                    'consignee_name' => ucwords(Str::replace('_', ' ', $items['l_r_bookings']['consignee_id'])),
+                    'from_location' => ucwords(Str::replace('_', ' ', $items['l_r_bookings']['from_location'])),
+                    'to_location' => ucwords(Str::replace('_', ' ', $items['l_r_bookings']['to_location'])),
+                    'vehicle_no' => $items['l_r_bookings']['vehicle_id'],
+                    'booking_date' => $items['l_r_bookings']['booking_date'],
+                    'due_amount' => $items['final_amount'],
+                    'created_by' => $items['created_by'],
+                    'order_weight' => $items['order_weight'],
+                    'unload_date' => $items['unload_date'],
+                ]);
+            }
+            return response(['status' => 'success', 'records' => count($duePayments), 'data' => $restultArray], 200);
+        } else {
+            return response(['status' => 'error', 'errors' => "No any vehicle due payment found!"], 422);
         }
     }
 }

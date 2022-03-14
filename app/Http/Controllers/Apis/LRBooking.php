@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bilty;
 use App\Models\LRBooking as ModelsLRBooking;
 use App\Models\SettingDriver;
 use App\Models\Vehicle;
 use App\Models\VehicleUnload;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
