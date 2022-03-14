@@ -279,7 +279,7 @@ class LRBooking extends Controller
                         'to_location' => ucwords(Str::replace('_', ' ', $items['to_location'])),
                         'vehicle_no' => $items['vehicle_id'],
                         'ownership' => $items['vehicles']['ownership'],
-                        'driver_name' => $items['vehicles']['driver_name'],
+                        'driver_name' => $items['vehicles']['name'],
                         'booking_date' => $items['booking_date']
                     ]);
                 }
