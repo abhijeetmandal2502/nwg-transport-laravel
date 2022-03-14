@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
 Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+Route::get('/logs/{lrNo}', [LRBooking::class, 'getAllSingleLrDtl']);
 
 Route::middleware('auth:api')->group(function () {
 
@@ -55,7 +56,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/lr-bookings-status/{type}', [LRBooking::class, 'geLrByStatus'])->name('api.lr.bookings.status');
     Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name('api.freeVehicle');
     Route::get('/due-payment/{lrNo}', [LRBooking::class, 'getLrFinalPaymentDetails'])->name('api.due-payment');
-
+    Route::get('/lr-bookings/{lrNo}', [LRBooking::class, 'getAllSingleLrDtl']);
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
     Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');

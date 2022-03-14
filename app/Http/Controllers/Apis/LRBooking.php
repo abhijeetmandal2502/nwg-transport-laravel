@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class LRBooking extends Controller
 {
@@ -64,7 +65,6 @@ class LRBooking extends Controller
 
     public function getLrBookings($page = null, $lrNo = null)
     {
-        $restultArray = array();
 
         $limit = 10;
         $page = $page == null ? $page = 1 : $page;
@@ -72,11 +72,11 @@ class LRBooking extends Controller
         // for print custom date use
         $printStatus = array('yes', 'no');
         if ($lrNo != "") {
-            $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $lrNo)->limit(1)->get()->toArray();
+            $allLrBooking =  ModelsLRBooking::where('booking_id', $lrNo)->with()->limit(1)->get()->toArray();
         } else {
-            $allLrBooking =  DB::table('lrBookingView')->orderByDesc('id')->offset($ofset)->limit($limit)->get()->toArray();
+            $allLrBooking =  ModelsLRBooking::orderByDesc('id')->offset($ofset)->limit($limit)->get()->toArray();
         }
-        $allRowsCount = DB::table('lrBookingView')->count();
+        $allRowsCount = ModelsLRBooking::count();
 
 
         if (!empty($allLrBooking)) {
@@ -84,22 +84,20 @@ class LRBooking extends Controller
                 $restultArray[$key] = ([
                     'lr_id' => $items->booking_id,
                     'consignor_id' => $items->consignor_id,
-                    'consignor_name' => $items->consignorName,
+                    'consignor_name' => ucwords(Str::replace('_', ' ', $items->consignor_id)),
                     'consignee_id' => $items->consignee_id,
-                    'consignee_name' => $items->consigneeName,
-                    'from_location' => $items->from_location,
-                    'to_location' => $items->to_location,
+                    'consignee_name' => ucwords(Str::replace('_', ' ', $items->consignee_id)),
+                    'from_location' => ucwords(Str::replace('_', ' ', $items->from_location)),
+                    'to_location' => ucwords(Str::replace('_', ' ', $items->to_location)),
                     'amount' => $items->amount,
                     'status' => $items->status,
                     'print' => $printStatus[array_rand($printStatus)]
                 ]);
             }
-            $finalArr = ['status' => 'success', 'totalCount' => $allRowsCount, 'records' => count($allLrBooking), 'data' => $restultArray];
+            return response(['status' => 'success', 'totalCount' => $allRowsCount, 'records' => count($allLrBooking), 'data' => $restultArray], 200);
         } else {
-            $finalArr = ['status' => 'error', 'data' => 'Data not available!'];
+            return response(['status' => 'error', 'data' => 'Data not available!'], 422);
         }
-
-        return response()->json($finalArr);
     }
 
     public function getAllVehicles($type)
@@ -128,17 +126,14 @@ class LRBooking extends Controller
             }
             $resultData = Vehicle::select('vehicle_no', 'type', 'ownership', 'vehicle_details')->whereNotIn('vehicle_no', $vehicleIds)->get()->toArray();
         } else {
-            $result = ['status' => 'error', 'errors' => "Wrong Url!"];
+            return response(['status' => 'error', 'errors' => "Wrong Url!"], 422);
         }
 
         if (!empty($resultData)) {
-            $result = ['status' => 'success', 'records' => count($resultData), 'data' => $resultData];
+            return response(['status' => 'success', 'records' => count($resultData), 'data' => $resultData], 200);
         } else {
-            $result = ['status' => 'error', 'errors' => "No any " . $type . " found!"];
+            return response(['status' => 'error', 'errors' => "No any " . $type . " found!"], 422);
         }
-
-
-        return response()->json($result);
     }
     public function geLrByStatus($type)
     {
@@ -146,163 +141,153 @@ class LRBooking extends Controller
         $finalArr = array();
         $printStatus = array('yes', 'no');
         if ($type === "fresh") {
-            $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+            $allLrBooking =  ModelsLRBooking::where('status', $type)->get()->toArray();
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $restultArray[$key] = ([
-                        'lr_id' => $items->booking_id,
-                        'consignor_id' => $items->consignor_id,
-                        'consignor_name' => $items->consignorName,
-                        'consignee_id' => $items->consignee_id,
-                        'consignee_name' => $items->consigneeName,
-                        'from_location' => $items->from_location,
-                        'to_location' => $items->to_location,
-                        'amount' => $items->amount,
-                        'status' => $items->status,
+                        'lr_id' => $items['booking_id'],
+                        'consignor_id' => $items['consignor_id'],
+                        'consignor_name' => ucwords(Str::replace('_', ' ', $items['consignor_id'])),
+                        'consignee_id' => $items['consignee_id'],
+                        'consignee_name' => ucwords(Str::replace('_', ' ', $items['consignee_id'])),
+                        'from_location' => ucwords(Str::replace('_', ' ', $items['from_location'])),
+                        'to_location' => ucwords(Str::replace('_', ' ', $items['to_location'])),
+                        'amount' => $items['amount'],
+                        'status' => $items['status'],
                         'print' => $printStatus[array_rand($printStatus)]
                     ]);
                 }
-                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+                return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
             } else {
-                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+                return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
             }
         } elseif ($type === "vehicle-assigned") {
-            $allLrBooking =  DB::table('lrBookingView')->where('status', 'vehicle-assigned')->orWhere('status', 'loading')->get()->toArray();
+            $restultArray = array();
+            $allLrBooking = ModelsLRBooking::where('status', 'vehicle-assigned')->orWhere('status', 'loading')->with('consignor', 'consignee', 'setting_drivers', 'vehicles', 'bilties')->get()->toArray();
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
-                    $shipment_no = null;
-                    $bilty = Bilty::where('booking_id', $items->booking_id)->get()->toArray();
-                    if (!empty($bilty)) {
-                        if (isset($bilty[0])) {
-                            $shipment_no = Arr::pull($bilty[0], 'shipment_no');
-                        }
-                    }
                     $restultArray[$key] = ([
-                        'lr_id' => $items->booking_id,
-                        'consignor_id' => $items->consignor_id,
-                        'consignor_name' => $items->consignorName,
-                        'consignor_mobile' => $items->consignor_mobile,
-                        'consignor_location' => $items->consignor_location,
-                        'consignor_address' => $items->consignor_address,
-                        'consignor_state' => $items->consignor_state,
-                        'consignor_city' => $items->consignor_city,
-                        'consignor_postal' => $items->consignor_postal,
-                        'consignor_country' => $items->consignor_country,
-                        'consignor_pan' => $items->consignor_pan,
-                        'consignor_altMobile' => $items->consignor_altMobile,
-                        'consignor_email' => $items->consignor_email,
-                        'consignee_id' => $items->consignee_id,
-                        'consignee_name' => $items->consigneeName,
-                        'consignee_mobile' => $items->consignee_mobile,
-                        'consignee_location' => $items->consignee_location,
-                        'consignee_address' => $items->consignee_address,
-                        'consignee_state' => $items->consignee_state,
-                        'consignee_city' => $items->consignee_city,
-                        'consignee_postal' => $items->consignee_postal,
-                        'consignee_country' => $items->consignee_country,
-                        'consignee_pan' => $items->consignee_pan,
-                        'consignee_altMobile' => $items->consignee_altMobile,
-                        'consignee_email' => $items->consignee_email,
-                        'from_location' => $items->from_location,
-                        'to_location' => $items->to_location,
-                        'vehicle_no' => $items->vehicle_id,
-                        'ownership' => $items->ownership,
-                        'vehicle_type' => $items->vehicle_type,
-                        'driver_name' => $items->driver_name,
-                        'driver_mobile' => $items->driver_mobile,
-                        'driver_dl' => $items->driver_dl,
-                        'DL_expire' => $items->DL_expire,
-                        'amount' => $items->amount,
-                        'bilty_count' => count($bilty),
-                        'shipment_no' => $shipment_no,
-                        'bilties' => $bilty
+                        'lr_id' => $items['booking_id'],
+                        'consignor_id' => $items['consignor_id'],
+                        'consignor_name' => $items['consignor']['name'],
+                        'consignor_mobile' => $items['consignor']['mobile'],
+                        'consignor_location' => $items['consignor']['location'],
+                        'consignor_address' => $items['consignor']['address'],
+                        'consignor_state' => $items['consignor']['state'],
+                        'consignor_city' => $items['consignor']['city'],
+                        'consignor_postal' => $items['consignor']['pin_code'],
+                        'consignor_country' => $items['consignor']['country'],
+                        'consignor_gst' => $items['consignor']['gst_no'],
+                        'consignor_pan' => $items['consignor']['pan_no'],
+                        'consignor_altMobile' => $items['consignor']['alt_mobile'],
+                        'consignor_email' => $items['consignor']['email'],
+                        'consignee_id' => $items['consignee_id'],
+                        'consignee_name' => $items['consignee']['name'],
+                        'consignee_mobile' => $items['consignee']['mobile'],
+                        'consignee_location' => $items['consignee']['location'],
+                        'consignee_address' => $items['consignee']['address'],
+                        'consignee_state' => $items['consignee']['state'],
+                        'consignee_city' => $items['consignee']['city'],
+                        'consignee_postal' => $items['consignee']['pin_code'],
+                        'consignee_country' => $items['consignee']['country'],
+                        'consignee_gst' => $items['consignee']['gst_no'],
+                        'consignee_pan' => $items['consignee']['pan_no'],
+                        'consignee_altMobile' => $items['consignee']['alt_mobile'],
+                        'consignee_email' => $items['consignee']['email'],
+                        'from_location' => $items['from_location'],
+                        'to_location' => $items['to_location'],
+                        'vehicle_no' => $items['vehicle_id'],
+                        'ownership' => $items['vehicles']['ownership'],
+                        'vehicle_type' => $items['vehicles']['type'],
+                        'driver_name' => $items['setting_drivers']['name'],
+                        'driver_mobile' => $items['setting_drivers']['mobile'],
+                        'driver_dl' => $items['setting_drivers']['DL_no'],
+                        'DL_expire' => $items['setting_drivers']['DL_expire'],
+                        'amount' => $items['amount'],
+                        'bilty_count' => count($items['bilties']),
+                        'shipment_no' => (isset($items['bilties'][0]['shipment_no']) ? $items['bilties'][0]['shipment_no'] : ""),
+                        'bilties' => $items['bilties']
                     ]);
                 }
-                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+                return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
             } else {
-                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+                return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
             }
         } elseif ($type === 'loading') {
-            $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+            $restultArray = array();
+            $allLrBooking = ModelsLRBooking::where('status', $type)->with('consignor', 'consignee', 'setting_drivers', 'vehicles', 'bilties')->get()->toArray();
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
-                    $shipment_no = null;
-                    $bilty = Bilty::where('booking_id', $items->booking_id)->get()->toArray();
-                    if (!empty($bilty)) {
-                        if (isset($bilty[0])) {
-                            $shipment_no = Arr::pull($bilty[0], 'shipment_no');
-                        }
-                    }
                     $restultArray[$key] = ([
-                        'lr_id' => $items->booking_id,
-                        'consignor_id' => $items->consignor_id,
-                        'consignor_name' => $items->consignorName,
-                        'consignor_mobile' => $items->consignor_mobile,
-                        'consignor_location' => $items->consignor_location,
-                        'consignor_address' => $items->consignor_address,
-                        'consignor_state' => $items->consignor_state,
-                        'consignor_city' => $items->consignor_city,
-                        'consignor_postal' => $items->consignor_postal,
-                        'consignor_country' => $items->consignor_country,
-                        'consignor_pan' => $items->consignor_pan,
-                        'consignor_altMobile' => $items->consignor_altMobile,
-                        'consignor_email' => $items->consignor_email,
-                        'consignee_id' => $items->consignee_id,
-                        'consignee_name' => $items->consigneeName,
-                        'consignee_mobile' => $items->consignee_mobile,
-                        'consignee_location' => $items->consignee_location,
-                        'consignee_address' => $items->consignee_address,
-                        'consignee_state' => $items->consignee_state,
-                        'consignee_city' => $items->consignee_city,
-                        'consignee_postal' => $items->consignee_postal,
-                        'consignee_country' => $items->consignee_country,
-                        'consignee_pan' => $items->consignee_pan,
-                        'consignee_altMobile' => $items->consignee_altMobile,
-                        'consignee_email' => $items->consignee_email,
-                        'from_location' => $items->from_location,
-                        'to_location' => $items->to_location,
-                        'vehicle_no' => $items->vehicle_id,
-                        'ownership' => $items->ownership,
-                        'vehicle_type' => $items->vehicle_type,
-                        'driver_name' => $items->driver_name,
-                        'driver_mobile' => $items->driver_mobile,
-                        'driver_dl' => $items->driver_dl,
-                        'DL_expire' => $items->DL_expire,
-                        'amount' => $items->amount,
-                        'bilty_count' => count($bilty),
-                        'is_advance_done' => $items->is_advance_done,
-                        'shipment_no' => $shipment_no,
-                        'bilties' => $bilty
+                        'lr_id' => $items['booking_id'],
+                        'consignor_id' => $items['consignor_id'],
+                        'consignor_name' => $items['consignor']['name'],
+                        'consignor_mobile' => $items['consignor']['mobile'],
+                        'consignor_location' => $items['consignor']['location'],
+                        'consignor_address' => $items['consignor']['address'],
+                        'consignor_state' => $items['consignor']['state'],
+                        'consignor_city' => $items['consignor']['city'],
+                        'consignor_postal' => $items['consignor']['pin_code'],
+                        'consignor_country' => $items['consignor']['country'],
+                        'consignor_gst' => $items['consignor']['gst_no'],
+                        'consignor_pan' => $items['consignor']['pan_no'],
+                        'consignor_altMobile' => $items['consignor']['alt_mobile'],
+                        'consignor_email' => $items['consignor']['email'],
+                        'consignee_id' => $items['consignee_id'],
+                        'consignee_name' => $items['consignee']['name'],
+                        'consignee_mobile' => $items['consignee']['mobile'],
+                        'consignee_location' => $items['consignee']['location'],
+                        'consignee_address' => $items['consignee']['address'],
+                        'consignee_state' => $items['consignee']['state'],
+                        'consignee_city' => $items['consignee']['city'],
+                        'consignee_postal' => $items['consignee']['pin_code'],
+                        'consignee_country' => $items['consignee']['country'],
+                        'consignee_gst' => $items['consignee']['gst_no'],
+                        'consignee_pan' => $items['consignee']['pan_no'],
+                        'consignee_altMobile' => $items['consignee']['alt_mobile'],
+                        'consignee_email' => $items['consignee']['email'],
+                        'from_location' => $items['from_location'],
+                        'to_location' => $items['to_location'],
+                        'vehicle_no' => $items['vehicle_id'],
+                        'ownership' => $items['vehicles']['ownership'],
+                        'vehicle_type' => $items['vehicles']['type'],
+                        'driver_name' => $items['setting_drivers']['name'],
+                        'driver_mobile' => $items['setting_drivers']['mobile'],
+                        'driver_dl' => $items['setting_drivers']['DL_no'],
+                        'DL_expire' => $items['setting_drivers']['DL_expire'],
+                        'amount' => $items['amount'],
+                        'bilty_count' => count($items['bilties']),
+                        'shipment_no' => (isset($items['bilties'][0]['shipment_no']) ? $items['bilties'][0]['shipment_no'] : ""),
+                        'bilties' => $items['bilties']
                     ]);
                 }
-                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+                return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
             } else {
-                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+                return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
             }
         } elseif ($type === 'unload') {
-            $allLrBooking =  DB::table('lrBookingView')->where('status', $type)->get()->toArray();
+            $allLrBooking = ModelsLRBooking::where('status', $type)->with('setting_drivers', 'vehicles')->get()->toArray();
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $restultArray[$key] = ([
                         'lr_id' => $items->booking_id,
-                        'consignor_id' => $items->consignor_id,
-                        'consignor_name' => $items->consignorName,
-                        'consignee_name' => $items->consigneeName,
-                        'from_location' => $items->from_location,
-                        'to_location' => $items->to_location,
-                        'vehicle_no' => $items->vehicle_id,
-                        'ownership' => $items->ownership,
-                        'driver_name' => $items->driver_name,
-                        'booking_date' => $items->booking_date
+                        'consignor_id' => $items['consignor_id'],
+                        'consignor_name' => ucwords(Str::replace('_', ' ', $items['consignor_id'])),
+                        'consignee_id' => $items['consignee_id'],
+                        'consignee_name' => ucwords(Str::replace('_', ' ', $items['consignee_id'])),
+                        'from_location' => ucwords(Str::replace('_', ' ', $items['from_location'])),
+                        'to_location' => ucwords(Str::replace('_', ' ', $items['to_location'])),
+                        'vehicle_no' => $items['vehicle_id'],
+                        'ownership' => $items['vehicles']['ownership'],
+                        'driver_name' => $items['vehicles']['driver_name'],
+                        'booking_date' => $items['booking_date']
                     ]);
                 }
-                $finalArr = ['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray];
+                return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
             } else {
-                $finalArr = ['status' => 'error', 'errors' => 'Data not available!'];
+                return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
             }
         }
-
-        return response()->json($finalArr);
     }
 
     public function updateVehicleInLr(Request $request)
@@ -377,6 +362,62 @@ class LRBooking extends Controller
             return response(['status' => 'success', 'data' => $resultArr], 200);
         } else {
             return response(['status' => 'error', 'errors' => 'Lr Number is not available!'], 422);
+        }
+    }
+
+    // single lr all details by lr number
+    public function getAllSingleLrDtl($lrNo)
+    {
+        $restultArray = array();
+        $allLrBooking = ModelsLRBooking::where('booking_id', $lrNo)->with('consignor', 'consignee', 'setting_drivers', 'vehicles', 'bilties')->get()->toArray();
+        if (!empty($allLrBooking)) {
+            foreach ($allLrBooking as $key => $items) {
+                $restultArray[$key] = ([
+                    'lr_id' => $items['booking_id'],
+                    'consignor_id' => $items['consignor_id'],
+                    'consignor_name' => $items['consignor']['name'],
+                    'consignor_mobile' => $items['consignor']['mobile'],
+                    'consignor_location' => $items['consignor']['location'],
+                    'consignor_address' => $items['consignor']['address'],
+                    'consignor_state' => $items['consignor']['state'],
+                    'consignor_city' => $items['consignor']['city'],
+                    'consignor_postal' => $items['consignor']['pin_code'],
+                    'consignor_country' => $items['consignor']['country'],
+                    'consignor_gst' => $items['consignor']['gst_no'],
+                    'consignor_pan' => $items['consignor']['pan_no'],
+                    'consignor_altMobile' => $items['consignor']['alt_mobile'],
+                    'consignor_email' => $items['consignor']['email'],
+                    'consignee_id' => $items['consignee_id'],
+                    'consignee_name' => $items['consignee']['name'],
+                    'consignee_mobile' => $items['consignee']['mobile'],
+                    'consignee_location' => $items['consignee']['location'],
+                    'consignee_address' => $items['consignee']['address'],
+                    'consignee_state' => $items['consignee']['state'],
+                    'consignee_city' => $items['consignee']['city'],
+                    'consignee_postal' => $items['consignee']['pin_code'],
+                    'consignee_country' => $items['consignee']['country'],
+                    'consignee_gst' => $items['consignee']['gst_no'],
+                    'consignee_pan' => $items['consignee']['pan_no'],
+                    'consignee_altMobile' => $items['consignee']['alt_mobile'],
+                    'consignee_email' => $items['consignee']['email'],
+                    'from_location' => $items['from_location'],
+                    'to_location' => $items['to_location'],
+                    'vehicle_no' => $items['vehicle_id'],
+                    'ownership' => $items['vehicles']['ownership'],
+                    'vehicle_type' => $items['vehicles']['type'],
+                    'driver_name' => $items['setting_drivers']['name'],
+                    'driver_mobile' => $items['setting_drivers']['mobile'],
+                    'driver_dl' => $items['setting_drivers']['DL_no'],
+                    'DL_expire' => $items['setting_drivers']['DL_expire'],
+                    'amount' => $items['amount'],
+                    'bilty_count' => count($items['bilties']),
+                    'shipment_no' => (isset($items['bilties'][0]['shipment_no']) ? $items['bilties'][0]['shipment_no'] : ""),
+                    'bilties' => $items['bilties']
+                ]);
+            }
+            return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
+        } else {
+            return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
         }
     }
 }
