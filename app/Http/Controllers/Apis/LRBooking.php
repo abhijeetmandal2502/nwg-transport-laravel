@@ -327,10 +327,9 @@ class LRBooking extends Controller
 
     public function getLrFinalPaymentDetails($lrNo)
     {
-        $allUnloadDetails = VehicleUnload::where('lr_no', $lrNo)->get()->toArray();
+        $allUnloadDetails = VehicleUnload::where('lr_no', $lrNo)->with('l_r_bookings:booking_id,booking_date')->get()->toArray();
         if (!empty($allUnloadDetails)) {
-            $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $lrNo)->get(['booking_date'])->toArray();
-            $bookingDate = $allLrBooking[0]->booking_date;
+            $bookingDate = $allUnloadDetails[0]['l_r_bookings']['booking_date'];
             $totaldeduction = 0;
             $newDeductionArr = [];
             $deductionsArr = json_decode($allUnloadDetails[0]['deductions']);

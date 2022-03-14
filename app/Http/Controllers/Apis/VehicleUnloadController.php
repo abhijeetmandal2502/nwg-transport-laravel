@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Apis;
 use App\Http\Controllers\Controller;
 use App\Models\Bilty;
 use App\Models\BookingPayment;
-use App\Models\Consignor;
 use App\Models\LRBooking;
 use App\Models\PetrolPumpPayment;
 use App\Models\SettingDistance;
@@ -34,12 +33,13 @@ class VehicleUnloadController extends Controller
 
         DB::beginTransaction();
         try {
-            $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
-            $ownership = $allLrBooking[0]->ownership;
-            $consignor_id = $allLrBooking[0]->consignor_id;
-            $from_location = $allLrBooking[0]->from_location;
-            $to_location = $allLrBooking[0]->to_location;
-            $is_advance_done = $allLrBooking[0]->is_advance_done;
+            $allLrBooking = LRBooking::where('booking_id', $request->lr_no)->with('vehicles:vehicle_no,ownership', 'consignor:cons_id,consignor')->get()->toArray();
+            $ownership = $allLrBooking[0]['vehicles']['ownership'];
+            $consignor_id = $allLrBooking[0]['consignor_id'];
+            $from_location = $allLrBooking[0]['from_location'];
+            $to_location = $allLrBooking[0]['to_location'];
+            $is_advance_done = $allLrBooking[0]['is_advance_done'];
+            $mainVendorName = $allLrBooking[0]['consignor']['consignor'];
             $getBiltyWeight = Bilty::where('booking_id', $request->lr_no)->groupBy('booking_id')->selectRaw('sum(weight) as totalWeight')->get()->toArray();
             // $totalWeight = ceil($getBiltyWeight[0]['totalWeight']);
             $totalWeight = (isset($getBiltyWeight[0]['totalWeight'])) ? $getBiltyWeight[0]['totalWeight'] : 0;
@@ -47,8 +47,6 @@ class VehicleUnloadController extends Controller
             if ($ownership !== "owned") {
                 $amount = $allLrBooking[0]->amount;
             } else {
-                $getConsignor = Consignor::where('cons_id', $consignor_id)->get('consignor')->toArray();
-                $mainVendorName = (isset($getConsignor[0]['consignor'])) ? $getConsignor[0]['consignor'] : "";
                 $getPerKgRate = SettingDistance::where('consignor', $mainVendorName)->where('from_location', $from_location)->where('to_location', $to_location)->get('own_per_kg_rate')->toArray();
                 $ownPerKgRate = (isset($getPerKgRate[0]['own_per_kg_rate'])) ? $getPerKgRate[0]['own_per_kg_rate'] : 0;
                 $amount = ceil($totalWeight) * $ownPerKgRate;
