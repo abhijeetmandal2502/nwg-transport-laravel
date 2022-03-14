@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
-// Route::get('/logs/{lrNo}', [PetrolPumpPaymentController::class, 'getLog']);
+// Route::get('/logs/{lrNo}', [BiltyController::class, 'getBilties']);
 
 
 Route::middleware('auth:api')->group(function () {
@@ -56,7 +56,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/lr-bookings-status/{type}', [LRBooking::class, 'geLrByStatus'])->name('api.lr.bookings.status');
     Route::get('/free-vehicles/{type}', [LRBooking::class, 'getAllVehicles'])->name('api.freeVehicle');
     Route::get('/due-payment/{lrNo}', [LRBooking::class, 'getLrFinalPaymentDetails'])->name('api.due-payment');
-    Route::get('/lr-booking/single/{lrNo}', [LRBooking::class, 'getAllSingleLrDtl']);
+    Route::get('/lr-booking/single/{lrNo}', [LRBooking::class, 'getAllSingleLrDtl'])->name('api.singleLrInfo');
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
     Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');
@@ -64,6 +64,7 @@ Route::middleware('auth:api')->group(function () {
     // Bitly Genrations
     Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
     Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
+    Route::get('/lr-bilties/{lrNo}', [BiltyController::class, 'getBilties'])->name('api.lrBilties');
 
     // Accounts
     Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');

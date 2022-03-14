@@ -127,4 +127,14 @@ class BiltyController extends Controller
             return response(['status' => 'error', 'errors' => 'Invalid Bilty Invoice!'], 422);
         }
     }
+
+    public function getBilties($lrNo)
+    {
+        $bilties = Bilty::where('booking_id', $lrNo)->get()->toArray();
+        if (!empty($bilties)) {
+            return response(['status' => 'success', 'records' => count($bilties), 'data' => $bilties], 200);
+        } else {
+            return response(['status' => 'error',  'errors' => "No any bilty available!"], 422);
+        }
+    }
 }
