@@ -266,7 +266,7 @@ class LRBooking extends Controller
                 return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
             }
         } elseif ($type === 'unload') {
-            $allLrBooking = ModelsLRBooking::where('status', $type)->with('setting_drivers', 'vehicles')->get()->toArray();
+            $allLrBooking = ModelsLRBooking::where('status', $type)->with('setting_drivers:driver_id,name', 'vehicles:vehicle_no,ownership')->get()->toArray();
             if (!empty($allLrBooking)) {
                 foreach ($allLrBooking as $key => $items) {
                     $restultArray[$key] = ([
@@ -279,7 +279,7 @@ class LRBooking extends Controller
                         'to_location' => ucwords(Str::replace('_', ' ', $items['to_location'])),
                         'vehicle_no' => $items['vehicle_id'],
                         'ownership' => $items['vehicles']['ownership'],
-                        'driver_name' => $items['vehicles']['name'],
+                        'driver_name' => $items['setting_drivers']['name'],
                         'booking_date' => $items['booking_date']
                     ]);
                 }
