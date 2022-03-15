@@ -46,7 +46,7 @@ class VehicleUnloadController extends Controller
             $totalWeight = (isset($getBiltyWeight[0]['totalWeight'])) ? $getBiltyWeight[0]['totalWeight'] : 0;
             $ownPerKgRate = 0;
             if ($ownership !== "owned") {
-                $amount = $allLrBooking[0]->amount;
+                $amount = $allLrBooking[0]['amount'];
             } else {
                 $getPerKgRate = SettingDistance::where('consignor', $mainVendorName)->where('from_location', $from_location)->where('to_location', $to_location)->get('own_per_kg_rate')->toArray();
                 $ownPerKgRate = (isset($getPerKgRate[0]['own_per_kg_rate'])) ? $getPerKgRate[0]['own_per_kg_rate'] : 0;
@@ -64,11 +64,10 @@ class VehicleUnloadController extends Controller
             $totaldeduction = 0;
             $deductionsArr = json_decode($request->deductions);
             foreach ($deductionsArr as $dk => $dv) {
-                $totaldeduction += $dv['amount'];
+                $totaldeduction += $dv->amount;
             }
 
             $finalPayment = $amount + $request->unload_charge - $totaldeduction - $advancePayment - $petrolPayment;
-
             $request->merge([
                 'order_weight' => $totalWeight,
                 'per_kg_rate' => $ownPerKgRate,
