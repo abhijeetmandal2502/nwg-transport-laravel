@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bilty;
+use App\Models\BookingPayment;
 use App\Models\LRBooking;
 use App\Models\SettingDistance;
 use Illuminate\Http\Request;
@@ -78,6 +79,72 @@ class BiltyController extends Controller
         }
     }
 
+
+    public function updateBitly(Request $request, $biltyId)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'narration' => 'string|max:150',
+            'amount' => 'required|numeric|min:0',
+            'payment_mode' => 'required|string|max:50',
+            'trans_id' => 'max:50',
+            'cheque_no' => 'max:50',
+        ]);
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+        $getBiltyDetails = Bilty::where('id', $biltyId)->where('payment_status', 'pending')->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
+        if (!empty($getBiltyDetails)) {
+            $lr_no = $getBiltyDetails[0]['booking_id'];
+            $shipment_no = $getBiltyDetails[0]['shipment_no'];
+            $invoice = $getBiltyDetails[0]['invoice'];
+            $request->merge(['lr_no' => $lr_no, 'shipment_no' => $shipment_no, 'invoice' => $invoice]);
+            DB::beginTransaction();
+            try {
+                Bilty::where('id', $biltyId)->update([
+                    'received_amount' => $request->amount,
+                    'payment_status' => 'paid',
+                ]);
+                $biltiyCount = count($getBiltyDetails);
+                if ($biltiyCount === 1) {
+                    LRBooking::where('booking_id', $lr_no)->update([
+                        'closed_date' => date('Y-m-d H:i:s'),
+                        'status' => 'closed'
+                    ]);
+                    $subject = "Bilty amount paid and LR closed";
+                } else {
+                    $subject = "Bilty amount paid successfully";
+                }
+
+                BookingPayment::create([
+                    'tr_id' => $uniqueAPId,
+                    'lr_no' => $request->lr_no,
+                    'type' => 'vehicle_advance',
+                    'txn_type' => 'debit',
+                    'amount' => $request->advance_amount,
+                    'narration' => $request->narration,
+                    'method' => $request->payment_mode,
+                    'txn_id' => $request->trans_id,
+                    'cheque_no' => $request->cheque_no,
+                    'created_at' => $request->created_at,
+                    'created_by' => auth()->user()->emp_id
+                ]);
+
+                allTransactions($request->lr_no, $actionType, json_encode($description), $request->petrol_amount, $transType, auth()->user()->emp_id);
+
+                $depart = 'account';
+                userLogs($depart, $subject);
+                DB::commit();
+                return response(['status' => 'success', 'message' => 'Bilty amount paid successfully!', 'data' => $request->all()], 201);
+            } catch (\Exception $e) {
+                DB::rollback();
+                return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
+            }
+        } else {
+            // invalid bilty 
+        }
+    }
+
     public function getAllBilties($biltyId)
     {
         $bilty = array();
@@ -93,6 +160,8 @@ class BiltyController extends Controller
                 'weight' => $getBilties[0]['weight'],
                 'weight_unit' => $getBilties[0]['unit'],
                 'goods_value' => $getBilties[0]['goods_value'],
+                'income_amount' => $getBilties[0]['income_amount'],
+                'status' => $getBilties[0]['payment_status']
             ];
             $restultArray = [
                 'lr_id' => $getBilties[0]['l_r_bookings']['booking_id'],

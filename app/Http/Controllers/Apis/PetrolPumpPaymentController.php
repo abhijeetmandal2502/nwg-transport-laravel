@@ -15,24 +15,12 @@ class PetrolPumpPaymentController extends Controller
     public function getLog()
     {
         $lrNo = 'TAS1647002024LR1';
-        $biltyId = 4;
+        $biltyId = 10;
         $restultArray = array();
-        $consignor = LRBooking::where('booking_id', $lrNo)->with('consignor:cons_id,consignor')->get()->toArray();
-        $consignor_id = $consignor[0]['consignor_id'];
-        $fromLocation = $consignor[0]['from_location'];
-        $toLocation = $consignor[0]['to_location'];
-        $mainVendor = $consignor[0]['consignor']['consignor'];
-        $getVendorKgRate = SettingDistance::where('consignor', $mainVendor)->where('from_location', $fromLocation)->where('to_location', $toLocation)->get('vendor_per_kg_rate')->toArray();
-        $vendorKgRate = $getVendorKgRate[0]['vendor_per_kg_rate'];
-
-        $result = [
-            'consignor_id' => $consignor_id,
-            'vendor_per_kg_rate' => $vendorKgRate
-
-        ];
-        dd($result);
+        $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
+        dd($getBiltyDetails[0]['booking_id']);
         // $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
-        $getBilties = Bilty::where('id', 4)->with('l_r_bookings.consignor', 'l_r_bookings.consignee', 'l_r_bookings.setting_drivers', 'l_r_bookings.vehicles')->get()->toArray();
+
 
         // $allLrBooking = LRBooking::where('booking_id', $lrNo)->with('vehicles:vehicle_no,ownership', 'consignor:cons_id,consignor')->get()->toArray();
 
