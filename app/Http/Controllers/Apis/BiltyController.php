@@ -111,27 +111,28 @@ class BiltyController extends Controller
                         'closed_date' => date('Y-m-d H:i:s'),
                         'status' => 'closed'
                     ]);
-                    $subject = "Bilty amount paid and LR closed";
+                    $subject = "Bilty amount received and LR closed";
                 } else {
-                    $subject = "Bilty amount paid successfully";
+                    $subject = "Bilty amount received";
                 }
-
+                $prifix = 'TASBP';
+                $tableName = 'booking_payments';
+                $transType = "credit";
+                $actionType = "bilty_payment";
+                $uniqueAPId = getUniqueCode($prifix, $tableName);
                 BookingPayment::create([
                     'tr_id' => $uniqueAPId,
-                    'lr_no' => $request->lr_no,
-                    'type' => 'vehicle_advance',
-                    'txn_type' => 'debit',
-                    'amount' => $request->advance_amount,
+                    'lr_no' => $lr_no,
+                    'type' => $actionType,
+                    'txn_type' => $transType,
+                    'amount' => $request->amount,
                     'narration' => $request->narration,
                     'method' => $request->payment_mode,
                     'txn_id' => $request->trans_id,
                     'cheque_no' => $request->cheque_no,
-                    'created_at' => $request->created_at,
                     'created_by' => auth()->user()->emp_id
                 ]);
-
-                allTransactions($request->lr_no, $actionType, json_encode($description), $request->petrol_amount, $transType, auth()->user()->emp_id);
-
+                allTransactions($lr_no, $actionType, json_encode($request->all()), $request->amount, $transType, auth()->user()->emp_id);
                 $depart = 'account';
                 userLogs($depart, $subject);
                 DB::commit();
@@ -141,7 +142,7 @@ class BiltyController extends Controller
                 return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
             }
         } else {
-            // invalid bilty 
+            return response(['status' => 'error', 'errors' => "Invalid Bilty Details!"], 422);
         }
     }
 

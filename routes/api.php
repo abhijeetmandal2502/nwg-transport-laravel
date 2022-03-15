@@ -67,7 +67,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
     Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
     Route::get('/lr-bilties/{lrNo}', [BiltyController::class, 'getBilties'])->name('api.lrBilties');
-
+    Route::post('/bilty-update/{biltyId}', [BiltyController::class, 'updateBitly'])->name('api.biltyUpdate');
     // Accounts
     Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');
     Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdvanceDetails'])->name('api.getAdvanceDetails');
