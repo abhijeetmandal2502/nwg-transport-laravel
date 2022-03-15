@@ -64,7 +64,7 @@ class VehicleUnloadController extends Controller
             $totaldeduction = 0;
             $deductionsArr = json_decode($request->deductions);
             foreach ($deductionsArr as $dk => $dv) {
-                $totaldeduction += $dv->amount;
+                $totaldeduction += $dv['amount'];
             }
 
             $finalPayment = $amount + $request->unload_charge - $totaldeduction - $advancePayment - $petrolPayment;

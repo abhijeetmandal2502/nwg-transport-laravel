@@ -9,6 +9,7 @@ use App\Models\LRBooking;
 use App\Models\PetrolPumpPayment;
 use App\Models\SettingDistance;
 use Illuminate\Http\Request;
+use NumberFormatter;
 
 class PetrolPumpPaymentController extends Controller
 {
@@ -17,8 +18,12 @@ class PetrolPumpPaymentController extends Controller
         $lrNo = 'TAS1647002024LR1';
         $biltyId = 10;
         $restultArray = array();
-        $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
-        dd($getBiltyDetails[0]['booking_id']);
+
+        $f = new NumberFormatter("en", NumberFormatter::SPELLOUT);
+        // echo $f->format(1432);
+        dd(ucwords($f->format(1432)));
+        // $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
+        // dd($getBiltyDetails[0]['booking_id']);
         // $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
 
 
