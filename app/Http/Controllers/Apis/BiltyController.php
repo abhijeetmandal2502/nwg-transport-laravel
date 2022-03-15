@@ -42,7 +42,7 @@ class BiltyController extends Controller
             return response(['status' => 'error', 'errors' => 'Consignor not found on this booking!'], 422);
         }
         $invoiceUnique = $consignor['consignor_id'] . '-' . $request->invoice_no;
-
+        $request->merge(['invoice' => $invoiceUnique]);
         $validator = Validator::make($request->all(), [
             'invoice' => 'required|unique:bilties,invoice',
             'booking_id' => 'required|alpha_num|exists:l_r_bookings,booking_id',
@@ -60,10 +60,9 @@ class BiltyController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-
         // income calculation
         $income_amount = ceil($request->weight) * $consignor['vendor_per_kg_rate'];
-        $request->merge(['invoice' => $invoiceUnique, 'income_amount' => $income_amount, 'created_by' => auth()->user()->emp_id]);
+        $request->merge(['income_amount' => $income_amount, 'created_by' => auth()->user()->emp_id]);
         DB::beginTransaction();
         try {
             Bilty::create($request->all());
