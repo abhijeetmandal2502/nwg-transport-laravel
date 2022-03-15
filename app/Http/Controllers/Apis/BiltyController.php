@@ -82,18 +82,18 @@ class BiltyController extends Controller
 
     public function updateBitly(Request $request, $biltyId)
     {
-
         $validator = Validator::make($request->all(), [
             'narration' => 'string|max:150',
             'amount' => 'required|numeric|min:0',
             'payment_mode' => 'required|string|max:50',
+            'status' => 'required|in:processing,approved',
             'trans_id' => 'max:50',
             'cheque_no' => 'max:50',
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        $getBiltyDetails = Bilty::where('id', $biltyId)->where('payment_status', 'pending')->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
+        $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
         if (!empty($getBiltyDetails)) {
             $lr_no = $getBiltyDetails[0]['booking_id'];
             $shipment_no = $getBiltyDetails[0]['shipment_no'];
@@ -101,20 +101,27 @@ class BiltyController extends Controller
             $request->merge(['lr_no' => $lr_no, 'shipment_no' => $shipment_no, 'invoice' => $invoice]);
             DB::beginTransaction();
             try {
+
                 Bilty::where('id', $biltyId)->update([
                     'received_amount' => $request->amount,
-                    'payment_status' => 'paid',
+                    'payment_status' => $request->status,
                 ]);
-                $biltiyCount = count($getBiltyDetails);
-                if ($biltiyCount === 1) {
-                    LRBooking::where('booking_id', $lr_no)->update([
-                        'closed_date' => date('Y-m-d H:i:s'),
-                        'status' => 'closed'
-                    ]);
-                    $subject = "Bilty amount received and LR closed";
-                } else {
-                    $subject = "Bilty amount received";
+                if ($request->status === "processing") {
+                    $subject = "Bilty Sent to vendor for approval!";
+                } elseif ($request->status === "approved") {
+
+                    if ($biltiyCount === 1) {
+                        LRBooking::where('booking_id', $lr_no)->update([
+                            'closed_date' => date('Y-m-d H:i:s'),
+                            'status' => 'closed'
+                        ]);
+                        $subject = "Bilty amount received and LR closed";
+                    } else {
+                        $subject = "Bilty amount received";
+                    }
                 }
+
+
                 $prifix = 'TASBP';
                 $tableName = 'booking_payments';
                 $transType = "credit";
