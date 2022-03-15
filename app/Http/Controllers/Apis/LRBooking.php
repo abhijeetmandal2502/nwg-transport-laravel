@@ -70,7 +70,7 @@ class LRBooking extends Controller
         // for print custom date use
         $printStatus = array('yes', 'no');
         if ($lrNo != "") {
-            $allLrBooking =  ModelsLRBooking::where('booking_id', $lrNo)->with()->limit(1)->get()->toArray();
+            $allLrBooking =  ModelsLRBooking::where('booking_id', $lrNo)->limit(1)->get()->toArray();
         } else {
             $allLrBooking =  ModelsLRBooking::orderByDesc('id')->offset($ofset)->limit($limit)->get()->toArray();
         }
@@ -80,15 +80,15 @@ class LRBooking extends Controller
         if (!empty($allLrBooking)) {
             foreach ($allLrBooking as $key => $items) {
                 $restultArray[$key] = ([
-                    'lr_id' => $items->booking_id,
-                    'consignor_id' => $items->consignor_id,
-                    'consignor_name' => ucwords(Str::replace('_', ' ', $items->consignor_id)),
-                    'consignee_id' => $items->consignee_id,
-                    'consignee_name' => ucwords(Str::replace('_', ' ', $items->consignee_id)),
-                    'from_location' => ucwords(Str::replace('_', ' ', $items->from_location)),
-                    'to_location' => ucwords(Str::replace('_', ' ', $items->to_location)),
-                    'amount' => $items->amount,
-                    'status' => $items->status,
+                    'lr_id' => $items['booking_id'],
+                    'consignor_id' => $items['consignor_id'],
+                    'consignor_name' => ucwords(Str::replace('_', ' ', $items['consignor_id'])),
+                    'consignee_id' => $items['consignee_id'],
+                    'consignee_name' => ucwords(Str::replace('_', ' ', $items['consignee_id'])),
+                    'from_location' => ucwords(Str::replace('_', ' ', $items['from_location'])),
+                    'to_location' => ucwords(Str::replace('_', ' ', $items['to_location'])),
+                    'amount' => $items['amount'],
+                    'status' => $items['status'],
                     'print' => $printStatus[array_rand($printStatus)]
                 ]);
             }
