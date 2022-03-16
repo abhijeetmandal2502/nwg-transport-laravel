@@ -82,68 +82,81 @@ class BiltyController extends Controller
 
     public function updateBitly(Request $request, $biltyId)
     {
-        $validator = Validator::make($request->all(), [
-            'narration' => 'string|max:150',
-            'amount' => 'required|numeric|min:0',
-            'payment_mode' => 'required|string|max:50',
-            'status' => 'required|in:processing,approved',
-            'trans_id' => 'max:50',
-            'cheque_no' => 'max:50',
-        ]);
-        if ($validator->fails()) {
-            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
-        }
+
         $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
         if (!empty($getBiltyDetails)) {
             $lr_no = $getBiltyDetails[0]['booking_id'];
             $shipment_no = $getBiltyDetails[0]['shipment_no'];
             $invoice = $getBiltyDetails[0]['invoice'];
             $request->merge(['lr_no' => $lr_no, 'shipment_no' => $shipment_no, 'invoice' => $invoice]);
+
             DB::beginTransaction();
             try {
-
-                Bilty::where('id', $biltyId)->update([
-                    'received_amount' => $request->amount,
-                    'payment_status' => $request->status,
-                ]);
                 if ($request->status === "processing") {
+                    $validator = Validator::make($request->all(), [
+                        'amount' => 'required|numeric|min:0',
+                        'status' => 'required|in:processing',
+                    ]);
+                    if ($validator->fails()) {
+                        return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+                    }
+                    Bilty::where('id', $biltyId)->update([
+                        'process_amount' => $request->amount,
+                        'payment_status' => $request->status,
+                    ]);
                     $subject = "Bilty Sent to vendor for approval!";
                 } elseif ($request->status === "approved") {
-
-                    if ($biltiyCount === 1) {
-                        LRBooking::where('booking_id', $lr_no)->update([
-                            'closed_date' => date('Y-m-d H:i:s'),
-                            'status' => 'closed'
-                        ]);
-                        $subject = "Bilty amount received and LR closed";
-                    } else {
-                        $subject = "Bilty amount received";
+                    $validator = Validator::make($request->all(), [
+                        'narration' => 'string|max:150',
+                        'amount' => 'required|numeric|min:0',
+                        'payment_mode' => 'required|string|max:50',
+                        'status' => 'required|in:approved',
+                        'trans_id' => 'max:50',
+                        'cheque_no' => 'max:50',
+                    ]);
+                    if ($validator->fails()) {
+                        return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
                     }
+                    Bilty::where('id', $biltyId)->update([
+                        'received_amount' => $request->amount,
+                        'tds_amount' => $request->tds_amount,
+                        'payment_status' => $request->status,
+                    ]);
+                    $bitliesCount = Bilty::where('booking_id', $lr_no)->where('payment_status', '!=', 'approved')->count();
+                    if ($bitliesCount === 0) {
+                        LRBooking::where('booking_id', $lr_no)->update([
+                            'status' => 'closed',
+                            'closed_date' => date('Y-m-d H:i:s'),
+                        ]);
+                        $subject = "Bilty payment received and LR closed!";
+                    } else {
+                        $subject = "Bilty payment received!";
+                    }
+                    $prifix = 'TASBP';
+                    $tableName = 'booking_payments';
+                    $transType = "credit";
+                    $actionType = "bilty_payment";
+                    $uniqueAPId = getUniqueCode($prifix, $tableName);
+                    BookingPayment::create([
+                        'tr_id' => $uniqueAPId,
+                        'lr_no' => $lr_no,
+                        'type' => $actionType,
+                        'txn_type' => $transType,
+                        'amount' => $request->amount,
+                        'narration' => $request->narration,
+                        'method' => $request->payment_mode,
+                        'txn_id' => $request->trans_id,
+                        'cheque_no' => $request->cheque_no,
+                        'created_by' => auth()->user()->emp_id
+                    ]);
+                    allTransactions($lr_no, $actionType, json_encode($request->all()), $request->amount, $transType, auth()->user()->emp_id);
+                } else {
+                    return response(['status' => 'error', 'errors' => "Invalid Status!"], 422);
                 }
-
-
-                $prifix = 'TASBP';
-                $tableName = 'booking_payments';
-                $transType = "credit";
-                $actionType = "bilty_payment";
-                $uniqueAPId = getUniqueCode($prifix, $tableName);
-                BookingPayment::create([
-                    'tr_id' => $uniqueAPId,
-                    'lr_no' => $lr_no,
-                    'type' => $actionType,
-                    'txn_type' => $transType,
-                    'amount' => $request->amount,
-                    'narration' => $request->narration,
-                    'method' => $request->payment_mode,
-                    'txn_id' => $request->trans_id,
-                    'cheque_no' => $request->cheque_no,
-                    'created_by' => auth()->user()->emp_id
-                ]);
-                allTransactions($lr_no, $actionType, json_encode($request->all()), $request->amount, $transType, auth()->user()->emp_id);
                 $depart = 'account';
                 userLogs($depart, $subject);
                 DB::commit();
-                return response(['status' => 'success', 'message' => 'Bilty amount paid successfully!', 'data' => $request->all()], 201);
+                return response(['status' => 'success', 'message' => 'Bilty amount received successfully!', 'data' => $request->all()], 201);
             } catch (\Exception $e) {
                 DB::rollback();
                 return response(['status' => 'error', 'errors' => $e->getMessage()], 422);

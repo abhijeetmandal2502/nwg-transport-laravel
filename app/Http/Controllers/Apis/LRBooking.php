@@ -114,7 +114,7 @@ class LRBooking extends Controller
             $resultData = SettingDriver::select('driver_id', 'name', 'mobile', 'DL_no', 'DL_expire')->whereNotIn('driver_id', $driverIds)->get()->toArray();
         } elseif ($type == 'vehicle') {
             $vehicleIds = [];
-            $findAllBookedVehicle = ModelsLRBooking::where('vehicle_id', '!=', null)->where(function ($query) {
+            $findAllBookedVehicle = ModelsLRBooking::where(function ($query) {
                 $query->where('status', '!=', 'cancel')
                     ->orWhere('status', '!=', 'closed')
                     ->orWhere('status', '!=', 'unload');
