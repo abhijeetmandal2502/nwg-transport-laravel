@@ -82,7 +82,6 @@ class BiltyController extends Controller
 
     public function updateBitly(Request $request, $biltyId)
     {
-
         $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
         if (!empty($getBiltyDetails)) {
             $lr_no = $getBiltyDetails[0]['booking_id'];
@@ -181,7 +180,10 @@ class BiltyController extends Controller
                 'weight' => $getBilties[0]['weight'],
                 'weight_unit' => $getBilties[0]['unit'],
                 'goods_value' => $getBilties[0]['goods_value'],
-                'income_amount' => $getBilties[0]['income_amount'],
+                'system_amount' => $getBilties[0]['income_amount'],
+                'process_amount' => $getBilties[0]['process_amount'],
+                'received_amount' => $getBilties[0]['received_amount'],
+                'tds_amount' => $getBilties[0]['tds_amount'],
                 'status' => $getBilties[0]['payment_status']
             ];
             $restultArray = [
