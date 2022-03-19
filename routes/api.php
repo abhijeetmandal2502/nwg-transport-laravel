@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Apis\AccessPagesController;
 use App\Http\Controllers\Apis\AdvancePaymentController;
 use App\Http\Controllers\Apis\AuthController;
 use App\Http\Controllers\Apis\BiltyController;
@@ -122,8 +123,13 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/update-ppump/{id}', [PetrolPumpController::class, 'updatePPump'])->name('api.updatePPump');
     Route::get('/petrol-pumps/{pumpId?}', [PetrolPumpController::class, 'getPPump'])->name('api.getPPump');
 
-    //page Management
+    //Menu Management
     Route::post('/create-page', [SettingPageController::class, 'createPage'])->name('api.createPage');
     Route::post('/update-page/{id}', [SettingPageController::class, 'updatePage'])->name('api.updatePage');
     Route::get('/pages/{pageSlug?}', [SettingPageController::class, 'getPage'])->name('api.getPage');
+
+    // Access Pages Management
+    Route::post('/access-pages', [AccessPagesController::class, 'createPage'])->name('api.createAccessPage');
+    Route::post('/update-access-page/{id}', [AccessPagesController::class, 'updatePage'])->name('api.updateAccessPage');
+    Route::get('/access-pages/{id?}', [AccessPagesController::class, 'getPage'])->name('api.getAcceessPage');
 });
