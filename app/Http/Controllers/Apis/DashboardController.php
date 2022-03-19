@@ -35,8 +35,8 @@ class DashboardController extends Controller
                 }
             }
         }
-        $lrStatusArr['total_lr'] = $total_lr;
-        $lrStatusArr['active_lr'] = $activeLr;
+        $lrStatusArr['total'] = $total_lr;
+        $lrStatusArr['active'] = $activeLr;
 
         $userCount = User::groupBy('status')
             ->selectRaw('count(*) as total, status')
