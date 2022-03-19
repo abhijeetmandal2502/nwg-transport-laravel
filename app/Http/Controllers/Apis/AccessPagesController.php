@@ -20,6 +20,11 @@ class AccessPagesController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
+        $prifix = 'page_';
+        $tableName = 'access_pages';
+        $uniqiePageId = getUniqueCode($prifix, $tableName);
+
+        $request->merge(['page_id' => $uniqiePageId]);
         DB::beginTransaction();
         try {
             AccessPages::create($request->all());

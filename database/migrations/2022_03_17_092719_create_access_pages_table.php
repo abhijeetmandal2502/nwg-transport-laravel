@@ -15,6 +15,7 @@ class CreateAccessPagesTable extends Migration
     {
         Schema::create('access_pages', function (Blueprint $table) {
             $table->id();
+            $table->string('page_id')->unique();
             $table->string('name');
             $table->string('url');
             $table->timestamps();

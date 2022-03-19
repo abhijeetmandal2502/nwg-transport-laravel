@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
+use App\Models\AccessPages;
 use App\Models\Role;
 use App\Models\SettingPage;
 use App\Models\User;
@@ -113,8 +114,10 @@ class AuthController extends Controller
                     $token = $user->createToken('access_transport_association')->accessToken;
                     $roleData = Role::where('role_id', $user->role_id)->first();
                     $jsonToArr = json_decode($roleData->access_pages, true);
-                    $accessPages = SettingPage::whereIn('page_slug', $jsonToArr)->get();
-                    foreach ($accessPages as $key => $value) {
+                    $internal_access = json_decode($roleData->internal_access, true);
+                    $accessPages = AccessPages::whereIn('page_id', $internal_access)->get();
+                    $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+                    foreach ($accessMenues as $key => $value) {
                         $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
                     }
                     // result array
@@ -128,7 +131,8 @@ class AuthController extends Controller
                         'mobile' => $user->mobile,
                         'role_id' => $user->role_id,
                         'role_name' => $roleData->role_name,
-                        'page_access' => $temArray
+                        'menu_access' => $temArray,
+                        'page_access' => $accessPages->toArray(),
                     ];
 
                     return response($response, 200);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Apis;
 
 use App\Http\Controllers\Controller;
+use App\Models\AccessPages;
 use App\Models\Role;
 use App\Models\SettingPage;
 use Illuminate\Http\Request;
@@ -47,8 +48,10 @@ class RoleController extends Controller
         if (count($allRoles) > 0) {
             foreach ($allRoles as $roles) {
                 $jsonToArr = json_decode($roles['access_pages'], true);
-                $accessPages = SettingPage::whereIn('page_slug', $jsonToArr)->get();
-                foreach ($accessPages as $key => $value) {
+                $internal_access = json_decode($roles['internal_access'], true);
+                $accessPages = AccessPages::whereIn('page_id', $internal_access)->get();
+                $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+                foreach ($accessMenues as $key => $value) {
                     $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
                 }
 
@@ -57,6 +60,7 @@ class RoleController extends Controller
                     'role_slug' => $roles['role_id'],
                     'role_name' => $roles['role_name'],
                     'access_pages' => $temArray,
+                    'internal_access' => $accessPages->toArray(),
                     'status' => $roles['status']
                 ]);
             }
@@ -74,7 +78,8 @@ class RoleController extends Controller
         $validator = Validator::make($request->all(), [
             'role' => 'required|max:100|unique:roles,role_id',
             'role_name' => 'required|string|max:100',
-            'access_pages' => 'required|json'
+            'access_pages' => 'required|json',
+            'internal_access' => 'required|json'
         ]);
 
         if ($validator->fails()) {
@@ -103,6 +108,7 @@ class RoleController extends Controller
             'role_id' => 'required|max:100|unique:roles,role_id,' . $id,
             'role_name' => 'required|string|max:100',
             'access_pages' => 'required|json',
+            'internal_access' => 'required|json',
             'status' => 'required|in:active,inactive'
         ]);
 
