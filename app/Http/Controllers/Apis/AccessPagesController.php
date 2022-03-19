@@ -61,7 +61,7 @@ class AccessPagesController extends Controller
         }
     }
 
-    public function getPage($id)
+    public function getPage($id = null)
     {
 
         // return response(auth()->user()->emp_id);
