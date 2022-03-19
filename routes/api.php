@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Route::get('/logs/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings']);
 Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
-
+// Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('api.dashboard');
 
 Route::middleware('auth:api')->group(function () {
 

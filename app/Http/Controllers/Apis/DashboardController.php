@@ -22,6 +22,7 @@ class DashboardController extends Controller
         $lrCount = LRBooking::groupBy('status')
             ->selectRaw('count(*) as total, status')
             ->get()->toArray();
+
         $lrStatusArr = ['fresh' => 0, 'vehicle-assigned' => 0, 'cancel' => 0, 'closed' => 0, 'hold' => 0, 'loading' => 0, 'unload' => 0];
 
         if (!empty($lrCount)) {
