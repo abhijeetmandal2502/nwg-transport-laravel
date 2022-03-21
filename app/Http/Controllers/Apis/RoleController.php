@@ -39,28 +39,32 @@ class RoleController extends Controller
     }
     public function getAllRolesDetails($slug = null)
     {
-        $roleData = array();
+        $roleData = [];
+        $accessPages = [];
         if ($slug !== null) {
-            $allRoles = Role::where('role_id', $slug)->get();
+            $allRoles = Role::where('role_id', $slug)->get()->toArray();
         } else {
-            $allRoles = Role::all();
+            $allRoles = Role::all()->toArray();
         }
-        if (count($allRoles) > 0) {
+
+        if (!empty($allRoles)) {
             foreach ($allRoles as $roles) {
+
                 $jsonToArr = json_decode($roles['access_pages'], true);
+
                 $internal_access = json_decode($roles['internal_access'], true);
-                $accessPages = AccessPages::whereIn('page_id', $internal_access)->get();
+                $accessPages = AccessPages::whereIn('page_id', $internal_access)->get()->toArray();
                 $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+
                 foreach ($accessMenues as $key => $value) {
                     $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
                 }
-
                 $roleData[] = ([
                     'id' => $roles['id'],
                     'role_slug' => $roles['role_id'],
                     'role_name' => $roles['role_name'],
                     'access_pages' => $temArray,
-                    'internal_access' => $accessPages->toArray(),
+                    'internal_access' => $accessPages,
                     'status' => $roles['status']
                 ]);
             }
