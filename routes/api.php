@@ -38,7 +38,8 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Route::get('/logs/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings']);
-Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+// Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 
 Route::middleware('auth:api')->group(function () {
 
@@ -82,7 +83,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/update-consignor/{id}', [ConsignorController::class, 'updateConsignors'])->name('api.update.consignors');
 
     // Role managment
-    Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
+
     Route::post('/create-role', [RoleController::class, 'createRole'])->name('api.createRole');
     Route::post('/update-role/{id}', [RoleController::class, 'updateRole'])->name('api.updateRole');
     Route::get('/all-roles/{slug?}', [RoleController::class, 'getAllRolesDetails'])->name('api.getAllRolesDetails');
