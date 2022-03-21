@@ -16,6 +16,51 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+    /**
+     * * @OA\Info(
+     *    title="Transport Association Backend",
+     *    version="1.0.0",
+     * )
+     * @OA\Post(
+     * path="/api/register",
+     * operationId="Authentication",
+     * tags={"Authentication"},
+     * summary="Employee Register",
+     * description="Employee Register here",
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(),
+     *         @OA\MediaType(
+     *            mediaType="multipart/form-data",
+     *            @OA\Schema(
+     *               type="object",
+     *               required={"name","email", "password",},
+     *               @OA\Property(property="employee_id", type="text"),
+     *               @OA\Property(property="name", type="text"),
+     *               @OA\Property(property="email", type="text"),
+     *               @OA\Property(property="mobile", type="text"),
+     *               @OA\Property(property="gender", type="text"),
+     *               @OA\Property(property="date_of_join", type="date"),
+     *               @OA\Property(property="date_of_birth", type="date"),
+     *               @OA\Property(property="salary", type="number"),
+     *               @OA\Property(property="role", type="text"),
+     *               @OA\Property(property="password", type="password"),
+     *            ),
+     *        ),
+     *    ),
+     *      @OA\Response(
+     *          response=201,
+     *          description="Employee created successfully!",
+     *          @OA\JsonContent()
+     *       ),
+     *      @OA\Response(
+     *          response=422,
+     *          description="Unprocessable Entity",
+     *          @OA\JsonContent()
+     *       ),
+     * )
+     */
+
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -57,6 +102,53 @@ class AuthController extends Controller
             // $response = ['token' => $token];
             $depart = 'super_admin';
             $subject = "New Employee Created";
+            userLogs($depart, $subject);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Employee created successfully!'], 201);
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
+            Db::rollback();
+            return response(['status' => 'error', 'errors' => $th->getMessage()], 422);
+        }
+    }
+
+    public function updateEmployee(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'employee_id' => 'required|alpha_num|max:50|unique:users,emp_id,' . $id,
+            'name' => 'required|string|max:100',
+            'mobile' => 'required|numeric|digits:10|unique:users,mobile,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+            'gender' => 'required|in:male,female,other',
+            'date_of_join' => 'required|date',
+            'date_of_birth' => 'required|date',
+            'salary' => 'required|numeric',
+            'role' => 'required|exists:roles,role_id',
+            'password' => 'required|string|min:6',
+        ]);
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            User::where('id', $id)->update([
+                'emp_id' => $request->employee_id,
+                'name' => $request->name,
+                'mobile' => $request->mobile,
+                'email' => $request->email,
+                'gender' => $request->gender,
+                'doj' => $request->date_of_join,
+                'dob' => $request->date_of_birth,
+                'salary' => $request->salary,
+                'password' => Hash::make($request->password),
+                'view_pass' => $request->password,
+                'role_id' => $request->role,
+
+            ]);
+            $depart = 'super_admin';
+            $subject = "Employee Details Updated";
             userLogs($depart, $subject);
             DB::commit();
             return response(['status' => 'success', 'message' => 'Employee created successfully!'], 201);

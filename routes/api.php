@@ -48,6 +48,7 @@ Route::middleware('auth:api')->group(function () {
     // user registration api
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');
     Route::get('/employees/{empId?}', [AuthController::class, 'getEmployees'])->name('api.employees');
+    Route::post('/update-employees/{id}', [AuthController::class, 'updateEmployee'])->name('api.employeeUpdate');
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
 
     // Lr Booking managment
