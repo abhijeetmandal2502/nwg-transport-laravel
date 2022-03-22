@@ -41,6 +41,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 
+
 Route::middleware('auth:api')->group(function () {
 
     // Dashboard

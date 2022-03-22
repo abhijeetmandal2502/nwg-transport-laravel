@@ -102,21 +102,28 @@ class LRBooking extends Controller
     {
         if ($type == 'driver') {
             $driverIds = [];
-            $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where(function ($query) {
+            // $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where('driver_id', '!=', null)->where(function ($query) {
+            //     $query->where('status', '!=', 'cancel')
+            //         ->orWhere('status', '!=', 'closed')
+            //         ->orWhere('status', '!=', 'unload');
+            // })->get()->toArray();
+            $findAllBookedVehicle = ModelsLRBooking::select('driver_id')->where('driver_id', '!=', null)->where(function ($query) {
                 $query->where('status', '!=', 'cancel')
-                    ->orWhere('status', '!=', 'closed')
-                    ->orWhere('status', '!=', 'unload');
+                    ->where('status', '!=', 'closed')
+                    ->where('status', '!=', 'unload');
             })->get()->toArray();
             foreach ($findAllBookedVehicle as $key => $value) {
                 $driverIds[] = $value['driver_id'];
             }
+
+
             $resultData = SettingDriver::select('driver_id', 'name', 'mobile', 'DL_no', 'DL_expire')->whereNotIn('driver_id', $driverIds)->get()->toArray();
         } elseif ($type == 'vehicle') {
             $vehicleIds = [];
-            $findAllBookedVehicle = ModelsLRBooking::where(function ($query) {
+            $findAllBookedVehicle = ModelsLRBooking::select('vehicle_id')->where('vehicle_id', '!=', null)->where(function ($query) {
                 $query->where('status', '!=', 'cancel')
-                    ->orWhere('status', '!=', 'closed')
-                    ->orWhere('status', '!=', 'unload');
+                    ->Where('status', '!=', 'closed')
+                    ->Where('status', '!=', 'unload');
             })->get()->toArray();
             foreach ($findAllBookedVehicle as $key => $value) {
                 $vehicleIds[] = $value['vehicle_id'];
