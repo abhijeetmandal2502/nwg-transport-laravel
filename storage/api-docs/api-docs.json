@@ -1,7 +1,11 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Transport Association Backend",
+        "title": "Transport Association Management",
+        "description": "Transport association management backend api",
+        "contact": {
+            "email": "honeydeveloper012@gmail.com"
+        },
         "version": "1.0.0"
     },
     "paths": {
@@ -12,15 +16,22 @@
                 ],
                 "summary": "Employee Register",
                 "description": "Employee Register here",
-                "operationId": "Authentication",
+                "operationId": "employeeRegister",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
+                                    "employee_id",
                                     "name",
                                     "email",
-                                    "password"
+                                    "mobile",
+                                    "gender",
+                                    "password",
+                                    "date_of_join",
+                                    "date_of_birth",
+                                    "salary",
+                                    "role"
                                 ],
                                 "properties": {
                                     "employee_id": {
@@ -30,7 +41,7 @@
                                         "type": "text"
                                     },
                                     "email": {
-                                        "type": "text"
+                                        "type": "email"
                                     },
                                     "mobile": {
                                         "type": "text"
@@ -67,6 +78,102 @@
                 "responses": {
                     "201": {
                         "description": "Employee created successfully!",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/update-employees/{id}": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update Employee",
+                "description": "Employee Update here",
+                "operationId": "employeeUpdate",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "employee_id",
+                                    "name",
+                                    "email",
+                                    "mobile",
+                                    "gender",
+                                    "password",
+                                    "date_of_join",
+                                    "date_of_birth",
+                                    "salary",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "employee_id": {
+                                        "type": "text"
+                                    },
+                                    "name": {
+                                        "type": "text"
+                                    },
+                                    "email": {
+                                        "type": "email"
+                                    },
+                                    "mobile": {
+                                        "type": "text"
+                                    },
+                                    "gender": {
+                                        "type": "text"
+                                    },
+                                    "date_of_join": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "date_of_birth": {
+                                        "type": "string",
+                                        "format": "date"
+                                    },
+                                    "salary": {
+                                        "type": "number"
+                                    },
+                                    "role": {
+                                        "type": "text"
+                                    },
+                                    "password": {
+                                        "type": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Employee Updated successfully!",
                         "content": {
                             "application/json": {
                                 "schema": {}
