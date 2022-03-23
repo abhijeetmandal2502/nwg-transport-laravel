@@ -51,14 +51,21 @@ class RoleController extends Controller
             foreach ($allRoles as $roles) {
 
                 $jsonToArr = json_decode($roles['access_pages'], true);
-
                 $internal_access = json_decode($roles['internal_access'], true);
-                $accessPages = AccessPages::whereIn('page_id', $internal_access)->get()->toArray();
-                $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
-
-                foreach ($accessMenues as $key => $value) {
-                    $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
+                if (!empty($jsonToArr)) {
+                    $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+                    foreach ($accessMenues as $key => $value) {
+                        $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
+                    }
+                } else {
+                    $temArray = [];
                 }
+                if (!empty($internal_access)) {
+                    $accessPages = AccessPages::whereIn('page_id', $internal_access)->get()->toArray();
+                } else {
+                    $accessPages = [];
+                }
+
                 $roleData[] = ([
                     'id' => $roles['id'],
                     'role_slug' => $roles['role_id'],

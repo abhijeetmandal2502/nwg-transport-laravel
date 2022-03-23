@@ -282,11 +282,22 @@ class AuthController extends Controller
                     $roleData = Role::where('role_id', $user->role_id)->first();
                     $jsonToArr = json_decode($roleData->access_pages, true);
                     $internal_access = json_decode($roleData->internal_access, true);
-                    $accessPages = AccessPages::whereIn('page_id', $internal_access)->get();
-                    $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
-                    foreach ($accessMenues as $key => $value) {
-                        $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
+                    if (!empty($jsonToArr)) {
+                        $accessMenues = SettingPage::whereIn('page_slug', $jsonToArr)->get();
+                        foreach ($accessMenues as $key => $value) {
+                            $temArray[$value->parent_title][] = (['id' => $value->id, 'slug' => $value->page_slug, 'name' => $value->page_title, 'category' => $value->parent_title]);
+                        }
+                    } else {
+                        $temArray = [];
                     }
+                    if (!empty($internal_access)) {
+                        $accessPages = AccessPages::whereIn('page_id', $internal_access)->get()->toArray();
+                    } else {
+                        $accessPages = [];
+                    }
+
+
+
                     // result array
                     $response = [
                         'status' => 'success',
@@ -299,7 +310,7 @@ class AuthController extends Controller
                         'role_id' => $user->role_id,
                         'role_name' => $roleData->role_name,
                         'menu_access' => $temArray,
-                        'page_access' => $accessPages->toArray(),
+                        'page_access' => $accessPages,
                     ];
 
                     return response($response, 200);
