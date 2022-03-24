@@ -31,6 +31,7 @@ class CreateBiltiesTable extends Migration
             $table->decimal('received_amount', 10, 2)->default(0)->comment('actual received from vendor');
             $table->decimal('tds_amount', 10, 2)->default(0)->comment('TDS amount');
             $table->enum('payment_status', ['pending', 'processing', 'approved'])->default('pending');
+            $table->date('receipt_date')->nullable()->comment('when receipt create for vendor');
             $table->string('created_by')->nullable()->comment('who generated');
             $table->timestamps();
             $table->softDeletes();

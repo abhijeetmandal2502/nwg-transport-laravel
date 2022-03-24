@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 // Route::get('/logs/{page?}/{lrNo?}', [LRBooking::class, 'getLrBookings']);
-// Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 
 

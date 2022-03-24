@@ -94,6 +94,7 @@ class BiltyController extends Controller
                 if ($request->status === "processing") {
                     $validator = Validator::make($request->all(), [
                         'amount' => 'required|numeric|min:0',
+                        'receipt_date' => 'required|date',
                         'status' => 'required|in:processing',
                     ]);
                     if ($validator->fails()) {
@@ -101,6 +102,7 @@ class BiltyController extends Controller
                     }
                     Bilty::where('id', $biltyId)->update([
                         'process_amount' => $request->amount,
+                        'receipt_date' => $request->receipt_date,
                         'payment_status' => $request->status,
                     ]);
                     $subject = "Bilty Sent to vendor for approval!";
@@ -172,6 +174,8 @@ class BiltyController extends Controller
         $getBilties = Bilty::where('id', $biltyId)->with('l_r_bookings.consignor', 'l_r_bookings.consignee', 'l_r_bookings.setting_drivers', 'l_r_bookings.vehicles')->get()->toArray();
         if (!empty($getBilties)) {
             $bilty = [
+                'bill_no' => $getBilties[0]['id'],
+                'receipt_date' => $getBilties[0]['receipt_date'],
                 'package' => $getBilties[0]['packages'],
                 'description' => $getBilties[0]['description'],
                 'invoice_no' => $getBilties[0]['invoice_no'],
