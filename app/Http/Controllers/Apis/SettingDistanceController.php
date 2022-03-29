@@ -19,49 +19,45 @@ class SettingDistanceController extends Controller
         $toLocation = Str::of($request->to_location)->slug('_');
         $consignor = Str::of($request->consignor)->slug('_');
 
-        $request->merge(['from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor, 'created_by' => auth()->user()->emp_id]);
+        $request->merge(['from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor, 'created_by' => 'honey001']);
         $validator = Validator::make($request->all(), [
             'consignor' => 'required|exists:vendor_lists,slug',
             'from_location' => 'required|exists:setting_locations,slug',
             'to_location' => 'required|exists:setting_locations,slug',
-            'distance' => 'required|numeric|min:1',
-            'vehicle_type' => 'required|exists:vehicle_types,type_id',
-            'own_per_kg_rate' => 'required|numeric|min:1',
-            'vendor_per_kg_rate' => 'required|numeric|min:1'
+            'own_per_kg_rate.*' => 'required|numeric|min:1',
+            'vendor_per_kg_rate.*' => 'required|numeric|min:1'
         ]);
 
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
-        DB::beginTransaction();
-        try {
-            SettingDistance::create([
-                'consignor' => $consignor,
-                'from_location' => $fromLocation,
-                'to_location' => $toLocation,
-                'distance' => $request->distance,
-                'vehicle_type' => $request->vehicle_type,
-                'own_per_kg_rate' => $request->own_per_kg_rate,
-                'vendor_per_kg_rate' => $request->vendor_per_kg_rate,
+        $data = [];
+        foreach ($request->vendor_per_kg_rate as $key => $value) {
+            $data[] = ([
+                'consignor' => $request->consignor,
+                'from_location' => $request->from_location,
+                'to_location' => $request->to_location,
+                'vehicle_type' => $key,
+                'own_per_kg_rate' => $request->own_per_kg_rate[$key],
+                'vendor_per_kg_rate' => $value,
                 'created_by' => auth()->user()->emp_id
             ]);
+        }
 
-            // SettingDistance::upsert([
-            //     [
-            //         'slug' => strtolower($slug2),
-            //         'from_location' => $request->to_location,
-            //         'to_location' => $request->from_location,
-            //         'distance' => $request->distance,
-            //         'per_kg_amount' => $request->per_kg_amount
-            //     ],
-            //     [
-            //         'slug' => strtolower($slug),
-            //         'from_location' => $request->from_location,
-            //         'to_location' => $request->to_location,
-            //         'distance' => $request->distance,
-            //         'per_kg_amount' => $request->per_kg_amount
-            //     ]
-            // ], ['slug']);
+        DB::beginTransaction();
+        try {
+            // SettingDistance::create([
+            //     'consignor' => $consignor,
+            //     'from_location' => $fromLocation,
+            //     'to_location' => $toLocation,
+            //     'distance' => $request->distance,
+            //     'vehicle_type' => $request->vehicle_type,
+            //     'own_per_kg_rate' => $request->own_per_kg_rate,
+            //     'vendor_per_kg_rate' => $request->vendor_per_kg_rate,
+            //     'created_by' => auth()->user()->emp_id
+            // ]);
+
+            SettingDistance::upsert($data, ['consignor', 'from_location', 'to_location', 'vehicle_type']);
             $depart = 'supervisor';
             $subject = "New location distance was mapped";
             userLogs($depart, $subject);
