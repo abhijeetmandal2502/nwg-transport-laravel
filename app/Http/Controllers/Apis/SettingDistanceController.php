@@ -163,7 +163,7 @@ class SettingDistanceController extends Controller
         if (!empty($locationData)) {
             $location = $locationData[0]['location'];
             $consignor = $locationData[0]['consignor'];
-            $allDistance = SettingDistance::where('consignor', $consignor)->where('from_location', $location)->get(['slug', 'to_location'])->toArray();
+            $allDistance = SettingDistance::where('consignor', $consignor)->where('from_location', $location)->get(['to_location'])->toArray();
 
             foreach ($allDistance as $index => $items) {
                 $to_location = strtolower($items['to_location']);
