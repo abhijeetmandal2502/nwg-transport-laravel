@@ -23,4 +23,8 @@ class Vehicle extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
+    public function vehicle_types()
+    {
+        return $this->belongsTo(VehicleType::class, 'type', 'type_id');
+    }
 }

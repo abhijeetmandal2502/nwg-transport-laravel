@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\BusinesTransaction;
+use App\Models\Setting;
 use App\Models\UserActivityLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -53,5 +54,23 @@ if (!function_exists('userLogs')) {
         $logs['agent'] = Request::header('user-agent');
         $logs['created_by'] = auth()->check() ? auth()->user()->emp_id : 'unknown';
         UserActivityLog::create($logs);
+    }
+}
+
+if (!function_exists('systemSetting')) {
+
+    function systemSetting($arrVar)
+    {
+        $sesultArr = array();
+        $result = Setting::whereIn('slug', $arrVar)->get()->toArray();
+        if (!empty($result)) {
+            foreach ($result as $key => $value) {
+                $slug = $value['slug'];
+                $sesultArr[$slug] = $value['value'];
+            }
+            return $sesultArr;
+        } else {
+            return null;
+        }
     }
 }

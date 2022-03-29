@@ -6,14 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class VehicleType extends Model
+class Setting extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $guarded = []; // replace of fillable
-
-    public function vehicles()
-    {
-        return $this->hasMany(Vehicle::class, 'type', 'type_id');
-    }
 }

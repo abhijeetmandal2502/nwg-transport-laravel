@@ -34,8 +34,9 @@ class VehicleUnloadController extends Controller
 
         DB::beginTransaction();
         try {
-            $allLrBooking = LRBooking::where('booking_id', $request->lr_no)->with('vehicles:vehicle_no,ownership', 'consignor:cons_id,consignor')->get()->toArray();
+            $allLrBooking = LRBooking::where('booking_id', $request->lr_no)->with('vehicles:vehicle_no,ownership,type', 'consignor:cons_id,consignor')->get()->toArray();
             $ownership = $allLrBooking[0]['vehicles']['ownership'];
+            $vehicleType = $allLrBooking[0]['vehicles']['type'];
             $consignor_id = $allLrBooking[0]['consignor_id'];
             $from_location = $allLrBooking[0]['from_location'];
             $to_location = $allLrBooking[0]['to_location'];
@@ -48,7 +49,7 @@ class VehicleUnloadController extends Controller
             if ($ownership !== "owned") {
                 $amount = $allLrBooking[0]['amount'];
             } else {
-                $getPerKgRate = SettingDistance::where('consignor', $mainVendorName)->where('from_location', $from_location)->where('to_location', $to_location)->get('own_per_kg_rate')->toArray();
+                $getPerKgRate = SettingDistance::where('consignor', $mainVendorName)->where('from_location', $from_location)->where('to_location', $to_location)->where('vehicle_type', $vehicleType)->get('own_per_kg_rate')->toArray();
                 $ownPerKgRate = (isset($getPerKgRate[0]['own_per_kg_rate'])) ? $getPerKgRate[0]['own_per_kg_rate'] : 0;
                 $amount = ceil($totalWeight) * $ownPerKgRate;
             }

@@ -17,6 +17,7 @@ class VehicleTypeController extends Controller
         $validator = Validator::make($request->all(), [
             'type_name' => 'required|string|max:120',
         ]);
+
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
@@ -42,6 +43,8 @@ class VehicleTypeController extends Controller
         $validator = Validator::make($request->all(), [
             'type_id' => 'required|string',
             'type_name' => 'required|string|max:120',
+            'own_per_kg_rate' => 'required|numeric',
+            'vendor_per_kg_rate' => 'required|numeric',
             'status' => 'required|in:active,inactive'
         ]);
         if ($validator->fails()) {

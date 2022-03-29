@@ -25,6 +25,7 @@ class CreateBiltiesTable extends Migration
             $table->string('gst_no')->nullable()->comment('shipment number');
             $table->decimal('weight', 10, 2)->default(0)->comment('weight in kg/tan/other');
             $table->string('unit', 50)->nullable()->comment('shipment number');
+            $table->decimal('per_kg_rate', 10, 2)->default(0)->comment('Per Kg Rate for vendor');
             $table->decimal('goods_value', 10, 2)->default(0)->comment('Package value in amount');
             $table->decimal('income_amount', 10, 2)->default(0)->comment('system genrate income from vendor');
             $table->decimal('process_amount', 10, 2)->default(0)->comment('invoice sent to vendor');

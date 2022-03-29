@@ -17,7 +17,7 @@ class VehicleController extends Controller
         $request->merge(['created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'vehicle_no' => 'required|alpha_num|unique:vehicles',
-            'type' => 'required|string',
+            'type' => 'required|exists:vehicle_types,type_id',
             'ownership' => 'required|in:third-party,owned',
             'vehicle_details' => 'required|string|max:120',
             'state' => 'required|string',
@@ -46,7 +46,7 @@ class VehicleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'vehicle_no' => 'required|alpha_num|unique:vehicles,vehicle_no,' . $id,
-            'type' => 'required|string',
+            'type' => 'required|exists:vehicle_types,type_id',
             'ownership' => 'required|in:third-party,owned',
             'vehicle_details' => 'required|string|max:120',
             'state' => 'required|string',

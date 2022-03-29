@@ -13,17 +13,18 @@ use Illuminate\Support\Facades\Validator;
 
 class BiltyController extends Controller
 {
-
     public function getConsignor($lrNo)
     {
         $result = array();
-        $consignor = LRBooking::where('booking_id', $lrNo)->with('consignor:cons_id,consignor')->get()->toArray();
+        $consignor  = LRBooking::where('booking_id', $lrNo)->with('vehicles:vehicle_no,type', 'consignor:cons_id,consignor')->get()->toArray();
         $consignor_id = $consignor[0]['consignor_id'];
         $fromLocation = $consignor[0]['from_location'];
         $toLocation = $consignor[0]['to_location'];
         $mainVendor = $consignor[0]['consignor']['consignor'];
-        $getVendorKgRate = SettingDistance::where('consignor', $mainVendor)->where('from_location', $fromLocation)->where('to_location', $toLocation)->get('vendor_per_kg_rate')->toArray();
+        $vehicleType = $consignor[0]['vehicles']['type'];
+        $getVendorKgRate = SettingDistance::where('consignor', $mainVendor)->where('from_location', $fromLocation)->where('to_location', $toLocation)->where('vehicle_type', $vehicleType)->get('vendor_per_kg_rate')->toArray();
         $vendorKgRate = $getVendorKgRate[0]['vendor_per_kg_rate'];
+
         $result = [
             'consignor_id' => $consignor_id,
             'vendor_per_kg_rate' => $vendorKgRate
@@ -61,9 +62,11 @@ class BiltyController extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
+        $vendorPerKgRate = (isset($consignor['vendor_per_kg_rate']) ? $consignor['vendor_per_kg_rate'] : 0);
         // income calculation
-        $income_amount = ceil($request->weight) * $consignor['vendor_per_kg_rate'];
-        $request->merge(['income_amount' => $income_amount, 'created_by' => auth()->user()->emp_id]);
+        $income_amount = ceil($request->weight) * $vendorPerKgRate;
+
+        $request->merge(['per_kg_rate' => $vendorPerKgRate, 'income_amount' => $income_amount, 'created_by' => auth()->user()->emp_id]);
         DB::beginTransaction();
         try {
             Bilty::create($request->all());

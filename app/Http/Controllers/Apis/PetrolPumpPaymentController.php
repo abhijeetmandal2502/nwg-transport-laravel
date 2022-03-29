@@ -15,20 +15,22 @@ class PetrolPumpPaymentController extends Controller
 {
     public function getLog()
     {
-        $lrNo = 'TAS1647002024LR1';
+        $lrNo = 'TAS1647337400LR5';
         $biltyId = 10;
-        $restultArray = array();
-
-        $f = new NumberFormatter("en", NumberFormatter::SPELLOUT);
+        // $global_var = ['per_kg_rate'];
+        // $global_settings = systemSetting($global_var);
+        // ['per_kg_rate' => $global_per_kg_rate] = $global_settings; // destruction of array
+        // dd($global_per_kg_rate);
+        // $f = new NumberFormatter("en", NumberFormatter::SPELLOUT);
         // echo $f->format(1432);
-        dd(ucwords($f->format(1432)));
+        // dd(ucwords($f->format(1432)));
         // $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
         // dd($getBiltyDetails[0]['booking_id']);
         // $allLrBooking =  DB::table('lrBookingView')->where('booking_id', $request->lr_no)->get(['amount', 'ownership', 'consignor_id', 'from_location', 'to_location', 'is_advance_done'])->toArray();
 
 
-        // $allLrBooking = LRBooking::where('booking_id', $lrNo)->with('vehicles:vehicle_no,ownership', 'consignor:cons_id,consignor')->get()->toArray();
-
+        $allLrBooking = LRBooking::where('booking_id', $lrNo)->with('vehicles:vehicle_no,type', 'consignor:cons_id,consignor')->get()->toArray();
+        dd($allLrBooking[0]['vehicles']['type']);
         // foreach ($allLrBooking as $key => $items) {
         //     dd($items->booking_id);
         //     $restultArray[$key] = ([
