@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
-Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
+// Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 
 
@@ -97,7 +97,7 @@ Route::middleware('auth:api')->group(function () {
     // Distance Management
     Route::get('/distances/list/{did?}', [SettingDistanceController::class, 'getDistanceList'])->name('api.getDistanceList');
     Route::get('/distances/{slug}', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
-    // Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
+    Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
     Route::post('/update-distance/{id}', [SettingDistanceController::class, 'updateDistance'])->name('api.updateDistance');
 
     // State management
