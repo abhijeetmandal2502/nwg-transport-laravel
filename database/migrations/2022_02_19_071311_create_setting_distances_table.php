@@ -15,6 +15,7 @@ class CreateSettingDistancesTable extends Migration
     {
         Schema::create('setting_distances', function (Blueprint $table) {
             $table->id();
+            $table->string('slug')->unique();
             $table->string('consignor')->comment('vendor slug');
             $table->string('from_location')->comment('location slug');
             $table->string('to_location')->comment('location slug');

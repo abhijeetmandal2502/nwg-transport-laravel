@@ -34,6 +34,7 @@ class SettingDistanceController extends Controller
         $data = [];
         foreach ($request->vendor_per_kg_rate as $key => $value) {
             $data[] = ([
+                'slug' => $consignor . '_' . $fromLocation . '_to_' . $toLocation . '_' . $key,
                 'consignor' => $request->consignor,
                 'from_location' => $request->from_location,
                 'to_location' => $request->to_location,
@@ -57,7 +58,7 @@ class SettingDistanceController extends Controller
             //     'created_by' => auth()->user()->emp_id
             // ]);
 
-            SettingDistance::upsert($data, ['consignor', 'from_location', 'to_location', 'vehicle_type'], ['own_per_kg_rate', 'vendor_per_kg_rate']);
+            SettingDistance::upsert($data, ['slug']);
             $depart = 'supervisor';
             $subject = "New location distance was mapped";
             userLogs($depart, $subject);
