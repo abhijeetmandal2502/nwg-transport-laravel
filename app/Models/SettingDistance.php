@@ -28,4 +28,8 @@ class SettingDistance extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
+    public function vehicle_types()
+    {
+        return $this->belongsTo(VehicleType::class, 'vehicle_type', 'type_id');
+    }
 }

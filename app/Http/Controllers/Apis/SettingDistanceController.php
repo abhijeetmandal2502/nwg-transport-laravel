@@ -192,4 +192,29 @@ class SettingDistanceController extends Controller
             return response(['status' => 'error', 'errors' => 'No location distance found!'], 422);
         }
     }
+
+
+    public function getDistanceRateList()
+    {
+        $allRates = SettingDistance::with('vehicle_types:type_id,type_name')->get()->toArray();
+        // dd($allRates);
+
+        foreach ($allRates as $key => $items) {
+            $consignor = $items['consignor'];
+            $location = $items['from_location'] . '_' . $items['to_location'];
+            $typeId = $items['vehicle_type'];
+            $typeName = $items['vehicle_types']['type_name'];
+            $data[$consignor][$location][$typeId] = ([
+                'type' => $typeName,
+                'own_rate' => $items['own_per_kg_rate'],
+                'vendor_rate' => $items['vendor_per_kg_rate']
+            ]);
+        }
+
+        if (!empty($data)) {
+            return response(['status' => 'success', 'data' => $data], 200);
+        } else {
+            return response(['status' => 'error', 'errors' => 'No location distance found!'], 422);
+        }
+    }
 }

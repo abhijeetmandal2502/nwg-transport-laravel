@@ -40,7 +40,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
 // Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
-
+// Route::get('/all-rates', [SettingDistanceController::class, 'getDistanceRateList'])->name('api.all-rates');
 
 Route::middleware('auth:api')->group(function () {
 
@@ -99,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/distances/{slug}', [SettingDistanceController::class, 'getDistance'])->name('api.getDistance');
     Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
     Route::post('/update-distance/{id}', [SettingDistanceController::class, 'updateDistance'])->name('api.updateDistance');
+    Route::get('/all-rates', [SettingDistanceController::class, 'getDistanceRateList'])->name('api.all-rates');
 
     // State management
     Route::get('/states/{code?}', [SettingStateController::class, 'getState'])->name('api.States');

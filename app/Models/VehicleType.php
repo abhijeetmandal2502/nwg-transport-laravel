@@ -16,4 +16,8 @@ class VehicleType extends Model
     {
         return $this->hasMany(Vehicle::class, 'type', 'type_id');
     }
+    public function setting_distances()
+    {
+        return $this->hasMany(SettingDistance::class, 'vehicle_type', 'type_id');
+    }
 }
