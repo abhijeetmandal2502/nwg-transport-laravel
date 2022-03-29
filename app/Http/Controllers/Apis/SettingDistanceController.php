@@ -19,7 +19,7 @@ class SettingDistanceController extends Controller
         $toLocation = Str::of($request->to_location)->slug('_');
         $consignor = Str::of($request->consignor)->slug('_');
 
-        $request->merge(['from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor, 'created_by' => 'honey001']);
+        $request->merge(['from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor, 'created_by' => auth()->user()->emp_id]);
         $validator = Validator::make($request->all(), [
             'consignor' => 'required|exists:vendor_lists,slug',
             'from_location' => 'required|exists:setting_locations,slug',
@@ -40,7 +40,7 @@ class SettingDistanceController extends Controller
                 'vehicle_type' => $key,
                 'own_per_kg_rate' => $request->own_per_kg_rate[$key],
                 'vendor_per_kg_rate' => $value,
-                'created_by' => auth()->user()->emp_id
+                'created_by' => $request->created_by
             ]);
         }
 
