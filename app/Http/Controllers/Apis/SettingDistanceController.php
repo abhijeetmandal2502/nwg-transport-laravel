@@ -57,7 +57,7 @@ class SettingDistanceController extends Controller
             //     'created_by' => auth()->user()->emp_id
             // ]);
 
-            SettingDistance::upsert($data, ['consignor', 'from_location', 'to_location', 'vehicle_type'], ['own_per_kg_rate'], ['vendor_per_kg_rate']);
+            SettingDistance::upsert($data, ['consignor', 'from_location', 'to_location', 'vehicle_type'], ['own_per_kg_rate', 'vendor_per_kg_rate']);
             $depart = 'supervisor';
             $subject = "New location distance was mapped";
             userLogs($depart, $subject);
