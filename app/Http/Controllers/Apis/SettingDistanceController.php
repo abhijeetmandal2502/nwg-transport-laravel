@@ -198,7 +198,7 @@ class SettingDistanceController extends Controller
         $fromLocation = Str::of($request->from_location)->slug('_');
         $toLocation = Str::of($request->to_location)->slug('_');
         $consignor = Str::of($request->consignor)->slug('_');
-
+        $request->merge(['from_location' => $fromLocation, 'to_location' => $toLocation, 'consignor' => $consignor]);
         $validator = Validator::make($request->all(), [
             'consignor' => 'required|exists:vendor_lists,slug',
             'from_location' => 'required|exists:setting_locations,slug',

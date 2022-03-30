@@ -40,6 +40,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
 // Route::post('/create-distance', [SettingDistanceController::class, 'createDistance'])->name('api.createDistance');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
+// Route::post('/all-rates', [SettingDistanceController::class, 'getSingleLocationRateList'])->name('api.single-rates');
 
 
 Route::middleware('auth:api')->group(function () {
