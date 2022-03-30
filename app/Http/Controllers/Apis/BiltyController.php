@@ -113,6 +113,7 @@ class BiltyController extends Controller
                     $validator = Validator::make($request->all(), [
                         'narration' => 'string|max:150',
                         'amount' => 'required|numeric|min:0',
+                        'tds_amount' => 'required|numeric|min:0',
                         'payment_mode' => 'required|string|max:50',
                         'status' => 'required|in:approved',
                         'trans_id' => 'max:50',
