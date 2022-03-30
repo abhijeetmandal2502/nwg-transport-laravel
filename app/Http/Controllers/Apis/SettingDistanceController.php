@@ -193,6 +193,37 @@ class SettingDistanceController extends Controller
         }
     }
 
+    public function getSingleLocationRateList(Request $request)
+    {
+        $fromLocation = Str::of($request->from_location)->slug('_');
+        $toLocation = Str::of($request->to_location)->slug('_');
+        $consignor = Str::of($request->consignor)->slug('_');
+
+        $validator = Validator::make($request->all(), [
+            'consignor' => 'required|exists:vendor_lists,slug',
+            'from_location' => 'required|exists:setting_locations,slug',
+            'to_location' => 'required|exists:setting_locations,slug'
+        ]);
+
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+
+        $allRates = SettingDistance::where('consignor', $consignor)->where('from_location', $fromLocation)->where('to_location', $toLocation)->get()->toArray();
+        foreach ($allRates as $key => $items) {
+            $typeId = $items['vehicle_type'];
+            $data[$typeId] = [
+                'own_rate' => $items['own_per_kg_rate'],
+                'vendor_rate' => $items['vendor_per_kg_rate']
+            ];
+        }
+
+        if (!empty($data)) {
+            return response(['status' => 'success', 'data' => $data], 200);
+        } else {
+            return response(['status' => 'error', 'errors' => 'No location distance found!'], 422);
+        }
+    }
 
     public function getDistanceRateList()
     {
