@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Apis;
 use App\Http\Controllers\Controller;
 use App\Models\Consignor;
 use App\Models\SettingDistance;
+use App\Models\VehicleType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -218,10 +219,19 @@ class SettingDistanceController extends Controller
             ];
         }
 
+
         if (!empty($data)) {
             return response(['status' => 'success', 'data' => $data], 200);
         } else {
-            return response(['status' => 'error', 'errors' => 'No location distance found!'], 422);
+            $allType = VehicleType::all()->toArray();
+            foreach ($allType as $vk => $vtv) {
+                $t_id = $vtv['type_id'];
+                $data[$t_id] = [
+                    'own_rate' => 0,
+                    'vendor_rate' => 0
+                ];
+            }
+            return response(['status' => 'success', 'data' => $data], 200);
         }
     }
 
