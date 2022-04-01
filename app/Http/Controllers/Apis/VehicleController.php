@@ -77,7 +77,7 @@ class VehicleController extends Controller
     public function getVehicle($vehicleNo = null)
     {
         if ($vehicleNo !== null) {
-            $vehicles = Vehicle::where('vehicle_no', $vehicleNo)->first()->toArray();
+            $vehicles = Vehicle::where('vehicle_no', $vehicleNo)->get()->toArray();
         } else {
             $vehicles = Vehicle::where('active_status', 'active')->orderByDesc('rating')->get()->toArray();
         }
