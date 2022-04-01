@@ -77,12 +77,31 @@ class VehicleController extends Controller
     public function getVehicle($vehicleNo = null)
     {
         if ($vehicleNo !== null) {
-            $vehicles = Vehicle::where('vehicle_no', $vehicleNo)->get()->toArray();
+            $vehicles = Vehicle::where('vehicle_no', $vehicleNo)->with('vehicle_types')->get()->toArray();
         } else {
-            $vehicles = Vehicle::where('active_status', 'active')->orderByDesc('rating')->get()->toArray();
+            $vehicles = Vehicle::where('active_status', 'active')->with('vehicle_types')->orderByDesc('rating')->get()->toArray();
         }
         if (!empty($vehicles)) {
-            return response(['status' => 'success', 'data' => $vehicles], 200);
+            foreach ($vehicles as $key => $items) {
+                $data[] = ([
+                    "id" => $items['id'],
+                    "vehicle_no" => $items['vehicle_no'],
+                    "type_id" => $items['type'],
+                    "type" => $items['vehicle_types']['type_name'],
+                    "ownership" => $items['ownership'],
+                    "created_by" => $items['created_by'],
+                    "vehicle_details" => $items['vehicle_details'],
+                    "owner_details" => json_decode($items['owner_details'], true),
+                    "driver_id" => $items['driver_id'],
+                    "state" => $items['active_status'],
+                    "rating" => $items['rating'],
+                    "active_status" => $items['vehicle_no'],
+                    "created_at" => $items['created_at'],
+                    "updated_at" => $items['updated_at'],
+
+                ]);
+            }
+            return response(['status' => 'success', 'data' => $data], 200);
         } else {
             return response(['status' => 'error', 'data' => 'No  any vehicle found!'], 422);
         }
