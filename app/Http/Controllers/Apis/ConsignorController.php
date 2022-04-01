@@ -15,7 +15,7 @@ class ConsignorController extends Controller
     {
 
         if ($consId != null) {
-            $consData = Consignor::where('cons_id', $consId)->get()->toArray();
+            $consData = Consignor::where('cons_id', $consId)->orWhere('id', $consId)->get()->toArray();
         } else {
             $consData = Consignor::where('active_status', 'active')->get()->toArray();
         }
