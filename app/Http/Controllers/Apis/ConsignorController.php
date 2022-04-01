@@ -72,7 +72,7 @@ class ConsignorController extends Controller
             $subject = "New Sub Vendor Created";
             userLogs($depart, $subject);
             DB::commit();
-            return response(['status' => 'success', 'cons_id' => $cons_id, 'msessage' => 'Consignor Created successfully!'], 201);
+            return response(['status' => 'success', 'cons_id' => $cons_id, 'message' => 'Consignor Created successfully!'], 201);
         } catch (\Exception $e) {
             //throw $th;
             DB::rollBack();
@@ -114,7 +114,7 @@ class ConsignorController extends Controller
             $subject = "Sub Vendor Upated";
             userLogs($depart, $subject);
             DB::commit();
-            return response(['status' => 'success', 'msessage' => 'Consignor Updated successfully!'], 201);
+            return response(['status' => 'success', 'message' => 'Consignor Updated successfully!'], 201);
         } catch (\Exception $e) {
             //throw $th;
             DB::rollBack();
