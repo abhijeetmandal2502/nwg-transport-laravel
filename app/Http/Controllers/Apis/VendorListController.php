@@ -59,4 +59,36 @@ class VendorListController extends Controller
             return response(['status' => 'error', 'errors' => "No Consignor Available!"], 422);
         }
     }
+    public function updateVendors(Request $request, $id)
+    {
+        $this->slug = Str::of($request->name)->slug('_');
+        $request->merge(['consignor' => $this->slug]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'consignor' => 'required|max:100|unique:vendor_lists,slug,' . $id,
+                'name' => 'required|string|max:100'
+            ],
+        );
+
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+        DB::beginTransaction();
+        try {
+            VendorList::where('id', $id)->update([
+                'slug' => $request->consignor,
+                'name' => $request->name
+            ]);
+            $depart = 'supervisor';
+            $subject = "Main vendor updated";
+            userLogs($depart, $subject);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'Consignor updated successfully!'], 201);
+        } catch (\Exception $e) {
+            //throw $th;
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
+        }
+    }
 }

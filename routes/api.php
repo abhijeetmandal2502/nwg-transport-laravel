@@ -80,6 +80,7 @@ Route::middleware('auth:api')->group(function () {
     // consignors managment
     Route::post('/create-vendor', [VendorListController::class, 'createVendor'])->name('api.createVendor');
     Route::get('/vendors/{slug?}', [VendorListController::class, 'getVendors'])->name('api.getVendors');
+    Route::post('/vendors/{id}', [VendorListController::class, 'updateVendors'])->name('api.updateVendors');
     Route::get('/consignors/{consId?}', [ConsignorController::class, 'getConsignor'])->name('api.consignors');
     Route::post('/create-consignor', [ConsignorController::class, 'createConsignor'])->name('api.create.consignors');
     Route::post('/update-consignor/{id}', [ConsignorController::class, 'updateConsignors'])->name('api.update.consignors');
