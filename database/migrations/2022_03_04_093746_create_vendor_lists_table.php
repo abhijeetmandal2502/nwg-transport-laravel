@@ -18,6 +18,7 @@ class CreateVendorListsTable extends Migration
             $table->string('slug')->unique()->comment('vendor slug');
             $table->string('name')->comment('vendor name');
             $table->string('created_by')->comment('who created');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

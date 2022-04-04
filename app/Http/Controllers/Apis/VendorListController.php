@@ -67,7 +67,8 @@ class VendorListController extends Controller
             $request->all(),
             [
                 'consignor' => 'required|max:100|unique:vendor_lists,slug,' . $id,
-                'name' => 'required|string|max:100'
+                'name' => 'required|string|max:100',
+                'status' => 'required|in:active,inactive'
             ],
         );
 
@@ -78,7 +79,8 @@ class VendorListController extends Controller
         try {
             VendorList::where('id', $id)->update([
                 'slug' => $request->consignor,
-                'name' => $request->name
+                'name' => $request->name,
+                'status' => $request->status
             ]);
             $depart = 'supervisor';
             $subject = "Main vendor updated";
