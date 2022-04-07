@@ -7,6 +7,7 @@ use App\Http\Controllers\Apis\BiltyController;
 use App\Http\Controllers\Apis\ConsignorController;
 use App\Http\Controllers\Apis\DashboardController;
 use App\Http\Controllers\Apis\LRBooking;
+use App\Http\Controllers\Apis\OfflineInvoiceController;
 use App\Http\Controllers\Apis\PetrolPumpController;
 use App\Http\Controllers\Apis\RoleController;
 use App\Http\Controllers\Apis\SettingDistanceController;
@@ -37,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
-Route::get('/logs', [PetrolPumpPaymentController::class, 'getLog']);
+Route::post('/logs', [OfflineInvoiceController::class, 'createInvoice']);
 // Route::get('/vehicles/{vehicleNo?}', [VehicleController::class, 'getVehicle'])->name('api.getVehicle');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 // Route::post('/all-rates', [SettingDistanceController::class, 'getSingleLocationRateList'])->name('api.single-rates');
@@ -72,11 +73,16 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
     Route::get('/lr-bilties/{lrNo}', [BiltyController::class, 'getBilties'])->name('api.lrBilties');
     Route::post('/bilty-update/{biltyId}', [BiltyController::class, 'updateBitly'])->name('api.biltyUpdate');
+
+
     // Accounts
     Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');
     Route::get('/advance-payments/{lrNo}', [AdvancePaymentController::class, 'getAdvanceDetails'])->name('api.getAdvanceDetails');
     Route::get('/vehicle-due-payments', [VehicleUnloadController::class, 'getAllDuePayement'])->name('api.getVehicleDuePayments');
 
+    // Offline invoice genration
+
+    Route::post('/offline-invoice', [OfflineInvoiceController::class, 'createInvoice'])->name('api.offlineInvoice');
     // consignors managment
     Route::post('/create-vendor', [VendorListController::class, 'createVendor'])->name('api.createVendor');
     Route::get('/vendors/{slug?}', [VendorListController::class, 'getVendors'])->name('api.getVendors');
