@@ -39,7 +39,7 @@ class LRBooking extends Controller
             if ($i > 1) {
                 $tempLrId = explode('S', $uniqueCode);
                 $lastId = $tempLrId[1] + 1;
-                $uniqueCode = $tempLrId[0] . '-' . $lastId;
+                $uniqueCode = $tempLrId[0] . 'S' . $lastId;
             }
             $data[] = ([
                 'booking_id' => $uniqueCode,
