@@ -81,8 +81,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/vehicle-due-payments', [VehicleUnloadController::class, 'getAllDuePayement'])->name('api.getVehicleDuePayments');
 
     // Offline invoice genration
+    Route::post('/offline-invoice', [OfflineInvoiceController::class, 'createInvoice'])->name('api.createOfflineInvoice');
+    Route::get('/offline-invoice/{id?}', [OfflineInvoiceController::class, 'offlineInvoice'])->name('api.getOfflineInvoice');
+    Route::post('/offline-invoice/{id}', [OfflineInvoiceController::class, 'updateInvoice'])->name('api.updateOfflineInvoice');
 
-    Route::post('/offline-invoice', [OfflineInvoiceController::class, 'createInvoice'])->name('api.offlineInvoice');
     // consignors managment
     Route::post('/create-vendor', [VendorListController::class, 'createVendor'])->name('api.createVendor');
     Route::get('/vendors/{slug?}', [VendorListController::class, 'getVendors'])->name('api.getVendors');

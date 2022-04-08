@@ -16,44 +16,53 @@ class LRBooking extends Controller
 {
     public function newBooking(Request $request)
     {
-        $time = time();
+        // $time = time();
         $dateNow = date('Y-m-d H:i:s');
-
         $prifix = "LR" . date('dmY') . '-';
         $tableName = 'l_r_bookings';
 
         $validator = Validator::make($request->all(), [
             'consignor' => 'required|string|exists:consignors,cons_id',
             'consignee' => 'required|string|exists:consignors,cons_id',
-            'indent_date' => 'required|date',
-            'reporting_date' => 'required|date',
             'from_location' => 'required|string|exists:setting_locations,location',
             'destination_location' => 'required|string|exists:setting_locations,location',
+            'indent_date.*' => 'required|date',
+            'reporting_date.*' => 'required|date',
         ]);
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
         // create booking number
         $uniqueCode = getUniqueCode($prifix, $tableName);
-
-        DB::beginTransaction();
-        try {
-            ModelsLRBooking::create([
+        $i = 1;
+        foreach ($request->indent_date as $key => $value) {
+            if ($i > 1) {
+                $tempLrId = explode('-', $uniqueCode);
+                $lastId = $tempLrId[1] + 1;
+                $uniqueCode = $tempLrId[0] . '-' . $lastId;
+            }
+            $data[] = ([
                 'booking_id' => $uniqueCode,
                 'consignor_id' => $request->consignor,
                 'consignee_id' => $request->consignee,
-                'indent_date' => $request->indent_date,
-                'reporting_date' => $request->reporting_date,
+                'indent_date' => $value,
+                'reporting_date' => $request->reporting_date[$key],
                 'booking_date' => $dateNow,
                 'from_location' => $request->from_location,
                 'to_location' => $request->destination_location,
                 'created_by' => auth()->user()->emp_id
             ]);
+            $i++;
+        }
+
+        DB::beginTransaction();
+        try {
+            ModelsLRBooking::upsert($data, ['booking_id']);
             $depart = 'supervisor';
             $subject = "New LR was created";
             userLogs($depart, $subject);
             DB::commit();
-            return response(['status' => 'success', 'lr_no' => $uniqueCode,  'message' => 'LR created successfully!'], 201);
+            return response(['status' => 'success', 'message' => 'LR created successfully!'], 201);
             //code...
         } catch (\Exception $th) {
             DB::rollBack();
