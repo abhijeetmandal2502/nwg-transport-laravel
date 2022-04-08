@@ -18,7 +18,7 @@ class LRBooking extends Controller
     {
         // $time = time();
         $dateNow = date('Y-m-d H:i:s');
-        $prifix = "LR" . date('dmY') . '-';
+        $prifix = "LR" . date('dmY') . 'S';
         $tableName = 'l_r_bookings';
 
         $validator = Validator::make($request->all(), [

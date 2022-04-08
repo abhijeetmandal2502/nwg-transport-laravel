@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 
 class SettingDistanceController extends Controller
 {
@@ -165,6 +166,7 @@ class SettingDistanceController extends Controller
 
             foreach ($allDistance as $index => $items) {
                 $to_location = strtolower($items['to_location']);
+
                 $resultArr[$location][] = ([
                     'to_location' => $to_location
                 ]);
