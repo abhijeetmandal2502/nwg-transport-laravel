@@ -37,7 +37,7 @@ class LRBooking extends Controller
         $i = 1;
         foreach ($request->indent_date as $key => $value) {
             if ($i > 1) {
-                $tempLrId = explode('-', $uniqueCode);
+                $tempLrId = explode('S', $uniqueCode);
                 $lastId = $tempLrId[1] + 1;
                 $uniqueCode = $tempLrId[0] . '-' . $lastId;
             }
