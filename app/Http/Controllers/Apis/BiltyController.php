@@ -255,36 +255,35 @@ class BiltyController extends Controller
 
     public function getAllBiltiesList()
     {
-
         $finalArray = array();
-        // $bilties =  Bilty::with('l_r_bookings:booking_id,consignor_id')->select([DB::raw("SUM(weight) as total_weight"), DB::raw("SUM(income_amount) as system_amount")])->groupBy('booking_id')->toArray();
-        // dd($bilties);
-        $bilties = LRBooking::whereIn('status', ['loading', 'unload'])->with(['bilties' => function ($query) {
+        $bilties = LRBooking::whereIn('status', ['unload'])->with(['bilties' => function ($query) {
             $query->select('booking_id', 'shipment_no', DB::raw('COUNT(id) as countBill'), DB::raw('SUM(weight) as total_weight'), DB::raw("SUM(process_amount) as system_amount"), 'payment_status');
+            $query->where('payment_status', '=', 'processing');
             $query->groupBy('booking_id', 'shipment_no');
-        }, 'setting_drivers:driver_id,name,mobile', 'vehicles:vehicle_no,ownership,type', 'vehicles.vehicle_types:type_id,type_name'])->get()->toArray();
-
+        }, 'setting_drivers:driver_id,name,mobile', 'vehicles:vehicle_no,ownership,type', 'vehicles.vehicle_types:type_id,type_name'])->orderByDesc('booking_date')->get()->toArray();
         foreach ($bilties as $key => $items) {
-            $finalArray[] = ([
-                'lr_no' => $items['booking_id'],
-                'consignor' => ucwords(str_replace("_", " ", $items['consignor_id'])),
-                'consignee' => ucwords(str_replace("_", " ", $items['consignee_id'])),
-                'indent_date' => $items['indent_date'],
-                'reporting_date' => $items['reporting_date'],
-                'booking_date' => $items['booking_date'],
-                'from_location' => $items['from_location'],
-                'to_location' => $items['to_location'],
-                'lr_status' => $items['status'],
-                'shipment_no' => $items['bilties'][0]['shipment_no'],
-                'bilties' => $items['bilties'][0]['countBill'],
-                'total_weight' => $items['bilties'][0]['total_weight'],
-                'amount' => $items['bilties'][0]['system_amount'],
-                'driver_name' => $items['setting_drivers']['name'],
-                'driver_mobile' => $items['setting_drivers']['mobile'],
-                'vehicle_no' => $items['vehicles']['vehicle_no'],
-                'ownership' => $items['vehicles']['ownership'],
-                'vehicle_type' => $items['vehicles']['vehicle_types']['type_name'],
-            ]);
+            if (!empty($items['bilties'])) {
+                $finalArray[] = ([
+                    'lr_no' => $items['booking_id'],
+                    'consignor' => ucwords(str_replace("_", " ", $items['consignor_id'])),
+                    'consignee' => ucwords(str_replace("_", " ", $items['consignee_id'])),
+                    'indent_date' => $items['indent_date'],
+                    'reporting_date' => $items['reporting_date'],
+                    'booking_date' => $items['booking_date'],
+                    'from_location' => $items['from_location'],
+                    'to_location' => $items['to_location'],
+                    'lr_status' => $items['status'],
+                    'shipment_no' => $items['bilties'][0]['shipment_no'],
+                    'bilties' => $items['bilties'][0]['countBill'],
+                    'total_weight' => $items['bilties'][0]['total_weight'],
+                    'amount' => $items['bilties'][0]['system_amount'],
+                    'driver_name' => $items['setting_drivers']['name'],
+                    'driver_mobile' => $items['setting_drivers']['mobile'],
+                    'vehicle_no' => $items['vehicles']['vehicle_no'],
+                    'ownership' => $items['vehicles']['ownership'],
+                    'vehicle_type' => $items['vehicles']['vehicle_types']['type_name'],
+                ]);
+            }
         }
         if (!empty($finalArray)) {
             return response(['status' => 'success', 'records' => count($bilties), 'data' => $finalArray], 200);

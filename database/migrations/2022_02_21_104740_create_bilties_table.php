@@ -20,6 +20,7 @@ class CreateBiltiesTable extends Migration
             $table->string('shipment_no')->comment('shipment number');
             $table->integer('packages')->default(0)->comment('No of packages');
             $table->string('invoice_no')->comment('Invoice number');
+            $table->string('group_id')->nullable()->comment('group invoice id if group');
             $table->dateTime('date')->comment('genrated date');
             $table->text('description')->comment('description of package');
             $table->string('gst_no')->nullable()->comment('shipment number');

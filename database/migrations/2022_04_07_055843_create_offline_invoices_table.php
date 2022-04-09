@@ -22,7 +22,7 @@ class CreateOfflineInvoicesTable extends Migration
             $table->decimal('process_amount', 10, 2)->default(0)->comment('sent bill to the vendor');
             $table->decimal('received_amount', 10, 2)->default(0)->comment('final received amount from the vendor');
             $table->decimal('tds_amount', 10, 2)->default(0)->comment('tds amount if any');
-            $table->enum('status', ['processing', 'approved'])->default('processing');
+            $table->enum('status', ['processing', 'approved', 'closed'])->default('processing');
             $table->string('narration')->nullable()->comment('remark or description if any');
             $table->dateTime('final_date')->nullable()->comment('final date when received');
             $table->string('created_by');
