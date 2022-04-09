@@ -258,7 +258,7 @@ class BiltyController extends Controller
         $finalArray = array();
         $bilties = LRBooking::whereIn('status', ['unload'])->with(['bilties' => function ($query) {
             $query->select('booking_id', 'shipment_no', DB::raw('COUNT(id) as countBill'), DB::raw('SUM(weight) as total_weight'), DB::raw("SUM(process_amount) as system_amount"), 'payment_status');
-            $query->where('payment_status', '=', 'processing');
+            $query->where('payment_status', '=', 'processing')->where('group_id', NULL);
             $query->groupBy('booking_id', 'shipment_no');
         }, 'setting_drivers:driver_id,name,mobile', 'vehicles:vehicle_no,ownership,type', 'vehicles.vehicle_types:type_id,type_name'])->orderByDesc('booking_date')->get()->toArray();
         foreach ($bilties as $key => $items) {
