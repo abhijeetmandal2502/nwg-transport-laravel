@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
-Route::post('/logs', [OfflineInvoiceController::class, 'createInvoice']);
+// Route::get('/logs', [BiltyController::class, 'getAllBiltiesList']);
 // Route::get('/vehicles/{vehicleNo?}', [VehicleController::class, 'getVehicle'])->name('api.getVehicle');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 // Route::post('/all-rates', [SettingDistanceController::class, 'getSingleLocationRateList'])->name('api.single-rates');
@@ -81,6 +81,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/vehicle-due-payments', [VehicleUnloadController::class, 'getAllDuePayement'])->name('api.getVehicleDuePayments');
 
     // Offline invoice genration
+    Route::get('/pending-bills', [BiltyController::class, 'getAllBiltiesList'])->name('api.pendingBills');
     Route::post('/offline-invoice', [OfflineInvoiceController::class, 'createInvoice'])->name('api.createOfflineInvoice');
     Route::get('/offline-invoice/{id?}', [OfflineInvoiceController::class, 'offlineInvoice'])->name('api.getOfflineInvoice');
     Route::post('/offline-invoice/{id}', [OfflineInvoiceController::class, 'updateInvoice'])->name('api.updateOfflineInvoice');

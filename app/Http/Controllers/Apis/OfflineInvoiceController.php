@@ -20,28 +20,25 @@ class OfflineInvoiceController extends Controller
         $systemIncome = 0;
         $validator = Validator::make($request->all(), [
             'lr_no' => 'required',
-            'process_amount' => 'required|numeric',
             'narration' => 'string'
         ]);
-
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
         $lrNumbers = explode(',', $request->lr_no);
-
-
         $uniqueFTLId = getUniqueCode($prifix, $tableName);
-        $request->merge(['bill_no' => $uniqueFTLId, 'total_weight' => $totalWeight, 'system_amount' => $systemIncome, 'created_by' => auth()->user()->emp_id]);
+
         DB::beginTransaction();
         try {
-
-
-            $getLrAmount = Bilty::whereIn('booking_id', $lrNumbers)->select(DB::raw("SUM(weight) as total_weight"), DB::raw("SUM(income_amount) as system_amount"))->get()->toArray();
+            $getLrAmount = Bilty::whereIn('booking_id', $lrNumbers)->where('status', 'processing')->select(DB::raw("SUM(weight) as total_weight"), DB::raw("SUM(process_amount) as process_amount"))->get()->toArray();
             if (!empty($getLrAmount)) {
                 $totalWeight = $getLrAmount[0]['total_weight'];
-                $systemIncome = $getLrAmount[0]['system_amount'];
+                $systemIncome = $getLrAmount[0]['process_amount'];
+            } else {
+                return response(['status' => 'error', 'errors' => "Bilty is currently pending!"], 422);
             }
 
+            $request->merge(['bill_no' => $uniqueFTLId, 'total_weight' => $totalWeight, 'system_amount' => $systemIncome, 'created_by' => auth()->user()->emp_id]);
             OfflineInvoice::create($request->all());
             Bilty::whereIn('booking_id', $lrNumbers)->update(['payment_status' => 'processing']);
             $depart = 'offline_invoice';
@@ -59,8 +56,7 @@ class OfflineInvoiceController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'received_amount' => 'required|numeric',
-            'narration' => 'string',
-
+            'narration' => 'string'
         ]);
 
         if ($validator->fails()) {

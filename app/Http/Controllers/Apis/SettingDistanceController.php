@@ -166,10 +166,18 @@ class SettingDistanceController extends Controller
 
             foreach ($allDistance as $index => $items) {
                 $to_location = strtolower($items['to_location']);
-
-                $resultArr[$location][] = ([
-                    'to_location' => $to_location
-                ]);
+                if (!empty($resultArr)) {
+                    $key = array_search($to_location, array_column($resultArr[$location], 'to_location'));
+                    if ($key === false && $key != 0) {
+                        $resultArr[$location][] = ([
+                            'to_location' => $to_location
+                        ]);
+                    }
+                } else {
+                    $resultArr[$location][] = ([
+                        'to_location' => $to_location
+                    ]);
+                }
             }
         } else {
             return response(['status' => 'error', 'errors' => 'No any location add in this consignor!'], 422);
