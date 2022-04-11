@@ -17,6 +17,7 @@ class CreateOfflineInvoicesTable extends Migration
             $table->id();
             $table->string('bill_no')->unique();
             $table->text('lr_no')->comment('lr number list');
+            $table->string('consignor_id')->comment('sub vendor slug');
             $table->enum('is_ftl', ['yes', 'no'])->default('yes')->comment('it for information');
             $table->decimal('total_weight', 10, 2)->default(0)->comment('all lr total weight');
             $table->decimal('system_amount', 10, 2)->default(0)->comment('sytem genrated amount');

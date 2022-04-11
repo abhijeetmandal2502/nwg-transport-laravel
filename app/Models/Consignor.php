@@ -20,6 +20,10 @@ class Consignor extends Model
     {
         return $this->hasMany(LRBooking::class, 'consignee_id', 'cons_id');
     }
+    public function offline_invoices()
+    {
+        return $this->hasMany(OfflineInvoice::class, 'consignor_id', 'cons_id');
+    }
 
     public function users()
     {

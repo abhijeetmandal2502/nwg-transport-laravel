@@ -16,4 +16,9 @@ class OfflineInvoice extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'emp_id');
     }
+
+    public function consignor()
+    {
+        return $this->belongsTo(Consignor::class, 'consignor_id', 'cons_id');
+    }
 }
