@@ -69,6 +69,7 @@ class OfflineInvoiceController extends Controller
 
     public function updateInvoice(Request $request, $id)
     {
+
         if ($request->status === "approved") {
             DB::beginTransaction();
             try {
@@ -86,6 +87,7 @@ class OfflineInvoiceController extends Controller
                 return response(['status' => 'error', 'errors' => $e->getMessage()], 422);
             }
         } elseif ($request->status === "closed") {
+
             $validator = Validator::make($request->all(), [
                 'received_amount' => 'required|numeric',
                 'tds_amount' => 'required|numeric',
@@ -102,30 +104,33 @@ class OfflineInvoiceController extends Controller
                 if (!empty($getLrNumbers)) {
                     $lrNumbers = explode(',', $getLrNumbers[0]['lr_no']);
                     $system_amount = $getLrNumbers[0]['system_amount'];
-                    $getLrAmount = Bilty::whereIn('booking_id', $lrNumbers)->select('booking_id', 'process_amount')->get()->toArray();
+                    $getLrAmount = Bilty::whereIn('booking_id', $lrNumbers)->select('id', 'booking_id', 'process_amount')->get()->toArray();
 
                     foreach ($getLrAmount as $key => $lrs) {
                         $processAmount = $lrs['process_amount'];
-                        $booking_id = $lrs['booking_id'];
+                        // $booking_id = $lrs['booking_id'];
+                        $rowId = $lrs['id'];
                         if ($system_amount != $request->received_amount) {
-                            $recSharePercent = ($processAmount * 100) / $request->received_amount;
-                            $received_amount = $recSharePercent * $$request->received_amount;
+                            $recSharePercent = ($processAmount * 100) / $system_amount;
+                            $received_amount = ($recSharePercent * $request->received_amount) / 100;
                         } else {
                             $received_amount = $processAmount;
                         }
                         if ($request->tds_amount > 0) {
-                            $tdsSharePercent = ($processAmount * 100) / $request->tds_amount;
-                            $tdsAmount = $tdsSharePercent * $request->tds_amount;
+                            $tdsSharePercent = ($processAmount * 100) / $system_amount;
+                            $tdsAmount = ($tdsSharePercent * $request->tds_amount) / 100;
                         } else {
                             $tdsAmount = 0;
                         }
+
                         $forTdsCalculation[] = ([
-                            'booking_id' => $booking_id,
+                            'id' => $rowId,
                             'received_amount' => $received_amount,
                             'tds_amount' => $tdsAmount,
                             'payment_status' => 'approved'
                         ]);
                     }
+
 
                     OfflineInvoice::where('id', $id)->update([
                         'received_amount' => $request->received_amount,
@@ -134,7 +139,7 @@ class OfflineInvoiceController extends Controller
                         'narration' => $request->narration,
                         'final_date' => date('Y-m-d H:i:s')
                     ]);
-                    Bilty::upsert($forTdsCalculation, ['booking_id']);
+                    Bilty::upsert($forTdsCalculation, ['id']);
                     LRBooking::whereIn('booking_id', $lrNumbers)->update(['status' => 'closed']);
                     $depart = 'offline_invoice';
                     $subject = "Group invoice final payment received";
