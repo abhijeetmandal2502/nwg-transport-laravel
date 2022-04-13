@@ -22,10 +22,10 @@ class LRBooking extends Controller
         $tableName = 'l_r_bookings';
 
         $validator = Validator::make($request->all(), [
-            'consignor' => 'required|string|exists:consignors,cons_id',
-            'consignee' => 'required|string|exists:consignors,cons_id',
-            'from_location' => 'required|string|exists:setting_locations,location',
-            'destination_location' => 'required|string|exists:setting_locations,location',
+            'consignor.*' => 'required|string|exists:consignors,cons_id',
+            'consignee.*' => 'required|string|exists:consignors,cons_id',
+            'from_location.*' => 'required|string|exists:setting_locations,location',
+            'destination_location.*' => 'required|string|exists:setting_locations,location',
             'indent_date.*' => 'required|date',
             'reporting_date.*' => 'required|date',
         ]);
@@ -35,7 +35,7 @@ class LRBooking extends Controller
         // create booking number
         $uniqueCode = getUniqueCode($prifix, $tableName);
         $i = 1;
-        foreach ($request->indent_date as $key => $value) {
+        foreach ($request->consignor as $key => $value) {
             if ($i > 1) {
                 $tempLrId = explode('S', $uniqueCode);
                 $lastId = $tempLrId[1] + 1;
@@ -43,13 +43,13 @@ class LRBooking extends Controller
             }
             $data[] = ([
                 'booking_id' => $uniqueCode,
-                'consignor_id' => $request->consignor,
-                'consignee_id' => $request->consignee,
-                'indent_date' => $value,
+                'consignor_id' => $value,
+                'consignee_id' => $request->consignee[$key],
+                'indent_date' => $request->indent_date[$key],
                 'reporting_date' => $request->reporting_date[$key],
                 'booking_date' => $dateNow,
-                'from_location' => $request->from_location,
-                'to_location' => $request->destination_location,
+                'from_location' => $request->from_location[$key],
+                'to_location' => $request->destination_location[$key],
                 'created_by' => auth()->user()->emp_id
             ]);
             $i++;
@@ -322,6 +322,19 @@ class LRBooking extends Controller
 
         DB::beginTransaction();
         try {
+
+            //  for calculation owner vehicle amount
+            //     $getVehicleType = Vehicle::where('vehicle_no', $request->vehicle_id)->first(['type', 'ownership'])->toArray();
+            //     $vehicleType = $getVehicleType['type'];
+            //     $ownership = $getVehicleType['ownership'];
+            //     if ($ownership === "owned") {
+            //         $getLrDeatils = ModelsLRBooking::with('consignor:cons_id,consignor')->where('booking_id', $request->booking_id)->first('consignor_id')->toArray();
+            //         $consignorName = $getLrDeatils['consignor']['consignor'];
+            //   $getRate
+            //     } else {
+            //         $amount = $request->amount;
+            //     }
+
             ModelsLRBooking::where('booking_id', $request->booking_id)->update([
                 'driver_id' => $request->driver_id,
                 'vehicle_id' => $request->vehicle_id,
@@ -433,6 +446,95 @@ class LRBooking extends Controller
             return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
         } else {
             return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
+        }
+    }
+
+    public function editBooking(Request $request)
+    {
+        if (!empty($request->booking_id)) {
+            $getLrStatus = ModelsLRBooking::where('booking_id', $request->booking_id)->first('status')->toArray();
+            if (!empty($getLrStatus)) {
+                $lrStatus = $getLrStatus['status'];
+                if ($lrStatus == "fresh") {
+                    $validator = Validator::make($request->all(), [
+                        'consignor_id' => 'required|exists:consignors,cons_id',
+                        'consignee_id' => 'required|exists:consignors,cons_id',
+                        'indent_date' => 'required|date',
+                        'reporting_date' => 'required|date',
+                        'from_location' => 'required|string|exists:setting_locations,location',
+                        'to_location' => 'required|string|exists:setting_locations,location',
+                    ]);
+                } elseif ($lrStatus == "vehicle-assigned") {
+                    $validator = Validator::make($request->all(), [
+                        'consignor_id' => 'required|exists:consignors,cons_id',
+                        'consignee_id' => 'required|exists:consignors,cons_id',
+                        'indent_date' => 'required|date',
+                        'reporting_date' => 'required|date',
+                        'from_location' => 'required|string|exists:setting_locations,location',
+                        'to_location' => 'required|string|exists:setting_locations,location',
+                        'driver_id' => 'required|exists:setting_drivers,driver_id',
+                        'vehicle_id' => 'required|exists:vehicles,vehicle_no',
+                        'amount' => 'required|numeric|min:0',
+                    ]);
+                } else {
+                    return response(['status' => 'error', 'errors' => "This LR can not be update!"], 422);
+                }
+                if ($validator->fails()) {
+                    return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+                }
+                DB::beginTransaction();
+                try {
+                    ModelsLRBooking::where('booking_id', $request->booking_id)->update($request->all());
+                    $depart = 'super_admin';
+                    $subject = "LR was successfully updated!";
+                    userLogs($depart, $subject);
+                    DB::commit();
+                    return response(['status' => 'success', 'message' => 'LR was successfully updated!'], 201);
+                } catch (\Exception $th) {
+                    DB::rollBack();
+                    return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
+                    //throw $th;
+                }
+            } else {
+                return response(['status' => 'error', 'errors' => "LR Number not valid!"], 422);
+            }
+        } else {
+            return response(['status' => 'error', 'errors' => "Valid LR number required!"], 422);
+        }
+    }
+
+    public function cancelLr(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'booking_id' => 'required|exists:l_r_bookings,booking_id'
+        ]);
+
+        if ($validator->fails()) {
+            return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+        }
+        $statusArr = ['fresh', 'vehicle-assigned', 'loading'];
+
+
+        DB::beginTransaction();
+        try {
+            $checkLrStatus = ModelsLRBooking::where('booking_id', $request->booking_id)->first('status')->toArray();
+            $lrStatus = $checkLrStatus['status'];
+            if (in_array($lrStatus, $statusArr)) {
+                ModelsLRBooking::where('booking_id', $request->booking_id)->update([
+                    'status' => 'cancel'
+                ]);
+            } else {
+                return response(['status' => 'error', 'errors' => "This LR can not be cancel!"], 422);
+            }
+            $depart = 'super_admin';
+            $subject = "LR was successfully cancelled!";
+            $request->merge(['status' => 'cancel']);
+            userLogs($depart, $subject);
+            DB::commit();
+            return response(['status' => 'success', 'message' => 'LR was successfully cancelled!'], 201);
+        } catch (\Exception $th) {
+            DB::rollBack();
+            return response(['status' => 'error', 'errors' => $th->getmessage()], 422);
         }
     }
 }
