@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Apis\AccessPagesController;
+use App\Http\Controllers\Apis\ActivityController;
 use App\Http\Controllers\Apis\AdvancePaymentController;
 use App\Http\Controllers\Apis\AuthController;
 use App\Http\Controllers\Apis\BiltyController;
@@ -38,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
-// Route::post('/logs', [OfflineInvoiceController::class, 'createInvoice']);
+Route::get('/logs', [ActivityController::class, 'activityLogs']);
 // Route::get('/vehicles/{vehicleNo?}', [VehicleController::class, 'getVehicle'])->name('api.getVehicle');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 // Route::post('/all-rates', [SettingDistanceController::class, 'getSingleLocationRateList'])->name('api.single-rates');
@@ -65,7 +66,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/lr-booking/single/{lrNo}', [LRBooking::class, 'getAllSingleLrDtl'])->name('api.singleLrInfo');
     Route::post('/lr-update', [LRBooking::class, 'editBooking'])->name('api.editBooking');
     Route::post('/lr-cancel', [LRBooking::class, 'cancelLr'])->name('api.cancelLr');
-
+    Route::get('/lr-status/{lrNo}', [LRBooking::class, 'getLrStatus'])->name('api.getLrStatus');
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
     Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');
@@ -75,7 +76,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
     Route::get('/lr-bilties/{lrNo}', [BiltyController::class, 'getBilties'])->name('api.lrBilties');
     Route::post('/bilty-update/{biltyId}', [BiltyController::class, 'updateBitly'])->name('api.biltyUpdate');
-
+    Route::delete('/bilty/{id}', [BiltyController::class, 'deleteBilty'])->name('api.biltyDelete');
 
     // Accounts
     Route::post('/advance-payment', [AdvancePaymentController::class, 'newPayment'])->name('api.advancePayment');

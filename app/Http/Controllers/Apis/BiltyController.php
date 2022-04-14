@@ -291,4 +291,25 @@ class BiltyController extends Controller
             return response(['status' => 'error',  'errors' => "No any LR available!"], 422);
         }
     }
+
+    public function deleteBilty(Request $request, $id)
+    {
+        $checkBilty = Bilty::find($id);
+        if ($checkBilty && $checkBilty->payment_status === "pending") {
+            DB::beginTransaction();
+            try {
+                $request->merge(['bilty' => $id]);
+                $checkBilty->delete();
+                $depart = 'super_admin';
+                $subject = "Bilty was successfully deleted!";
+                userLogs($depart, $subject);
+                DB::commit();
+                return response(['status' => 'success', 'message' => 'Bilty deleted successfully!'], 201);
+            } catch (\Exception $th) {
+                return response(['status' => 'error',  'errors' => $th->getMessage()], 422);
+            }
+        } else {
+            return response(['status' => 'error',  'errors' => "Bilty not found or invalid!"], 422);
+        }
+    }
 }

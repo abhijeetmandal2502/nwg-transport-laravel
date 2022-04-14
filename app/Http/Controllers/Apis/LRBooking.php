@@ -449,6 +449,16 @@ class LRBooking extends Controller
         }
     }
 
+    public function getLrStatus($lrNo)
+    {
+        $lrStatus =  ModelsLRBooking::where('booking_id', $lrNo)->first('status')->toArray();
+        if (!empty($lrStatus)) {
+            return response(['status' => 'success', 'data' => $lrStatus], 200);
+        } else {
+            return response(['status' => 'error', 'errors' => 'LR not available!'], 422);
+        }
+    }
+
     public function editBooking(Request $request)
     {
         if (!empty($request->booking_id)) {
