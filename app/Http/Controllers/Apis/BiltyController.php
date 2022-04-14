@@ -82,18 +82,48 @@ class BiltyController extends Controller
         }
     }
 
-
-    public function updateBitly(Request $request, $biltyId)
+    public function updateBilty(Request $request, $biltyId)
     {
-        $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice'])->toArray();
-        if (!empty($getBiltyDetails)) {
-            $lr_no = $getBiltyDetails[0]['booking_id'];
-            $shipment_no = $getBiltyDetails[0]['shipment_no'];
-            $invoice = $getBiltyDetails[0]['invoice'];
-            $request->merge(['lr_no' => $lr_no, 'shipment_no' => $shipment_no, 'invoice' => $invoice]);
+        $getBiltyDetails = Bilty::where('id', $biltyId)->get(['booking_id', 'shipment_no', 'invoice', 'payment_status'])->first();
+        if ($getBiltyDetails) {
+            $getBiltyDetails = $getBiltyDetails->toArray();
+            $lr_no = $getBiltyDetails['booking_id'];
+            $shipment_no = $getBiltyDetails['shipment_no'];
+            $invoice = $getBiltyDetails['invoice'];
+            $payment_status = $getBiltyDetails['payment_status'];
 
             DB::beginTransaction();
             try {
+                if (!isset($request->shipment_no)) {
+                    $request->merge(['lr_no' => $lr_no, 'shipment_no' => $shipment_no, 'invoice' => $invoice]);
+                } elseif ($payment_status === "pending") {
+                    $consignor = $this->getConsignor($lr_no);
+                    if ($consignor == null) {
+                        return response(['status' => 'error', 'errors' => 'Consignor not found on this booking!'], 422);
+                    }
+
+                    $invoiceUnique = $consignor['consignor_id'] . '-' . $request->invoice_no;
+                    $request->merge(['invoice' => $invoiceUnique]);
+                    $validator = Validator::make($request->all(), [
+                        'invoice' => 'required|unique:bilties,invoice,' . $biltyId,
+                        'shipment_no' => 'required|max:50',
+                        'invoice_no' => 'required|max:50',
+                        'packages' => 'required|numeric',
+                        'description' => 'required|max:150',
+                        'date' => 'required|date',
+                        'weight' => 'required|numeric',
+                        'goods_value' => 'required|numeric'
+                    ]);
+                    if ($validator->fails()) {
+                        return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
+                    }
+                    $vendorPerKgRate = (isset($consignor['vendor_per_kg_rate']) ? $consignor['vendor_per_kg_rate'] : 0);
+                    // income calculation
+                    $income_amount = ceil($request->weight) * $vendorPerKgRate;
+                    $request->merge(['per_kg_rate' => $vendorPerKgRate, 'income_amount' => $income_amount]);
+                    Bilty::where('id', $biltyId)->update($request->all());
+                    $subject = "Bilty updated successfully!";
+                }
                 if ($request->status === "processing") {
                     $validator = Validator::make($request->all(), [
                         'amount' => 'required|numeric|min:0',
@@ -155,13 +185,11 @@ class BiltyController extends Controller
                         'created_by' => auth()->user()->emp_id
                     ]);
                     allTransactions($lr_no, $actionType, json_encode($request->all()), $request->amount, $transType, auth()->user()->emp_id);
-                } else {
-                    return response(['status' => 'error', 'errors' => "Invalid Status!"], 422);
                 }
                 $depart = 'account';
                 userLogs($depart, $subject);
                 DB::commit();
-                return response(['status' => 'success', 'message' => 'Bilty amount received successfully!', 'data' => $request->all()], 201);
+                return response(['status' => 'success', 'message' => $subject, 'data' => $request->all()], 201);
             } catch (\Exception $e) {
                 DB::rollback();
                 return response(['status' => 'error', 'errors' => $e->getMessage()], 422);

@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 
 // authentication
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
-Route::get('/logs', [ActivityController::class, 'activityLogs']);
+Route::get('/logs/{id?}', [ActivityController::class, 'activityLogs']);
 // Route::get('/vehicles/{vehicleNo?}', [VehicleController::class, 'getVehicle'])->name('api.getVehicle');
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 // Route::post('/all-rates', [SettingDistanceController::class, 'getSingleLocationRateList'])->name('api.single-rates');
@@ -75,7 +75,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
     Route::get('/bilties/{biltyId}', [BiltyController::class, 'getAllBilties'])->name('api.getAllBilties');
     Route::get('/lr-bilties/{lrNo}', [BiltyController::class, 'getBilties'])->name('api.lrBilties');
-    Route::post('/bilty-update/{biltyId}', [BiltyController::class, 'updateBitly'])->name('api.biltyUpdate');
+    Route::post('/bilty-update/{biltyId}', [BiltyController::class, 'updateBilty'])->name('api.updateBilty');
     Route::delete('/bilty/{id}', [BiltyController::class, 'deleteBilty'])->name('api.biltyDelete');
 
     // Accounts
