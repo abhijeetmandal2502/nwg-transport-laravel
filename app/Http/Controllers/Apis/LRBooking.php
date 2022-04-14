@@ -393,57 +393,161 @@ class LRBooking extends Controller
         }
     }
 
+    protected function getBookingStatus($lrNo)
+    {
+        $lrStatus =  ModelsLRBooking::where('booking_id', $lrNo)->first('status');
+        if ($lrStatus) {
+            return $lrStatus->toArray();
+        } else {
+            return null;
+        }
+    }
     // single lr all details by lr number
     public function getAllSingleLrDtl($lrNo)
     {
         $restultArray = array();
-        $allLrBooking = ModelsLRBooking::where('booking_id', $lrNo)->with('consignor', 'consignee', 'setting_drivers', 'vehicles', 'bilties')->get()->toArray();
-        if (!empty($allLrBooking)) {
-            foreach ($allLrBooking as $key => $items) {
-                $restultArray[$key] = ([
-                    'lr_id' => $items['booking_id'],
-                    'consignor_id' => $items['consignor_id'],
-                    'consignor_name' => $items['consignor']['name'],
-                    'consignor_mobile' => $items['consignor']['mobile'],
-                    'consignor_location' => $items['consignor']['location'],
-                    'consignor_address' => $items['consignor']['address'],
-                    'consignor_state' => $items['consignor']['state'],
-                    'consignor_city' => $items['consignor']['city'],
-                    'consignor_postal' => $items['consignor']['pin_code'],
-                    'consignor_country' => $items['consignor']['country'],
-                    'consignor_gst' => $items['consignor']['gst_no'],
-                    'consignor_pan' => $items['consignor']['pan_no'],
-                    'consignor_altMobile' => $items['consignor']['alt_mobile'],
-                    'consignor_email' => $items['consignor']['email'],
-                    'consignee_id' => $items['consignee_id'],
-                    'consignee_name' => $items['consignee']['name'],
-                    'consignee_mobile' => $items['consignee']['mobile'],
-                    'consignee_location' => $items['consignee']['location'],
-                    'consignee_address' => $items['consignee']['address'],
-                    'consignee_state' => $items['consignee']['state'],
-                    'consignee_city' => $items['consignee']['city'],
-                    'consignee_postal' => $items['consignee']['pin_code'],
-                    'consignee_country' => $items['consignee']['country'],
-                    'consignee_gst' => $items['consignee']['gst_no'],
-                    'consignee_pan' => $items['consignee']['pan_no'],
-                    'consignee_altMobile' => $items['consignee']['alt_mobile'],
-                    'consignee_email' => $items['consignee']['email'],
-                    'from_location' => $items['from_location'],
-                    'to_location' => $items['to_location'],
-                    'vehicle_no' => $items['vehicle_id'],
-                    'ownership' => $items['vehicles']['ownership'],
-                    'vehicle_type' => $items['vehicles']['type'],
-                    'driver_name' => $items['setting_drivers']['name'],
-                    'driver_mobile' => $items['setting_drivers']['mobile'],
-                    'driver_dl' => $items['setting_drivers']['DL_no'],
-                    'DL_expire' => $items['setting_drivers']['DL_expire'],
-                    'amount' => $items['amount'],
-                    'bilty_count' => count($items['bilties']),
-                    'shipment_no' => (isset($items['bilties'][0]['shipment_no']) ? $items['bilties'][0]['shipment_no'] : ""),
-                    'bilties' => $items['bilties']
-                ]);
+        $getlrStatus =   $this->getBookingStatus($lrNo);
+        if (!empty($getlrStatus)) {
+            $lrStatus = $getlrStatus['status'];
+            if ($lrStatus === "fresh") {
+                $allLrBooking = ModelsLRBooking::where('booking_id', $lrNo)->with('consignor', 'consignee')->first();
+                if ($allLrBooking) {
+                    $allLrBooking = $allLrBooking->toArray();
+                    $restultArray = [
+                        'lr_id' => $allLrBooking['booking_id'],
+                        'consignor_id' => $allLrBooking['consignor_id'],
+                        'consignor_name' => $allLrBooking['consignor']['name'],
+                        'consignor_mobile' => $allLrBooking['consignor']['mobile'],
+                        'consignor_location' => $allLrBooking['consignor']['location'],
+                        'consignor_address' => $allLrBooking['consignor']['address'],
+                        'consignor_state' => $allLrBooking['consignor']['state'],
+                        'consignor_city' => $allLrBooking['consignor']['city'],
+                        'consignor_postal' => $allLrBooking['consignor']['pin_code'],
+                        'consignor_country' => $allLrBooking['consignor']['country'],
+                        'consignor_gst' => $allLrBooking['consignor']['gst_no'],
+                        'consignor_pan' => $allLrBooking['consignor']['pan_no'],
+                        'consignor_altMobile' => $allLrBooking['consignor']['alt_mobile'],
+                        'consignor_email' => $allLrBooking['consignor']['email'],
+                        'consignee_id' => $allLrBooking['consignee_id'],
+                        'consignee_name' => $allLrBooking['consignee']['name'],
+                        'consignee_mobile' => $allLrBooking['consignee']['mobile'],
+                        'consignee_location' => $allLrBooking['consignee']['location'],
+                        'consignee_address' => $allLrBooking['consignee']['address'],
+                        'consignee_state' => $allLrBooking['consignee']['state'],
+                        'consignee_city' => $allLrBooking['consignee']['city'],
+                        'consignee_postal' => $allLrBooking['consignee']['pin_code'],
+                        'consignee_country' => $allLrBooking['consignee']['country'],
+                        'consignee_gst' => $allLrBooking['consignee']['gst_no'],
+                        'consignee_pan' => $allLrBooking['consignee']['pan_no'],
+                        'consignee_altMobile' => $allLrBooking['consignee']['alt_mobile'],
+                        'consignee_email' => $allLrBooking['consignee']['email'],
+                        'from_location' => $allLrBooking['from_location'],
+                        'to_location' => $allLrBooking['to_location'],
+                    ];
+                    return response(['status' => 'success', 'data' => $restultArray], 200);
+                } else {
+                    return response(['status' => 'error', 'errors' => 'LR Details not found!'], 422);
+                }
+            } elseif ($lrStatus === "vehicle-assigned") {
+                $allLrBooking = ModelsLRBooking::where('booking_id', $lrNo)->with('consignor', 'consignee', 'setting_drivers', 'vehicles')->first();
+                if ($allLrBooking) {
+                    $allLrBooking = $allLrBooking->toArray();
+                    $restultArray = [
+                        'lr_id' => $allLrBooking['booking_id'],
+                        'consignor_id' => $allLrBooking['consignor_id'],
+                        'consignor_name' => $allLrBooking['consignor']['name'],
+                        'consignor_mobile' => $allLrBooking['consignor']['mobile'],
+                        'consignor_location' => $allLrBooking['consignor']['location'],
+                        'consignor_address' => $allLrBooking['consignor']['address'],
+                        'consignor_state' => $allLrBooking['consignor']['state'],
+                        'consignor_city' => $allLrBooking['consignor']['city'],
+                        'consignor_postal' => $allLrBooking['consignor']['pin_code'],
+                        'consignor_country' => $allLrBooking['consignor']['country'],
+                        'consignor_gst' => $allLrBooking['consignor']['gst_no'],
+                        'consignor_pan' => $allLrBooking['consignor']['pan_no'],
+                        'consignor_altMobile' => $allLrBooking['consignor']['alt_mobile'],
+                        'consignor_email' => $allLrBooking['consignor']['email'],
+                        'consignee_id' => $allLrBooking['consignee_id'],
+                        'consignee_name' => $allLrBooking['consignee']['name'],
+                        'consignee_mobile' => $allLrBooking['consignee']['mobile'],
+                        'consignee_location' => $allLrBooking['consignee']['location'],
+                        'consignee_address' => $allLrBooking['consignee']['address'],
+                        'consignee_state' => $allLrBooking['consignee']['state'],
+                        'consignee_city' => $allLrBooking['consignee']['city'],
+                        'consignee_postal' => $allLrBooking['consignee']['pin_code'],
+                        'consignee_country' => $allLrBooking['consignee']['country'],
+                        'consignee_gst' => $allLrBooking['consignee']['gst_no'],
+                        'consignee_pan' => $allLrBooking['consignee']['pan_no'],
+                        'consignee_altMobile' => $allLrBooking['consignee']['alt_mobile'],
+                        'consignee_email' => $allLrBooking['consignee']['email'],
+                        'from_location' => $allLrBooking['from_location'],
+                        'to_location' => $allLrBooking['to_location'],
+                        'vehicle_no' => $allLrBooking['vehicle_id'],
+                        'ownership' => $allLrBooking['vehicles']['ownership'],
+                        'vehicle_type' => $allLrBooking['vehicles']['type'],
+                        'driver_name' => $allLrBooking['setting_drivers']['name'],
+                        'driver_mobile' => $allLrBooking['setting_drivers']['mobile'],
+                        'driver_dl' => $allLrBooking['setting_drivers']['DL_no'],
+                        'DL_expire' => $allLrBooking['setting_drivers']['DL_expire'],
+                        'amount' => $allLrBooking['amount'],
+                    ];
+                    return response(['status' => 'success', 'data' => $restultArray], 200);
+                } else {
+                    return response(['status' => 'error', 'errors' => 'LR Details not found!'], 422);
+                }
+            } elseif ($lrStatus === "cancel") {
+                return response(['status' => 'error', 'errors' => 'LR Number is cancelled!'], 422);
+            } else {
+                $allLrBooking = ModelsLRBooking::where('booking_id', $lrNo)->with('consignor', 'consignee', 'setting_drivers', 'vehicles', 'bilties')->first();
+                if ($allLrBooking) {
+                    $allLrBooking = $allLrBooking->toArray();
+                    $restultArray[] = ([
+                        'lr_id' => $allLrBooking['booking_id'],
+                        'consignor_id' => $allLrBooking['consignor_id'],
+                        'consignor_name' => $allLrBooking['consignor']['name'],
+                        'consignor_mobile' => $allLrBooking['consignor']['mobile'],
+                        'consignor_location' => $allLrBooking['consignor']['location'],
+                        'consignor_address' => $allLrBooking['consignor']['address'],
+                        'consignor_state' => $allLrBooking['consignor']['state'],
+                        'consignor_city' => $allLrBooking['consignor']['city'],
+                        'consignor_postal' => $allLrBooking['consignor']['pin_code'],
+                        'consignor_country' => $allLrBooking['consignor']['country'],
+                        'consignor_gst' => $allLrBooking['consignor']['gst_no'],
+                        'consignor_pan' => $allLrBooking['consignor']['pan_no'],
+                        'consignor_altMobile' => $allLrBooking['consignor']['alt_mobile'],
+                        'consignor_email' => $allLrBooking['consignor']['email'],
+                        'consignee_id' => $allLrBooking['consignee_id'],
+                        'consignee_name' => $allLrBooking['consignee']['name'],
+                        'consignee_mobile' => $allLrBooking['consignee']['mobile'],
+                        'consignee_location' => $allLrBooking['consignee']['location'],
+                        'consignee_address' => $allLrBooking['consignee']['address'],
+                        'consignee_state' => $allLrBooking['consignee']['state'],
+                        'consignee_city' => $allLrBooking['consignee']['city'],
+                        'consignee_postal' => $allLrBooking['consignee']['pin_code'],
+                        'consignee_country' => $allLrBooking['consignee']['country'],
+                        'consignee_gst' => $allLrBooking['consignee']['gst_no'],
+                        'consignee_pan' => $allLrBooking['consignee']['pan_no'],
+                        'consignee_altMobile' => $allLrBooking['consignee']['alt_mobile'],
+                        'consignee_email' => $allLrBooking['consignee']['email'],
+                        'from_location' => $allLrBooking['from_location'],
+                        'to_location' => $allLrBooking['to_location'],
+                        'vehicle_no' => $allLrBooking['vehicle_id'],
+                        'ownership' => $allLrBooking['vehicles']['ownership'],
+                        'vehicle_type' => $allLrBooking['vehicles']['type'],
+                        'driver_name' => $allLrBooking['setting_drivers']['name'],
+                        'driver_mobile' => $allLrBooking['setting_drivers']['mobile'],
+                        'driver_dl' => $allLrBooking['setting_drivers']['DL_no'],
+                        'DL_expire' => $allLrBooking['setting_drivers']['DL_expire'],
+                        'amount' => $allLrBooking['amount'],
+                        'bilty_count' => count($allLrBooking['bilties']),
+                        'shipment_no' => (isset($allLrBooking['bilties'][0]['shipment_no']) ? $allLrBooking['bilties'][0]['shipment_no'] : ""),
+                        'bilties' => $allLrBooking['bilties']
+                    ]);
+                    return response(['status' => 'success', 'data' => $restultArray], 200);
+                } else {
+                    return response(['status' => 'error', 'errors' => 'LR Details not found!'], 422);
+                }
             }
-            return response(['status' => 'success', 'records' => count($allLrBooking), 'data' => $restultArray], 200);
         } else {
             return response(['status' => 'error', 'errors' => 'Data not available!'], 422);
         }
@@ -451,7 +555,8 @@ class LRBooking extends Controller
 
     public function getLrStatus($lrNo)
     {
-        $lrStatus =  ModelsLRBooking::where('booking_id', $lrNo)->first('status')->toArray();
+        $lrStatus =  $this->getBookingStatus($lrNo);
+
         if (!empty($lrStatus)) {
             return response(['status' => 'success', 'data' => $lrStatus], 200);
         } else {
