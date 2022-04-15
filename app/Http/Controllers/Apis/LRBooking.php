@@ -443,6 +443,8 @@ class LRBooking extends Controller
                         'consignee_email' => $allLrBooking['consignee']['email'],
                         'from_location' => $allLrBooking['from_location'],
                         'to_location' => $allLrBooking['to_location'],
+                        'indent_date' => $allLrBooking['indent_date'],
+                        'reporting_date' => $allLrBooking['reporting_date']
                     ];
                     return response(['status' => 'success', 'data' => $restultArray], 200);
                 } else {
@@ -482,6 +484,8 @@ class LRBooking extends Controller
                         'consignee_email' => $allLrBooking['consignee']['email'],
                         'from_location' => $allLrBooking['from_location'],
                         'to_location' => $allLrBooking['to_location'],
+                        'indent_date' => $allLrBooking['indent_date'],
+                        'reporting_date' => $allLrBooking['reporting_date'],
                         'vehicle_no' => $allLrBooking['vehicle_id'],
                         'ownership' => $allLrBooking['vehicles']['ownership'],
                         'vehicle_type' => $allLrBooking['vehicles']['type'],
@@ -531,6 +535,8 @@ class LRBooking extends Controller
                         'consignee_email' => $allLrBooking['consignee']['email'],
                         'from_location' => $allLrBooking['from_location'],
                         'to_location' => $allLrBooking['to_location'],
+                        'indent_date' => $allLrBooking['indent_date'],
+                        'reporting_date' => $allLrBooking['reporting_date'],
                         'vehicle_no' => $allLrBooking['vehicle_id'],
                         'ownership' => $allLrBooking['vehicles']['ownership'],
                         'vehicle_type' => $allLrBooking['vehicles']['type'],
