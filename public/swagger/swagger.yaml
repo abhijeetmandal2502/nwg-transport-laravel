@@ -1,0 +1,47 @@
+openapi: 3.0.1
+info:
+  title: Transport Association Management
+  description: Transport association management backend api
+  contact:
+    name: Honey Developer
+    url: https://nextwebguru.com/
+    email: honeydeveloper012@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: https://transport-backend.thenwg.xyz/api
+    description: Staging server
+  - url: http://localhost:8000/api
+    description: Development server
+tags:
+  - name: Authentication
+    description: Login to application here
+  - name: Employees
+    description: Manage Employees
+paths:
+  /login:
+   $ref: './src/Auth/Login.yaml'
+  /logout:
+    $ref: './src/Auth/Logout.yaml'
+  /register:
+    $ref: './src/Employee/Register.yaml'
+  /employees:
+    $ref: './src/Employee/Employees.yaml'
+  /employees/{empId}:
+    $ref: './src/Employee/Employee-by-id.yaml'
+  /update-employees/{id}:
+    $ref: './src/Employee/Update-employee.yaml'
+  
+
+
+components:
+  securitySchemes:
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 
+  schemas:
+    Employee:
+     $ref: './src/Models/employee.yaml'

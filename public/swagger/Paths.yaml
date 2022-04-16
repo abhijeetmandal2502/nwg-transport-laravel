@@ -1,0 +1,10 @@
+ /login:
+   $ref: './src/Auth/Login.yaml'
+ /logout:
+   $ref: './src/Auth/Logout.yaml'
+ /employees:
+   $ref: './src/Employee/Employees.yaml'
+ /employees/{empId}:
+   $ref: './src/Employee/Employee-by-id.yaml'
+ /update-employees/{id}:
+   $ref: './src/Employee/Update-employeee.yaml'

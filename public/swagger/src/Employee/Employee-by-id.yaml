@@ -1,0 +1,26 @@
+get:
+  tags:
+    - Employees
+  summary: Employee all details
+  description: Get only one employees deatils by id
+  operationId: singleEmployee
+  parameters:
+      - name: empId
+        in: path
+        description: ID of employee to return
+        required: true
+        schema:
+          empId:
+            type: string
+  responses:
+    '200':
+      description: Employee details with this id!
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Employee'
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []   

@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Authentication
+  summary: Employee Login here
+  description: Employee can login with email or employee_id
+  operationId: employeeLogin
+  requestBody:
+    required: true
+    description: employee login credential
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+              email:      
+                type: string
+              role:   
+                type: string
+              password:   
+                type: string
+          required:
+            - email
+            - role
+            - password
+  responses:
+    '200':
+      description: Employee access token and employee details
+      content: {}
+    
+    '422':
+      description: Unprocessable Entity
+      content: {}

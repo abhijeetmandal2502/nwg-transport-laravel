@@ -1,0 +1,11 @@
+post:
+    tags:
+      - Authentication
+    summary: Logs out current logged in user session
+    operationId: logoutEmployee
+    responses:
+      default:
+        description: You have successfully logged out!!
+        content: {}   
+    security:
+        - bearerAuth: []

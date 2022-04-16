@@ -486,6 +486,7 @@ class LRBooking extends Controller
                         'to_location' => $allLrBooking['to_location'],
                         'indent_date' => $allLrBooking['indent_date'],
                         'reporting_date' => $allLrBooking['reporting_date'],
+                        'driver_id' => $allLrBooking['driver_id'],
                         'vehicle_no' => $allLrBooking['vehicle_id'],
                         'ownership' => $allLrBooking['vehicles']['ownership'],
                         'vehicle_type' => $allLrBooking['vehicles']['type'],

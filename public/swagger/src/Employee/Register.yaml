@@ -1,0 +1,25 @@
+post:
+    tags:
+      - Employees
+    summary: Add new employee
+    description: create new employee with role
+    operationId: employeeRegister
+    requestBody:
+      description: Employee object need to store
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Employee'
+        # application/xml:
+        #   schema:
+        #     $ref: '#/components/schemas/Employee'
+      required: true
+    responses:
+      '201':
+        description: Employee created successfully!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+    security:
+      - bearerAuth: []

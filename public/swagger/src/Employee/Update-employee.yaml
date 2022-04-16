@@ -1,0 +1,29 @@
+post:
+  tags:
+    - Employees
+  summary: Update Employee
+  operationId: updateEmployee
+  parameters:
+    - name: id
+      in: path
+      description: ID of Employee to update
+      required: true
+      schema:
+        id:
+          type: integer
+  requestBody:
+      required: true
+      description: Employee object need to update
+      content:
+      application/json:
+        schema:
+          $ref: '/../../#/components/schemas/Employee'
+  responses:
+    '201':
+      description: Employee Updated successfully!
+      content:
+    '422':
+        description: Unprocessable Entity
+        content: {}
+    security:
+      - bearerAuth: [] 

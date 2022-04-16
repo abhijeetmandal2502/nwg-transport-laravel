@@ -1,0 +1,20 @@
+get:
+  tags:
+    - Employees
+  summary: All employees
+  description: Get all employees list
+  operationId: employees
+  responses:
+    '200':
+      description: All Employee list!
+      content:
+        application/json:
+          schema:
+            $ref: './src/Models/models.yaml#/Employee'
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

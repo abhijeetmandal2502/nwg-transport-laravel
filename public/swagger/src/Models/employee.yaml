@@ -1,0 +1,45 @@
+required:
+    - employee_id
+    - name
+    - email
+    - mobile
+    - gender
+    - date_of_birth
+    - date_of_join
+    - salary
+    - role
+    - password
+type: object
+properties:
+  id:
+    type: integer
+  employee_id:
+    type: string
+  name:
+    type: string
+    # example: doggie
+  email:
+    type: string
+    format: email
+  mobile:
+    type: string
+  gender:
+    type: string
+    enum: [male, female,other]
+  date_of_birth:
+    type: string
+    format: date
+  date_of_join:
+    type: string
+    format: date
+  salary:
+    type: number
+    format: float
+  role:
+    type: string
+  password:
+    type: string
+    format: password
+    xml:
+      name: Employee
+

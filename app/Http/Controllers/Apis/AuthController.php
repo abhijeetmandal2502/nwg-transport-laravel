@@ -16,54 +16,6 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    /**
-     *    @OA\Info(
-     *      version="1.0.0",
-     *      title="Transport Association Management",
-     * version="1.0.0",
-     *      description="Transport association management backend api",
-     *      @OA\Contact(
-     *          email="honeydeveloper012@gmail.com"
-     *      ),),
-     * @OA\Post(
-     * path="/api/register",
-     * operationId="employeeRegister",
-     * tags={"Authentication"},
-     * summary="Employee Register",
-     * description="Employee Register here",
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(),
-     *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
-     *            @OA\Schema(
-     *               type="object",
-     *               required={"employee_id","name","email","mobile","gender","password","date_of_join","date_of_birth","salary","role"},
-     *               @OA\Property(property="employee_id", type="text"),
-     *               @OA\Property(property="name", type="text"),
-     *               @OA\Property(property="email", type="email"),
-     *               @OA\Property(property="mobile", type="text"),
-     *               @OA\Property(property="gender", type="text"),
-     *               @OA\Property(property="date_of_join", type="date"),
-     *               @OA\Property(property="date_of_birth", type="date"),
-     *               @OA\Property(property="salary", type="number"),
-     *               @OA\Property(property="role", type="text"),
-     *               @OA\Property(property="password", type="password"),
-     *            ),
-     *        ),
-     *    ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Employee created successfully!",
-     *          @OA\JsonContent()
-     *       ),
-     *      @OA\Response(
-     *          response=422,
-     *          description="Unprocessable Entity",
-     *          @OA\JsonContent()
-     *       ),
-     * )
-     */
-
 
     public function register(Request $request)
     {
@@ -117,53 +69,6 @@ class AuthController extends Controller
         }
     }
 
-    /** 
-     * @OA\Post(
-     * path="/api/update-employees/{id}",
-     * operationId="employeeUpdate",
-     * tags={"Authentication"},
-     * summary="Update Employee",
-     * description="Employee Update here",
-     *   @OA\Parameter(
-     *      name="id",
-     *      in="path",
-     *      required=true,
-     *      @OA\Schema(
-     *           type="integer"
-     *      )
-     *   ),
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(),
-     *         @OA\MediaType(
-     *            mediaType="multipart/form-data",
-     *            @OA\Schema(
-     *               type="object",
-     *               required={"employee_id","name","email","mobile","gender","password","date_of_join","date_of_birth","salary","role"},
-     *               @OA\Property(property="employee_id", type="text"),
-     *               @OA\Property(property="name", type="text"),
-     *               @OA\Property(property="email", type="email"),
-     *               @OA\Property(property="mobile", type="text"),
-     *               @OA\Property(property="gender", type="text"),
-     *               @OA\Property(property="date_of_join", type="date"),
-     *               @OA\Property(property="date_of_birth", type="date"),
-     *               @OA\Property(property="salary", type="number"),
-     *               @OA\Property(property="role", type="text"),
-     *               @OA\Property(property="password", type="password"),
-     *            ),
-     *        ),
-     *    ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Employee Updated successfully!",
-     *          @OA\JsonContent()
-     *       ),
-     *      @OA\Response(
-     *          response=422,
-     *          description="Unprocessable Entity",
-     *          @OA\JsonContent()
-     *       ),
-     * )
-     */
 
     public function updateEmployee(Request $request, $id)
     {
@@ -212,28 +117,6 @@ class AuthController extends Controller
         }
     }
 
-
-    /**
-     * @OA\Get(
-     * path="/api/employees",
-     * summary="Get All Employees",
-     * description="Get All Employees list",
-     * operationId="GetAllEmployees",
-     * tags={"UserDetails"},
-     * security={ {"bearer": {} }},
-     * @OA\Parameter(
-     *    description="ID of User",
-     *    in="path",
-     *    name="userId",
-     *    required=true,
-     *    example="1",
-     *    @OA\Schema(
-     *       type="integer",
-     *       format="int64"
-     *    )
-     * )
-     * )
-     */
 
     public function getEmployees($empId = null)
     {

@@ -67,6 +67,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/lr-update', [LRBooking::class, 'editBooking'])->name('api.editBooking');
     Route::post('/lr-cancel', [LRBooking::class, 'cancelLr'])->name('api.cancelLr');
     Route::get('/lr-status/{lrNo}', [LRBooking::class, 'getLrStatus'])->name('api.getLrStatus');
+
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
     Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');
