@@ -9,7 +9,7 @@ post:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Employee'
+            $ref: '../../swagger.yaml#/components/schemas/Employee'
         # application/xml:
         #   schema:
         #     $ref: '#/components/schemas/Employee'

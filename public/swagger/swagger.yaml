@@ -18,8 +18,12 @@ servers:
 tags:
   - name: Authentication
     description: Login to application here
+  - name: Dashboard
+    description: Summary of business
   - name: Employees
     description: Manage Employees
+  - name: LR/CN Booking
+    description: All LR/CN management APIs
 paths:
   /login:
    $ref: './src/Auth/Login.yaml'
@@ -33,9 +37,11 @@ paths:
     $ref: './src/Employee/Employee-by-id.yaml'
   /update-employees/{id}:
     $ref: './src/Employee/Update-employee.yaml'
+  /dashboard:
+    $ref: './src/Dashboard/dashboard.yaml'
+  /create-lr-booking:
+    $ref: './src/LR/new-create.yaml'
   
-
-
 components:
   securitySchemes:
     bearerAuth:            
@@ -44,4 +50,4 @@ components:
       bearerFormat: JWT 
   schemas:
     Employee:
-     $ref: './src/Models/employee.yaml'
+     $ref: './src/Models/Employee.yaml'

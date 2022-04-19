@@ -10,7 +10,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: './src/Models/models.yaml#/Employee'
+            $ref: '../../swagger.yaml#/components/schemas/Employee'
     '422':
       description: Unprocessable Entity
       content: {}

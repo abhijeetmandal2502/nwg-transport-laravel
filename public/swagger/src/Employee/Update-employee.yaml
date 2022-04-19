@@ -17,7 +17,7 @@ post:
       content:
       application/json:
         schema:
-          $ref: '/../../#/components/schemas/Employee'
+            $ref: '../../swagger.yaml#/components/schemas/Employee'
   responses:
     '201':
       description: Employee Updated successfully!
@@ -27,3 +27,4 @@ post:
         content: {}
     security:
       - bearerAuth: [] 
+

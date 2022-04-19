@@ -1,0 +1,58 @@
+post:
+    tags:
+      - LR/CN Booking
+    summary: Create New Booking
+    description: create new booking with multiple once time
+    operationId: newLrCreate
+    requestBody:
+      required: true
+      description: Booking object need to store consignor and consignee slug accept here with comma separated
+      content:
+        application/json:
+          schema:
+              type: object
+              properties:
+                consignor:         
+                  type: array
+                  items:
+                    type: string
+                consignee:   
+                  type: array
+                  items:
+                    type: string
+                indent_date:
+                  type: array
+                  items:
+                    type: string
+                    format: date  
+                reporting_date:
+                  type: array
+                  items:
+                    type: string
+                    format: date
+                from_location:
+                  type: array
+                  items:
+                    type: string
+                destination_location:
+                  type: array
+                  items:
+                    type: string
+              required:
+                - consignor
+                - consignee
+                - indent_date
+                - reporting_date
+                - from_location
+                - destination_location
+    responses:
+      '201':
+        description: LR created successfully!!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+      '500':
+        description: Internal Server Error
+    security:
+      - bearerAuth: []

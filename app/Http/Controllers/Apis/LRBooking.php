@@ -32,6 +32,7 @@ class LRBooking extends Controller
         if ($validator->fails()) {
             return response(['status' => 'error', 'errors' => $validator->errors()->all()], 422);
         }
+        dd($request->all());
         // create booking number
         $uniqueCode = getUniqueCode($prifix, $tableName);
         $i = 1;
