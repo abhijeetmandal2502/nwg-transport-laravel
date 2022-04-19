@@ -281,14 +281,21 @@ class BiltyController extends Controller
         }
     }
 
-    public function getAllBiltiesList()
+    public function getAllBiltiesList($all = null)
     {
         $finalArray = array();
-        $bilties = LRBooking::whereIn('status', ['unload'])->with(['bilties' => function ($query) {
-            $query->select('booking_id', 'shipment_no', DB::raw('COUNT(id) as countBill'), DB::raw('SUM(weight) as total_weight'), DB::raw("SUM(process_amount) as system_amount"), 'payment_status');
-            $query->where('payment_status', '=', 'processing')->where('group_id', NULL);
-            $query->groupBy('booking_id', 'shipment_no');
-        }, 'setting_drivers:driver_id,name,mobile', 'vehicles:vehicle_no,ownership,type', 'vehicles.vehicle_types:type_id,type_name'])->orderByDesc('booking_date')->get()->toArray();
+        if (!empty($all) && $all == "all") {
+            $bilties = LRBooking::whereIn('status', ['loading', 'unload'])->with(['bilties' => function ($query) {
+                $query->select('booking_id', 'shipment_no', DB::raw('COUNT(id) as countBill'), DB::raw('SUM(weight) as total_weight'), DB::raw("SUM(process_amount) as system_amount"), 'payment_status');
+                $query->groupBy('booking_id', 'shipment_no');
+            }, 'setting_drivers:driver_id,name,mobile', 'vehicles:vehicle_no,ownership,type', 'vehicles.vehicle_types:type_id,type_name'])->orderByDesc('booking_date')->get()->toArray();
+        } else {
+            $bilties = LRBooking::whereIn('status', ['unload'])->with(['bilties' => function ($query) {
+                $query->select('booking_id', 'shipment_no', DB::raw('COUNT(id) as countBill'), DB::raw('SUM(weight) as total_weight'), DB::raw("SUM(process_amount) as system_amount"), 'payment_status');
+                $query->where('payment_status', '=', 'processing')->where('group_id', NULL);
+                $query->groupBy('booking_id', 'shipment_no');
+            }, 'setting_drivers:driver_id,name,mobile', 'vehicles:vehicle_no,ownership,type', 'vehicles.vehicle_types:type_id,type_name'])->orderByDesc('booking_date')->get()->toArray();
+        }
         foreach ($bilties as $key => $items) {
             if (!empty($items['bilties'])) {
                 $finalArray[] = ([
@@ -318,6 +325,10 @@ class BiltyController extends Controller
         } else {
             return response(['status' => 'error',  'errors' => "No any LR available!"], 422);
         }
+    }
+    public function all(Type $var = null)
+    {
+        # code...
     }
 
     public function deleteBilty(Request $request, $id)
