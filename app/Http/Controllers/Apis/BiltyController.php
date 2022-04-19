@@ -326,10 +326,6 @@ class BiltyController extends Controller
             return response(['status' => 'error',  'errors' => "No any LR available!"], 422);
         }
     }
-    public function all(Type $var = null)
-    {
-        # code...
-    }
 
     public function deleteBilty(Request $request, $id)
     {
