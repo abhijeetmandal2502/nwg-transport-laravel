@@ -1,0 +1,30 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get Only LR Status
+  description: This api is used to get only LR status.
+  operationId: singleLr
+  parameters:
+      - name: lrNo
+        in: path
+        description: lrNo of LR to return
+        schema:
+          lrNo:
+            type: string
+  responses:
+    '200':
+      description: LR Status
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

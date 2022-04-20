@@ -1,0 +1,48 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get All LR with status
+  description: This api is used to get all LR with status when initial stage.
+  operationId: lrList
+  parameters:
+      - name: page
+        in: path
+        description: page no for limit (optional)
+        schema:
+          page:
+            type: integer
+  responses:
+    '200':
+      description: All LR List!
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              lr_id:
+                type: string
+              consignor_id:
+                type: string
+              consignor_name:
+                type: string
+              consignee_id:
+                type: string
+              consignee_name:
+                type: string
+              from_location:
+                type: string
+              to_location:
+                type: string
+              amount:
+                type: number
+              status:
+                type: string
+              print:
+                type: string
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

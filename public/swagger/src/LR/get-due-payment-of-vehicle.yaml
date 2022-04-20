@@ -1,0 +1,58 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get vehicle due payment after unload vehicle
+  description: Get all Third Party vehicle owner due payment after unload vehicle.
+  operationId: vehicleDuePayment
+  parameters:
+      - name: lrNo
+        in: path
+        description: lrNo of LR to return
+        schema:
+          lrNo:
+            type: string
+  responses:
+    '200':
+      description: All Unload and advance details
+      content:
+         application/json:
+          schema:
+            type: object
+            properties:
+              lr_no:
+                type: string
+              booking_date:
+                type: string
+                format: date
+              arrive_date:
+                type: string 
+                format: date
+              unload_date:
+                type: string 
+                format: date
+              total_goods:
+                type: number
+              receive_goods:
+                type: number
+              unload_charge:
+                type: number 
+              total_amount:
+                type: number
+              advance_payment:
+                type: number   
+              petrol_payment:
+                type: number
+              final_payment:
+                type: number
+              deduction_amount:
+                type: number
+              deductions:
+                type: object
+              
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

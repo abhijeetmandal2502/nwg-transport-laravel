@@ -1,0 +1,25 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get free vehicle or driver list for LR
+  description: Get free vehicle or driver list for LR vehicle assignment.
+  operationId: getFreeVehicle
+  parameters:
+      - name: type
+        in: path
+        description: free type (driver/vehicle)
+        schema:
+          type:
+            type: string
+  responses:
+    '200':
+      description: All Details of vehicle or driver
+      content: {}
+    
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

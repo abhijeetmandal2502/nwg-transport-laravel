@@ -1,0 +1,29 @@
+post:
+    tags:
+      - LR/CN Booking
+    summary: LR cancel
+    description: LR can cancel before unload stage
+    operationId: lrCancel
+    requestBody:
+      required: true
+      description: only booking id required for cancel
+      content:
+        application/json:
+          schema:
+              type: object
+              properties:
+                booking_id:         
+                  type: string
+              required:
+                - booking_id
+    responses:
+      '201':
+        description: LR was successfully cancelled!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+      '500':
+        description: Internal Server Error
+    security:
+      - bearerAuth: []

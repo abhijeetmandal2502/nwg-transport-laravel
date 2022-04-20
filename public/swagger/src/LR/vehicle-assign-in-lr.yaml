@@ -1,0 +1,43 @@
+post:
+    tags:
+      - LR/CN Booking
+    summary: Vehicle Assignment in LR
+    description: Vehicle Assignment in fresh LR
+    operationId: vehicleAssign
+    requestBody:
+      description: LR object need to update
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              booking_id:
+                type: string
+              driver_id:
+                type: string
+              vehicle_id:
+                type: string
+              amount: 
+                type: number
+              status:
+                type: string
+                default: vehicle-assigned
+            required:
+                - booking_id
+                - driver_id
+                - vehicle_id
+                - amount
+                - status
+      required: true
+    responses:
+      '201':
+        description: Vehicle Details Updated!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+      '500':
+        description: Internal Server Error
+        content: {}
+    security:
+      - bearerAuth: []

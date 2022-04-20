@@ -1,0 +1,24 @@
+get:
+  tags:
+    - Bilties
+  summary: Get All Bilties of LR Number
+  description: filter by LR Number to get all Bilties.
+  operationId: biltyLrDetails
+  parameters:
+      - name: lrNo
+        in: path
+        description: lrNo of LR to return
+        schema:
+          lrNo:
+            type: string
+  responses:
+    '200':
+      description: bilties details
+      content: {}
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

@@ -1,0 +1,24 @@
+get:
+  tags:
+    - Bilties
+  summary: Get Single Bilty with LR details
+  description: This api is used to get single bilty with LR details.
+  operationId: singleBilyDetails
+  parameters:
+      - name: biltyId
+        in: path
+        description: auto increment id of bilty to return
+        schema:
+          biltyId:
+            type: integer
+  responses:
+    '200':
+      description: Bilty with LR details
+      content: {}
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

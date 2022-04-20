@@ -1,0 +1,25 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get LR List by Status
+  description: LR filter by status (fresh,vehicle-assigned,loading,unload).
+  operationId: getByLrStatus
+  parameters:
+      - name: type
+        in: path
+        description: status of LR to return
+        schema:
+          type:
+            type: string
+  responses:
+    '200':
+      description: All LR list with same status in type field
+      content: {}
+      
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

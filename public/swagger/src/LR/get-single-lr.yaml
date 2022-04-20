@@ -1,0 +1,48 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get Single LR with minimum details
+  description: This api is used to get single LR with minimum details.
+  operationId: singleLr
+  parameters:
+      - name: lrNo
+        in: path
+        description: lrNo of LR to return
+        schema:
+          lrNo:
+            type: string
+  responses:
+    '200':
+      description: Get Single LR data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              lr_id:
+                type: string
+              consignor_id:
+                type: string
+              consignor_name:
+                type: string
+              consignee_id:
+                type: string
+              consignee_name:
+                type: string
+              from_location:
+                type: string
+              to_location:
+                type: string
+              amount:
+                type: number
+              status:
+                type: string
+              print:
+                type: string
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

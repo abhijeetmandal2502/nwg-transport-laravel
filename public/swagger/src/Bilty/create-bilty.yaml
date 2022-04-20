@@ -1,0 +1,58 @@
+post:
+    tags:
+      - Bilties
+    summary: Create New Bilty
+    description: Create new bity here after vehicle assigned in LR
+    operationId: bityCreate
+    requestBody:
+      required: true
+      description: object need to create
+      content:
+        application/json:
+          schema:
+              type: object
+              properties:
+                booking_id:         
+                  type: string
+                shipment_no:
+                  type: string
+                invoice_no: 
+                  type: string
+                packages:
+                  type: number
+                description:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                weight:
+                  type: number
+                unit:
+                  type: string
+                  description: weight unit (kg)
+                gst_no:
+                  type: string
+                goods_value:
+                  type: number
+              required:
+                - booking_id
+                - shipment_no
+                - invoice_no
+                - packages
+                - description
+                - date
+                - weight
+                - unit
+                - gst_no
+                - goods_value
+    responses:
+      '201':
+        description: Bilty Created successfully!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+      '500':
+        description: Internal Server Error
+    security:
+      - bearerAuth: []

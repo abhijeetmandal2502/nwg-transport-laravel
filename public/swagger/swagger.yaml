@@ -24,11 +24,16 @@ tags:
     description: Manage Employees
   - name: LR/CN Booking
     description: All LR/CN management APIs
+  - name: Bilties
+    description: All Bilties management APIs
 paths:
+# authentication
   /login:
    $ref: './src/Auth/Login.yaml'
   /logout:
     $ref: './src/Auth/Logout.yaml'
+
+# employeee Manage
   /register:
     $ref: './src/Employee/Register.yaml'
   /employees:
@@ -37,11 +42,47 @@ paths:
     $ref: './src/Employee/Employee-by-id.yaml'
   /update-employees/{id}:
     $ref: './src/Employee/Update-employee.yaml'
+
+# dashboard
   /dashboard:
     $ref: './src/Dashboard/dashboard.yaml'
+
+# LR/CN Booking
   /create-lr-booking:
     $ref: './src/LR/new-create.yaml'
-  
+  /lr-bookings/{page?}:
+    $ref: './src/LR/get-lr-bookings.yaml'
+  /lr-bookings/1/{lrNo}:
+    $ref: './src/LR/get-single-lr.yaml'
+  /vehicle-assign:
+    $ref: './src/LR/vehicle-assign-in-lr.yaml'
+  /lr-bookings-status/{type}:
+    $ref: './src/LR/get-lr-by-status.yaml'
+  /free-vehicles/{type}:
+    $ref: './src/LR/get-free-vehicle-or-driver.yaml'
+  /due-payment/{lrNo}:
+    $ref: './src/LR/get-due-payment-of-vehicle.yaml'
+  /lr-booking/single/{lrNo}:
+    $ref: './src/LR/get-single-lr-details.yaml'
+  /lr-update:
+    $ref: './src/LR/lr-update.yaml'
+  /lr-cancel:
+    $ref: './src/LR/lr-cancel.yaml'
+  /lr-status/{lrNo}:
+    $ref: './src/LR/get-lr-status.yaml'
+
+# bilties management APIs
+  /create-bilty:
+    $ref: './src/Bilty/create-bilty.yaml'
+  /bilties/{biltyId}:
+    $ref: './src/Bilty/get-single-bilty-details.yaml'
+  /lr-bilties/{lrNo}:
+    $ref: './src/Bilty/get-all-bilty-by-lr.yaml'
+  /bilty-update/{biltyId}:
+    $ref: './src/Bilty/update-bilty.yaml'
+  /bilty/{id}:
+    $ref: './src/Bilty/delete-bilty.yaml'
+
 components:
   securitySchemes:
     bearerAuth:            

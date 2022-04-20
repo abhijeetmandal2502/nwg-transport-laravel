@@ -15,8 +15,8 @@ post:
       required: true
       description: Employee object need to update
       content:
-      application/json:
-        schema:
+        application/json: 
+          schema:
             $ref: '../../swagger.yaml#/components/schemas/Employee'
   responses:
     '201':
@@ -25,6 +25,6 @@ post:
     '422':
         description: Unprocessable Entity
         content: {}
-    security:
+  security:
       - bearerAuth: [] 
 

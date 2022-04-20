@@ -1,0 +1,87 @@
+post:
+  tags:
+    - Bilties
+  summary: Update Bilty
+  operationId: biltyUpdate
+  parameters:
+    - name: biltyId
+      in: path
+      description: auto increment ID of bilty to update
+      required: true
+      schema:
+        biltyId:
+          type: integer
+  requestBody:
+      required: true
+      description: Employee object need to update
+      content:
+        application/json: 
+          schema:
+              type: object
+              properties:
+                shipment_no:
+                  type: string
+                  description: when bilty pending then required
+                invoice_no: 
+                  type: string
+                  description: when bilty pending then required
+                packages:
+                  type: number
+                  description: when bilty pending then required
+                description:
+                  type: string
+                  description: when bilty pending then required
+                date:
+                  type: string
+                  format: date
+                  description: when bilty pending then required
+                weight:
+                  type: number
+                  description: when bilty pending then required
+                unit:
+                  type: string
+                  description: weight unit (kg)
+                gst_no:
+                  type: string
+                  description: when bilty pending then required
+                goods_value:
+                  type: number
+                  description: when bilty pending then required
+                status:
+                  type: string
+                  description: if create invoice for vendor for payment
+                amount:
+                  type: number
+                  description: if request status processing/approved then required
+                receipt_date: 
+                  type: string
+                  format: date
+                  description: if request status processing then required
+                narration:
+                  type: string
+                  description: if request status approved then optional
+                tds_amount:
+                  type: number
+                  description: if request status approved then required
+                payment_mode:
+                  type: string
+                  description: if request status approved then required
+                trans_id:
+                  type: string
+                  description: if request status approved then optional
+                cheque_no:
+                  type: string
+                  description: if request status approved then optional
+  responses:
+    '201':
+      description: Bilty Updated successfully!
+      content:
+    '422':
+        description: Unprocessable Entity
+        content: {}
+    '500':
+        description: Internal Server Error
+        content: {}
+  security:
+      - bearerAuth: [] 
+

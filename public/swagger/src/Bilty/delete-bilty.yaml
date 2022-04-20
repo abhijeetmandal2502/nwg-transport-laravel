@@ -1,0 +1,25 @@
+ delete:
+      tags:
+        - Bilties
+      summary: Delete Bilty 
+      operationId: deleteBilty
+      parameters:
+      - name: id
+        in: path
+        description: auto increment ID of bilty to delete
+        required: true
+        schema:
+          id:
+            type: integer
+      responses:
+        '200':
+          description: Bilty deleted successfully!
+          content: {}
+        '422':
+          description: Unprocessable Entity
+          content: {}
+        '500':
+          description: Internal Server Error
+          content: {}
+      security:
+        - bearerAuth: [] 

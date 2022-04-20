@@ -1,0 +1,24 @@
+get:
+  tags:
+    - LR/CN Booking
+  summary: Get Single LR with all details
+  description: This api is used to get single LR with all details.
+  operationId: singleLrDetails
+  parameters:
+      - name: lrNo
+        in: path
+        description: lrNo of LR to return
+        schema:
+          lrNo:
+            type: string
+  responses:
+    '200':
+      description: Get Single LR all data
+      content: {}
+    '422':
+      description: Unprocessable Entity
+      content: {}
+  security:
+    - bearerAuth: []
+
+ 

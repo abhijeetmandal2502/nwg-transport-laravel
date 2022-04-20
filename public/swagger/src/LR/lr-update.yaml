@@ -1,0 +1,58 @@
+post:
+    tags:
+      - LR/CN Booking
+    summary: Update LR
+    description: LR can update before loading stage
+    operationId: lrUpdate
+    requestBody:
+      required: true
+      description: if lr status is fresh and vehicle-assigned then lr can update with different parameters
+      content:
+        application/json:
+          schema:
+              type: object
+              properties:
+                booking_id:         
+                  type: string
+                consignor_id:         
+                  type: string
+                consignee_id:   
+                  type: string
+                indent_date:
+                  type: string
+                  format: date  
+                reporting_date:
+                  type: string
+                  format: date
+                from_location:
+                  type: string
+                to_location:
+                  type: string
+                driver_id:
+                  type: string
+                  description: if lr status is vehicle-assigned then this feild is required else skip
+                vehicle_id:
+                  type: string
+                  description: if lr status is vehicle-assigned then this feild is required else skip
+                amount:
+                  type: number
+                  description: if lr status is vehicle-assigned then this feild is required else skip
+              required:
+                - booking_id
+                - consignor_id
+                - consignee_id
+                - indent_date
+                - reporting_date
+                - from_location
+                - to_location
+    responses:
+      '201':
+        description: LR was successfully updated!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+      '500':
+        description: Internal Server Error
+    security:
+      - bearerAuth: []
