@@ -224,7 +224,7 @@ class BiltyController extends Controller
             ];
             $restultArray = [
                 'lr_id' => $getBilties[0]['l_r_bookings']['booking_id'],
-                'lr_date' => $getBilties[0]['l_r_bookings']['booking_date'],
+                'lr_date' => date('d/m/Y', strtotime($getBilties[0]['l_r_bookings']['booking_date'])),
                 'consignor_id' => $getBilties[0]['l_r_bookings']['consignor']['cons_id'],
                 'consignor_name' => $getBilties[0]['l_r_bookings']['consignor']['name'],
                 'consignor_mobile' => $getBilties[0]['l_r_bookings']['consignor']['mobile'],
