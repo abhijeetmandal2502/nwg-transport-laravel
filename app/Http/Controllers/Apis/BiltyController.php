@@ -211,7 +211,7 @@ class BiltyController extends Controller
                 'package' => $getBilties[0]['packages'],
                 'description' => $getBilties[0]['description'],
                 'invoice_no' => $getBilties[0]['invoice_no'],
-                'bitly_date' => $getBilties[0]['date'],
+                'bitly_date' => date('d/m/Y', strtotime($getBilties[0]['date'])),
                 'gst_no' => $getBilties[0]['gst_no'],
                 'weight' => $getBilties[0]['weight'],
                 'weight_unit' => $getBilties[0]['unit'],
