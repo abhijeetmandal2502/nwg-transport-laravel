@@ -174,7 +174,7 @@ class AuthController extends Controller
                         $temArray = [];
                     }
                     if (!empty($internal_access)) {
-                        $accessPages = AccessPages::whereIn('page_id', $internal_access)->get()->toArray();
+                        $accessPages = AccessPages::whereIn('page_id', $internal_access)->get('name', 'url')->toArray();
                     } else {
                         $accessPages = [];
                     }
