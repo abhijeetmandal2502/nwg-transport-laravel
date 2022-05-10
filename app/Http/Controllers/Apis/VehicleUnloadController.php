@@ -182,4 +182,14 @@ class VehicleUnloadController extends Controller
             return response(['status' => 'error', 'errors' => "No any vehicle due payment found!"], 422);
         }
     }
+
+
+    public function totalLoadedCases($lrNo)
+    {
+
+        $getTotalLoadedCases = 0;
+
+        $getTotalLoadedCases = Bilty::where('booking_id', $lrNo)->sum('packages');
+        return response(['status' => 'success', 'totalPackages' => $getTotalLoadedCases], 200);
+    }
 }

@@ -44,7 +44,6 @@ Route::get('/logs/{id?}', [ActivityController::class, 'activityLogs']);
 Route::get('/roles', [RoleController::class, 'getRoles'])->name('api.roles');
 // Route::post('/all-rates', [SettingDistanceController::class, 'getSingleLocationRateList'])->name('api.single-rates');
 
-
 Route::middleware('auth:api')->group(function () {
 
     // Dashboard
@@ -71,6 +70,7 @@ Route::middleware('auth:api')->group(function () {
     // Unloading Vehicle
     Route::post('/vehicle-unload', [VehicleUnloadController::class, 'newUnload'])->name('api.vehicleUnload');
     Route::post('/final-vechicle-payment', [VehicleUnloadController::class, 'finalDuePayment'])->name('api.finalVehicleDuePayment');
+    Route::get('/total-loaded-cases/{lrNo}', [VehicleUnloadController::class, 'totalLoadedCases'])->name('api.totalLoadedCases');
 
     // Bitly Genrations
     Route::post('/create-bilty', [BiltyController::class, 'createBilty'])->name('api.createBilty');
