@@ -1,0 +1,47 @@
+post:
+    tags:
+      - Unload
+    summary: Unload vehicle
+    description: Unload vehicle is compulsory for Vehicle payment and Vendor payment
+    operationId: vehicleUnload
+    requestBody:
+      required: true
+      description: object need to create
+      content:
+        application/json:
+          schema:
+              type: object
+              properties:
+                lr_no:         
+                  type: string
+                arrive_date:
+                  type: string
+                  format: date
+                unload_date:
+                  type: string
+                  format: date
+                total_goods: 
+                  type: number
+                receive_goods:
+                  type: number
+                unload_charge:
+                  type: number
+                deductions:
+                  type: object
+              required:
+                - lr_no
+                - arrive_date
+                - unload_date
+                - total_goods
+                - receive_goods
+    responses:
+      '201':
+        description: Vehicle unloaded successfully!
+        content: {}
+      '422':
+        description: Unprocessable Entity
+        content: {}
+      '500':
+        description: Internal Server Error
+    security:
+      - bearerAuth: []
